@@ -30,10 +30,11 @@ def main():
     ap.add_argument("--src", required=True, help="Source side text file")
     ap.add_argument("--tgt", required=True, help="Target side text file")
     ap.add_argument("--out", required=True, help="Output TSV: score\\tsrc\\ttgt")
-    ap.add_argument("--model", default="wmt22-cometkiwi-da",
-                    help="COMET registry name; CometKiwi-22 is the standard "
-                         "reference-free QE model. (No 'Unbabel/' prefix — "
-                         "comet looks up by short name.)")
+    ap.add_argument("--model", default="Unbabel/wmt22-cometkiwi-da",
+                    help="HF model id; CometKiwi-22 is the standard reference-"
+                         "free QE model. Gated — request access at "
+                         "https://huggingface.co/Unbabel/wmt22-cometkiwi-da "
+                         "and run `hf auth login` first.")
     ap.add_argument("--batch-size", type=int, default=64)
     ap.add_argument("--gpus", type=int, default=1)
     ap.add_argument("--chunk-size", type=int, default=50000,
