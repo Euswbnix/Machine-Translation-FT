@@ -22,30 +22,38 @@ The result is a clean **negative finding**, and the negative finding is itself t
 
 ## 7.3 Results
 
-We ran SFT on both Base v1.1 (60M) and Big v1.1 (209M) under identical SFT data, hyperparameters, and stopping rule. Both runs early-stopped under default patience after ~6K SFT steps. Validation BLEU monotonically decreased throughout, on both models:
+We ran SFT on both Base v1.1 (60M) and Big v1.1 (209M) under identical SFT data, hyperparameters, and stopping rule. Both runs early-stopped under default patience after ~6K SFT steps. BLEU monotonically decreased throughout, on both models, on both splits:
 
-| Model     | Baseline | After SFT (best) | Δ vs baseline |
-|-----------|----------|-----------------|---------------|
-| Base v1.1 (60M)  | 30.52 | 28.97 | **−1.55** |
-| Big  v1.1 (209M) | 31.14 | 29.05 | **−2.09** |
+| Run | newstest2014 (test) | newstest2013 (valid) |
+|-----|---------------------|----------------------|
+| Base v1.1 baseline (averaged) | 35.31 | 30.52 |
+| Base v1.1 + SFT (final ckpt)  | **33.77** (−1.54) | **28.97** (−1.55) |
+| Big v1.1 baseline (averaged)  | 35.87 | 31.14 |
+| Big v1.1 + SFT (final ckpt)   | **33.54** (−2.33) | **29.05** (−2.09) |
 
-Training loss on the SFT set converged smoothly from ~3.5 (pretraining floor on v1) to 1.94 (Base SFT floor) — the model fit the SFT distribution well; the loss curve gives no indication of optimization failure. Sample translations during SFT remain fluent and grammatically correct; in particular, accented French characters (`Israël`, etc.) are preserved (no `<unk>`) thanks to the v1.1 SPM. **The drop is not a translation-quality collapse. It is a distribution shift.**
+(Note on units: baselines are 5-ckpt averaged checkpoints; SFT numbers are single final checkpoints because the 6K-step SFT runs did not produce enough save_interval-spaced checkpoints to average. Averaging the SFT runs would likely lift their BLEU by 0.2–0.4 — the directional finding is unaffected.)
 
-The Big-Base gap is itself diagnostic: Big lost 0.54 BLEU more than Base under the same SFT intervention. We will return to this in §7.6 — it mirrors the v2-pretraining failure where Big also lost more than Base.
+Training loss on the SFT set converged smoothly from ~3.5 (pretraining floor on v1) to 1.94 (Base SFT floor); the loss curve gives no indication of optimization failure. Sample translations during SFT remain fluent and grammatically correct; in particular, accented French characters (`Israël`, etc.) are preserved (no `<unk>`) thanks to the v1.1 SPM. **The drop is not a translation-quality collapse. It is a distribution shift.**
+
+Two observations from these numbers anticipate the analysis:
+
+1. **Big loses more than Base on both splits.** Big − Base = −0.79 (test) / −0.54 (valid), consistent in sign and magnitude. The same architectural property that makes Big a better learner of clean in-distribution signal also makes it more pliable to whatever distribution it is fine-tuned on.
+
+2. **The SFT-degraded Base v1.1 lands near v2-pretrained Base.** Base + SFT test 33.77 ≈ Base v2 test 33.90; Big + SFT test 33.54 is slightly above Big v2 test 33.03. Two genuinely different failure modes — pretraining on noise (§5) and SFT on a domain-mismatched filter (§7) — converge to the same BLEU band of 33–34. We argue in §7.6 that this is not coincidence: both modes inject "wrong supervision" (incorrect-translation in §5, correct-but-wrong-distribution in §7), and the model's available accuracy is bounded by how much wrong supervision it has integrated, regardless of which kind.
 
 ## 7.4 Analysis: why the filter selected what it did
 
-CometKiwi-22 is reference-free: it scores translation quality in absolute terms. Inspection of the top-5 highest-scored pairs (after dedup):
+CometKiwi-22 is reference-free: it scores translation quality in absolute terms. The top-5 highest-scored pairs after dedup (CometKiwi score band 0.8959–0.9145, top 0.0003% of v2 by score):
 
-```
-1. UN disability statistics (en/fr) — formal report register
-2. UNAIDS HIV/AIDS prevalence statistics — formal report
-3. Government federal-debt announcement — formal/legislative
-4. Finland population statistics — formal/statistical
-5. (other UN/legislative variants)
-```
+| # | Source (en) | Translation (fr) | Domain |
+|---|------------|------------------|--------|
+| 1 | *It is estimated that there are 500–650 million persons with disabilities in the world, approximately 10% of the world population, 150 million of whom are children.* | *On estime qu'il y a entre 500 et 650 millions de personnes handicapées dans le monde, soit environ 10% de la population mondiale; 150 millions d'entre elles sont des enfants.* | UN report |
+| 2 | *The estimated number of people living with HIV in Eastern Europe and Central Asia rose to 1.5 million in 2007; almost 90% of those infected live in either the Russian Federation (69%) or Ukraine (29%).* | *On estime que le nombre de personnes vivant avec le VIH en Europe orientale et en Asie centrale a atteint 1,5 million en 2007; près de 90% des personnes infectées vivent soit en Fédération de Russie (69%) soit en Ukraine (29%).* | UNAIDS report |
+| 3 | *Since 2005–2006, the Government has reduced the federal debt by $37 billion.* | *Depuis 2005–2006, le gouvernement a réduit la dette fédérale de 37 milliards de dollars.* | Gov. announcement |
+| 4 | *During 2006, the population of Finland increased by 4 per cent (21,375 persons).* | *En 2006, la population finlandaise a augmenté de 4 % (21 375 personnes).* | Stat. report |
+| 5 | *(other UN/legislative variants of similar register)* | — | UN/legislative |
 
-The top scorers are **dominated by UN, intergovernmental, and legislative-document parallel data**. This is unsurprising: such corpora contain professionally-translated, syntactically aligned, semantically tight pairs — exactly what a QE metric will rank highest. WMT14 newstest, in contrast, is **news domain**: looser register, shorter sentences, conversational interjections, named-entity-rich.
+The top scorers are **dominated by UN, intergovernmental, and legislative-document parallel data**: long, formal, syntactically rigid sentences with statistical content, professionally translated. This is unsurprising: such corpora are exactly what a QE metric will rank highest because they exhibit the alignment, completeness, and syntactic correspondence that QE is trained to reward. WMT14 newstest, in contrast, is **news domain** — looser register, shorter sentences, conversational interjections, named-entity-rich, occasional ungrammaticality from quoted speech.
 
 We thus have two distributions:
 - **SFT distribution**: high-quality, formal, document-style
