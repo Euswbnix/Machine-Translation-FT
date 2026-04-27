@@ -36,7 +36,7 @@ v2 (30M loose)     & \textbf{33.90} & 33.03 & $\mathbf{-0.87}$ \\
 \textbf{Quality drop} & $-1.41$ & $-2.84$ & --- \\
 \bottomrule
 \end{tabular}
-\caption{The 2$\times$2 result: test BLEU on newstest2014, sacrebleu 13a, 5-checkpoint averaged. Bold marks the better model within each row (capacity gap) and column (data-quality gap). The Big$-$Base difference flips sign: $+0.56$ on clean data, $-0.87$ on noisy data. Equivalently, the v1$\rightarrow$v2 quality drop is twice as large for Big ($-2.84$) as for Base ($-1.41$).}
+\caption{The 2$\times$2 result: test BLEU on newstest2014; sacrebleu 13a, beam=5, length-penalty=1.0, 5-checkpoint averaged. Bold marks the better model within each row (capacity gap) and column (data-quality gap). The Big$-$Base difference flips sign: $+0.56$ on clean data, $-0.87$ on noisy data. Equivalently, the v1$\rightarrow$v2 quality drop is twice as large for Big ($-2.84$) as for Base ($-1.41$).}
 \label{tab:two_by_two}
 \end{table}
 
@@ -60,7 +60,7 @@ We claim v2's degradation is due to noise in the extra 20M pairs beyond the v1 h
 \subsection{Big v2 was halted early: was that the right call?}
 Big v2 was planned for 800K steps and halted at 416K. The halt rule was: a single eval drops below the running best AND the run has been pathologically slow to find new bests. At halt, Big v2's averaged BLEU was 33.03 / 28.91, well below Base v2's 33.90 / 29.23 already established at the same wall-clock.
 
-Could continued training to 800K have lifted Big v2 above Base v2? The training-curve trajectory (Figure~\ref{fig:big_v2_curves}) makes this implausible: the late-training BLEU oscillates within $\pm 0.5$ around 27.7--28.0 from step 300K through 416K with no upward trend, while training loss plateaus at $\sim$~3.0. Continued steps would have continued to reduce loss on noisy patterns and produced no further BLEU gain. We accept the halt as the conservative choice and note that Big v2's true asymptote could lie a few BLEU below the reported 33.03 (further noise fitting), not above.
+Could continued training to 800K have lifted Big v2 above Base v2? The training-curve trajectory (Figure~\ref{fig:big_v2_curves}) makes this unlikely under the observed trend: late-training BLEU oscillates within $\pm 0.5$ around 27.7--28.0 from step 300K through 416K with no upward trend, while training loss plateaus at $\sim$~3.0. Continued steps would have continued to reduce loss on noisy patterns; we have no evidence they would have produced further BLEU gain. We accept the halt as the conservative choice and note that Big v2's continued-training trajectory could plausibly drift further below the reported 33.03 (further noise fitting) rather than above.
 
 \begin{figure}[t]
 \centering

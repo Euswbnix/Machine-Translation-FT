@@ -22,7 +22,9 @@ The result is a clean negative finding, and the negative finding is itself the c
 \subsection{Results}
 \label{sec:sft_results}
 
-BLEU monotonically decreased throughout FT, on both models, on both splits (Table~\ref{tab:sft_results}, Figure~\ref{fig:sft_curves}).
+\textbf{Unit-of-comparison reminder.} The pretraining baselines we compare against are 5-checkpoint averages (Vaswani's averaging trick); the fine-tuning runs in this section are too short (6K steps) to produce 5 save-interval-spaced checkpoints, so their numbers are single final checkpoints. Averaging the fine-tuning runs would likely lift their BLEU by 0.2--0.4. Reported $\Delta$s in Table~\ref{tab:sft_results} therefore overstate the fine-tuning loss by approximately the averaging gain. The directional finding (monotonic degradation, Big-loses-more-than-Base) is unaffected.
+
+BLEU monotonically decreased throughout fine-tuning, on both models, on both splits (Table~\ref{tab:sft_results}, Figure~\ref{fig:sft_curves}).
 
 \begin{table}[t]
 \centering
@@ -38,14 +40,14 @@ Big  v1.1 baseline (averaged) & 35.87 & 31.14 \\
 Big  v1.1 + FT (final ckpt)  & 33.54 \scriptsize{($-2.33$)} & 29.05 \scriptsize{($-2.09$)} \\
 \bottomrule
 \end{tabular}
-\caption{Quality-filtered FT degrades both Base and Big v1.1 on newstest2013/2014 (sacrebleu 13a, beam=5, lp=1.0). Big loses more than Base by $0.5$--$0.8$ BLEU on both splits. Baselines are 5-checkpoint averages; FT figures are single final checkpoints because the 6K-step FT runs did not produce enough save-interval-spaced checkpoints to average. Averaging the FT runs would likely lift their BLEU by $0.2$--$0.4$, leaving the directional finding unchanged.}
+\caption{QE-filtered fine-tuning degrades both Base and Big v1.1. BLEU on newstest2013 (valid) / newstest2014 (test); sacrebleu 13a, beam=5, length-penalty=1.0. Pretraining \emph{baselines} are 5-checkpoint averaged; \emph{fine-tuning} figures are single final checkpoints (6K-step runs did not produce 5 save-interval-spaced checkpoints; averaging would likely lift fine-tuning BLEU by 0.2--0.4, narrowing reported $\Delta$s by the same amount). Big loses more than Base by 0.5--0.8 BLEU on both splits.}
 \label{tab:sft_results}
 \end{table}
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{figures/sft_curves.png}
-\caption{Validation BLEU during quality-filtered FT. Both Base v1.1 (blue) and Big v1.1 (red) drop monotonically below their baseline averaged-checkpoint BLEU (dashed lines). The first FT eval (step $+2$K) loses approximately 1 BLEU; subsequent steps drift further. Big drops more than Base.}
+\caption{Validation BLEU (newstest2013, sacrebleu 13a, beam=5, length-penalty=1.0) during QE-filtered fine-tuning. Solid lines are single-checkpoint evaluations during fine-tuning; dashed lines are pretraining baselines (5-checkpoint averaged). Both Base v1.1 (blue) and Big v1.1 (red) drop monotonically below their baselines. The first fine-tuning eval (step $+2$K) loses approximately 1 BLEU; subsequent steps drift further. Big drops more than Base.}
 \label{fig:sft_curves}
 \end{figure}
 
@@ -119,7 +121,7 @@ Big$-$Base $\Delta$ & $-0.87$ & $-0.79$ (test) \\
 Lesson & filter for noise & match for distribution \\
 \bottomrule
 \end{tabular}
-\caption{Two failure modes producing $\sim$~33--34 test BLEU. Both amplify with capacity at similar magnitude.}
+\caption{Two failure modes producing $\sim$~33--34 test BLEU on newstest2014. Both amplify with capacity at comparable magnitude. The Big$-$Base $\Delta$ row reports test-BLEU differences (sacrebleu 13a, beam=5, lp=1.0; pretraining figures averaged, fine-tuning figures single ckpt as in Table~\ref{tab:sft_results}).}
 \label{tab:two_failures}
 \end{table}
 
