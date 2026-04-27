@@ -1,15 +1,15 @@
 \section{Cross-Language Replication: WMT14 en-de}
 \label{sec:ende}
 
-This section asks whether the en-fr 2$\times$2 pattern generalizes to a different language pair. We pick WMT14 en-de --- a $4.5\times$ smaller raw corpus than en-fr (4.5M vs.\ 40.8M), where the raw data is also already cleaner per-pair. The corpus is small enough that we cannot construct a clean v1/v2 split (there is no ``loose'' option that yields meaningfully more data); instead we run a single Base + a single Big on the standard cleaned corpus and look at the Base/Big gap.
+This section asks whether the en-fr 2$\times$2 pattern generalizes to a different language pair. We pick WMT14 en-de --- a $4.5\times$ smaller raw corpus than en-fr (4.5M vs.\ 40.8M), where the raw data is already cleaner per-pair. The corpus is small enough that no clean v1/v2 split is possible (there is no ``loose'' option that yields meaningfully more data); instead we train a single Base and a single Big on the standard cleaned corpus and inspect the Base/Big gap.
 
 \subsection{Corpus and setup}
-WMT14 en-de download via HuggingFace Datasets (4{,}509{,}489 raw pairs); cleaned with the v1 thresholds; 4{,}174{,}104 pairs survive (92.6\% keep rate). SPM 32K joint vocabulary, \texttt{character\_coverage=1.0} (preserves German umlauts). Train/valid/test = 4.17M / 3{,}000 / 3{,}003.
+WMT14 en-de is downloaded via HuggingFace Datasets (4{,}509{,}489 raw pairs) and cleaned with the v1 thresholds; 4{,}174{,}104 pairs survive (92.6\% keep rate). SPM 32K joint vocabulary, \texttt{character\_coverage=1.0} (preserves German umlauts). Train/valid/test $=$ 4.17M / 3{,}000 / 3{,}003.
 
-Hyperparameters mirror the en-fr Base config (\S\ref{sec:setup}) with two changes: max\_steps from 100K $\rightarrow$ 230K (extended after the curve at 150K showed continued non-trivial improvement), and dropout 0.1 $\rightarrow$ 0.3 for Big (following the original Vaswani recommendation for the smaller en-de corpus).
+Hyperparameters mirror the en-fr Base config (\S\ref{sec:setup}) with two changes: max\_steps 100K $\rightarrow$ 230K (extended after the curve at 150K showed continued non-trivial improvement), and dropout 0.1 $\rightarrow$ 0.3 for Big (following the original Vaswani recommendation for the smaller en-de corpus).
 
 \subsection{Base en-de}
-Base en-de trains for 230K steps ($\sim$~6 epochs at this batch size), best valid 24.25 (single ckpt), 5-checkpoint averaged valid 24.35 / test 24.04 with default beam=5 lp=1.0. The original paper reports tokenized BLEU 27.3 on en-de Base; converting via the ${\sim}1.5$--$2$ tokenized-vs-sacrebleu band, our 24.04 sacrebleu is $\sim$~25.5--26 tokenized BLEU --- 1--1.5 BLEU below the original report. Following the original paper's en-de decoding hyperparameters (beam=4, length-penalty=0.6) does not close this gap (24.19 sacrebleu, +0.15). The gap is small relative to the +0.56 / -0.87 effects we make claims on, and likely reflects differences in BPE tokenization details and training-corpus filtering that we cannot precisely reproduce.
+Base en-de trains for 230K steps ($\sim$~6 epochs at this batch size); best single-checkpoint valid is 24.25, and 5-checkpoint averaged valid / test reach 24.35 / 24.04 under default beam=5, lp=1.0. The original paper reports tokenized BLEU 27.3 on en-de Base; converting via the ${\sim}1.5$--$2$ tokenized-vs-sacrebleu band, our 24.04 sacrebleu corresponds to $\sim$~25.5--26 tokenized BLEU --- 1--1.5 BLEU below the original. Switching to the original en-de decoding hyperparameters (beam=4, lp=0.6) does not close the gap (24.19 sacrebleu, $+0.15$). The remaining gap is small relative to the $+0.56$ / $-0.87$ effects we make claims on, and likely reflects BPE tokenization and training-corpus filtering details that we cannot precisely reproduce.
 
 \begin{figure}[t]
 \centering
@@ -19,7 +19,7 @@ Base en-de trains for 230K steps ($\sim$~6 epochs at this batch size), best vali
 \end{figure}
 
 \subsection{Big en-de}
-Big en-de trains for 466K steps with dropout 0.3 (original Vaswani's en-de regularization), best single-checkpoint valid 23.41, 5-checkpoint averaged valid 23.01 / test 22.47.
+Big en-de trains for 466K steps with dropout 0.3 (the original Vaswani en-de regularization); best single-checkpoint valid is 23.41, with 5-checkpoint averaged valid / test 23.01 / 22.47.
 
 \subsection{The pattern replicates}
 \begin{table}[t]
@@ -37,9 +37,9 @@ Test  & 24.04 & 22.47 & $\mathbf{-1.57}$ \\
 \label{tab:ende}
 \end{table}
 
-The Base $>$ Big ordering on en-de is the same direction as en-fr v2's $-0.87$, with a larger magnitude ($-1.57$ on test). Mechanistically these may differ --- en-fr v2 fails by data \emph{noise}, en-de fails (we hypothesize) by data \emph{quantity}, since 4.5M en-de is genuinely cleaner per-pair (\S\ref{sec:setup}) than 30M en-fr v2 yet $\sim$~half the size of clean v1.1's 9.3M. Both routes produce Base $\geq$ Big.
+The Base $>$ Big ordering on en-de matches the direction of en-fr v2's $-0.87$, with a larger magnitude ($-1.57$ on test). The two may differ mechanistically: en-fr v2 fails through data \emph{noise}, while en-de plausibly fails through data \emph{quantity}, since 4.5M en-de is genuinely cleaner per-pair (\S\ref{sec:setup}) than 30M en-fr v2 yet $\sim$~half the size of clean v1.1's 9.3M. Both routes yield Base $\geq$ Big.
 
-A unifying \emph{hypothesis} consistent with the three data points so far is that Big requires both (a) cleanly-aligned data and (b) enough of it; v1.1 has both, v2 has (b) but not (a), en-de has (a) but not (b). Three points do not establish a curve, and we are careful not to claim a precise scale threshold; we only claim the en-de result is consistent with this picture. A cross-language scaling sweep with multiple corpus-size points per language would be needed to test the hypothesis directly.
+A unifying \emph{hypothesis} consistent with the three data points so far is that Big requires both (a) cleanly-aligned data and (b) enough of it: v1.1 has both, v2 has (b) but not (a), and en-de has (a) but not (b). Three points do not establish a curve, and we avoid claiming a precise scale threshold; we only note that the en-de result is consistent with this picture. A cross-language scaling sweep with multiple corpus-size points per language would be needed to test the hypothesis directly.
 
 \subsection{HuggingFace release}
 Both en-de checkpoints are published on the HuggingFace Hub:

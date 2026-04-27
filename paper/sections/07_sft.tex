@@ -2,29 +2,29 @@
 \label{sec:sft}
 
 \subsection{Motivation}
-\S\S\ref{sec:enfr_v1}--\ref{sec:ende} establish a controlled two-by-two: \textbf{data quality determines the sign of the capacity return}. On the strict-filter v1.1 corpus (9.3M pairs), Big exceeds Base by $+0.56$ BLEU; on the loose-filter v2 corpus (30M pairs), Big falls below Base by $-0.87$. The natural follow-up question is whether v2's extra 20M pairs are \emph{recoverable}: can we extract the high-quality subset of v2 and use it to lift v1.1's plateau?
+\S\S\ref{sec:enfr_v1}--\ref{sec:ende} establish a controlled 2$\times$2: \textbf{data quality determines the sign of the capacity return}. On the strict-filter v1.1 corpus (9.3M pairs), Big exceeds Base by $+0.56$ BLEU; on the loose-filter v2 corpus (30M pairs), Big trails Base by $-0.87$. The natural follow-up question is whether v2's extra 20M pairs are \emph{recoverable}: can we extract the high-quality subset of v2 and use it to push past v1.1's plateau?
 
-This section tests that hypothesis with \emph{QE-filtered fine-tuning}: we score the full v2 corpus with a reference-free quality-estimation (QE) model, take the top-1M pairs by score, deduplicate, and continue training Base v1.1 and Big v1.1 on this filtered subset under the same cross-entropy loss as pretraining. \textbf{This is not instruction or preference tuning.}\footnote{We use the term ``fine-tuning'' (or ``FT'') in this section to denote continued pretraining-style training on a curated parallel-corpus subset. We avoid ``SFT'' alone because in the LLM literature it now most commonly refers to instruction tuning on (prompt, response) pairs, which is not what we do here.} The intent is to retain whatever signal v2 contributes beyond v1's strict cutoffs while discarding the noise.
+This section tests that hypothesis with \emph{QE-filtered fine-tuning}: we score the full v2 corpus with a reference-free quality-estimation (QE) model, take the top-1M pairs by score, deduplicate, and continue training Base v1.1 and Big v1.1 on this filtered subset under the same cross-entropy loss as pretraining. \textbf{This is not instruction or preference tuning.}\footnote{We use ``fine-tuning'' (FT) in this section to denote continued pretraining-style training on a curated parallel-corpus subset. We avoid ``SFT'' alone because in the LLM literature it now most commonly refers to instruction tuning on (prompt, response) pairs, which is not the procedure here.} The intent is to retain whatever signal v2 contributes beyond v1's strict cutoffs while discarding the noise.
 
-The result is a clean negative finding, and the negative finding is itself the contribution: it constrains what ``data quality'' means.
+The outcome is a clean negative finding, and the negative finding is itself the contribution: it constrains what ``data quality'' means.
 
 \subsection{Method}
-\paragraph{Scoring.} We use CometKiwi-22 (\texttt{Unbabel/wmt22-cometkiwi-da})~\cite{rei2022cometkiwi}, the WMT22+ standard reference-free QE model based on XLM-RoBERTa-XL~\cite{conneau2020unsupervised}. Each $(\text{src}, \text{mt})$ pair receives a scalar quality score in roughly $[0, 1]$. Scoring v2's 30,129,500 pairs took 13.8 hours on a single RTX 5090 ($\approx$~750 pairs/sec at batch size 64), with the score range concentrated in $[0.5, 0.92]$.
+\paragraph{Scoring.} We use CometKiwi-22 (\texttt{Unbabel/wmt22-cometkiwi-da})~\cite{rei2022cometkiwi}, the WMT22+ standard reference-free QE model based on XLM-RoBERTa-XL~\cite{conneau2020unsupervised}. Each $(\text{src}, \text{mt})$ pair receives a scalar quality score in roughly $[0, 1]$. Scoring v2's 30{,}129{,}500 pairs took 13.8 hours on a single RTX 5090 ($\approx$~750 pairs/sec at batch size 64), with scores concentrated in $[0.5, 0.92]$.
 
-\paragraph{Filtering.} We retain the top 1M pairs by score (top 3.3\% of v2). Score range of the retained set: 0.8959--0.9145 --- a tight 0.02 band, indicating a dense plateau of near-equivalent high-quality pairs above this cutoff.
+\paragraph{Filtering.} We retain the top 1M pairs by score (the top 3.3\% of v2). The retained band is tight --- 0.8959--0.9145 --- indicating a dense plateau of near-equivalent high-quality pairs above the cutoff.
 
-\paragraph{Deduplication.} Sorting and unique-ing the top-1M yields 931{,}366 unique pairs (7\% duplicate rate within the top-1M, mostly UN-document boilerplate). All FT below uses this 931K-pair deduplicated set.
+\paragraph{Deduplication.} Sorting and unique-ing the top-1M yields 931{,}366 unique pairs (a 7\% duplicate rate, mostly UN-document boilerplate). All FT below uses this 931K-pair deduplicated set.
 
-\paragraph{FT setup.} We fine-tune Base v1.1 and Big v1.1 averaged checkpoints by resuming training with optimizer state reset. The Noam scheduler resumes at post-warmup decay, giving an effective peak LR of $2.7\text{e--}4$ (Base) / $2.0\text{e--}4$ (Big) --- within the 10--20\% of pretraining peak band conventional for FT. Other hyperparameters are unchanged from pretraining: bf16, label smoothing 0.1, eval every 2K steps. We allow up to 10K FT steps; both runs early-stop under default patience after $\approx$~6K FT steps.
+\paragraph{FT setup.} We fine-tune the averaged Base v1.1 and Big v1.1 checkpoints by resuming training with the optimizer state reset. The Noam scheduler resumes at post-warmup decay, giving an effective peak LR of $2.7\text{e--}4$ (Base) / $2.0\text{e--}4$ (Big) --- within the 10--20\% of pretraining-peak band conventional for FT. Other hyperparameters are unchanged from pretraining: bf16, label smoothing 0.1, eval every 2K steps. We allow up to 10K FT steps; both runs early-stop under default patience after $\approx$~6K steps.
 
-\paragraph{Evaluation.} newstest2013 (valid) and newstest2014 (test), sacrebleu 13a, beam=5, length-penalty=1.0. The same SPM (coverage=1.0) used in v1.1 pretraining is reused.
+\paragraph{Evaluation.} newstest2013 (valid) and newstest2014 (test), sacrebleu 13a, beam=5, length-penalty=1.0. We reuse the same SPM (coverage=1.0) from v1.1 pretraining.
 
 \subsection{Results}
 \label{sec:sft_results}
 
-\textbf{Unit-of-comparison reminder.} The pretraining baselines we compare against are 5-checkpoint averages (Vaswani's averaging trick); the fine-tuning runs in this section are too short (6K steps) to produce 5 save-interval-spaced checkpoints, so their numbers are single final checkpoints. Averaging the fine-tuning runs would likely lift their BLEU by 0.2--0.4. Reported $\Delta$s in Table~\ref{tab:sft_results} therefore overstate the fine-tuning loss by approximately the averaging gain. The directional finding (monotonic degradation, Big-loses-more-than-Base) is unaffected.
+\textbf{Unit-of-comparison reminder.} The pretraining baselines we compare against are 5-checkpoint averages (Vaswani's averaging trick); the fine-tuning runs here are too short (6K steps) to produce 5 save-interval-spaced checkpoints, so their numbers come from single final checkpoints. Averaging the fine-tuning runs would likely add 0.2--0.4 BLEU. The reported $\Delta$s in Table~\ref{tab:sft_results} therefore overstate the fine-tuning loss by roughly that amount. The directional finding --- monotonic degradation, Big-loses-more-than-Base --- is unaffected.
 
-BLEU monotonically decreased throughout fine-tuning, on both models, on both splits (Table~\ref{tab:sft_results}, Figure~\ref{fig:sft_curves}).
+BLEU decreases monotonically throughout fine-tuning on both models and both splits (Table~\ref{tab:sft_results}, Figure~\ref{fig:sft_curves}).
 
 \begin{table}[t]
 \centering
@@ -51,16 +51,16 @@ Big  v1.1 + FT (final ckpt)  & 33.54 \scriptsize{($-2.33$)} & 29.05 \scriptsize{
 \label{fig:sft_curves}
 \end{figure}
 
-Training loss on the FT set converged smoothly from ${\sim}3.5$ (pretraining floor on v1) to 1.94 (Base FT floor); the loss curve gives no indication of optimization failure. Sample translations during FT remain fluent and grammatically correct; in particular, accented French characters (\textit{Israël}, etc.) are preserved (no \texttt{<unk>}) thanks to the v1.1 SPM. \textbf{The drop is not a translation-quality collapse. It is a distribution shift.}
+Training loss on the FT set converges smoothly from ${\sim}3.5$ (the pretraining floor on v1) to 1.94 (Base FT floor); the loss curve shows no sign of optimization failure. Sample translations during FT remain fluent and grammatically correct; accented French characters (\textit{Israël}, etc.) are preserved (no \texttt{<unk>}) thanks to the v1.1 SPM. \textbf{The drop is not a translation-quality collapse --- it is a distribution shift.}
 
 Two observations from these numbers anticipate the analysis:
 \begin{enumerate}
-\item Big loses more than Base on both splits ($-0.79$ test, $-0.54$ valid). The same architectural property that makes Big a better learner of clean in-distribution signal also makes it more pliable to whatever distribution it is fine-tuned on.
-\item The FT-degraded models land near their respective v2-pretrained counterparts: Base+FT test 33.77 $\approx$ Base v2 test 33.90; Big+FT test 33.54 $>$ Big v2 test 33.03. Two genuinely different failure modes --- pretraining on noise (\S\ref{sec:enfr_v2}) and FT on a domain-mismatched filter (\S\ref{sec:sft}) --- converge to the same 33--34 BLEU band. We argue in \S\ref{sec:why_failures_differ} that this is not coincidence.
+\item Big loses more than Base on both splits ($-0.79$ test, $-0.54$ valid). The architectural property that makes Big a better learner of clean in-distribution signal also makes it more pliable to whatever distribution it is fine-tuned on.
+\item The FT-degraded models land near their v2-pretrained counterparts: Base$+$FT test 33.77 $\approx$ Base v2 test 33.90; Big$+$FT test 33.54 $>$ Big v2 test 33.03. Two genuinely different failure modes --- pretraining on noise (\S\ref{sec:enfr_v2}) and FT under a domain-mismatched filter (\S\ref{sec:sft}) --- converge to the same 33--34 BLEU band. We argue in \S\ref{sec:why_failures_differ} that this is not coincidence.
 \end{enumerate}
 
 \subsection{Why the filter selected what it did}
-CometKiwi-22 is reference-free: it scores translation quality in absolute terms. The top-5 highest-scored pairs after dedup are dominated by UN, intergovernmental, and legislative-document parallel data --- long, formal, syntactically rigid sentences with statistical content, professionally translated (Table~\ref{tab:top5_samples}).
+CometKiwi-22 is reference-free: it scores translation quality in absolute terms. The top-5 highest-scored pairs after deduplication are dominated by UN, intergovernmental, and legislative parallel data --- long, formal, syntactically rigid sentences with statistical content, professionally translated (Table~\ref{tab:top5_samples}).
 
 \begin{table*}[t]
 \centering
@@ -82,11 +82,11 @@ CometKiwi-22 is reference-free: it scores translation quality in absolute terms.
 \label{tab:top5_samples}
 \end{table*}
 
-This is unsurprising: such corpora exhibit the alignment, completeness, and syntactic correspondence that QE is trained to reward. WMT14 newstest, in contrast, is news domain --- looser register, shorter sentences, conversational interjections, named-entity-rich, occasional ungrammaticality from quoted speech.
+This is unsurprising: such corpora exhibit the alignment, completeness, and syntactic correspondence that QE is trained to reward. WMT14 newstest, in contrast, is news-domain --- looser register, shorter sentences, conversational interjections, named-entity-rich, with occasional ungrammaticality from quoted speech.
 
-We thus have two distributions: an FT distribution (high-quality, formal, document-style) and an eval distribution (high-quality, informal, news-style). FT pulls the model's output distribution toward the FT distribution. On the FT distribution itself, the model improves; on the eval distribution, it gets worse, because every step of FT trades news-style fit for formal-style fit.
+We thus have two distributions: an FT distribution (high-quality, formal, document-style) and an eval distribution (high-quality, informal, news-style). FT pulls the model's output distribution toward the former. On the FT distribution itself the model improves; on the eval distribution it gets worse, because every FT step trades news-style fit for formal-style fit.
 
-\textbf{The model is not deteriorating in absolute quality.} It is being relocated in distribution space, and that relocation crosses the eval distribution.
+\textbf{The model is not deteriorating in absolute quality.} It is being relocated in distribution space, and that relocation moves it away from the eval distribution.
 
 \subsection{Implication: ``data quality'' decomposes}
 This negative result refines the central claim of the paper:
@@ -101,12 +101,12 @@ Both dimensions matter, and they are independent. Reference-free QE metrics meas
 
 A naive top-K-by-QE filter optimizes only the first axis, and on a heterogeneous corpus (which v2 is --- news, web, UN, Europarl, all mixed) this can move the data far from the target eval distribution. The cleaner the QE filter, the more pronounced the domain skew, because high-quality parallel data is disproportionately UN/legislative.
 
-This generalizes: any post-training step that filters on absolute quality without conditioning on the eval distribution is liable to move the model away from where it should land. The fix is not ``better QE'' --- CometKiwi-22 is doing exactly what it should --- but \emph{domain-conditional filtering}: filter by QE within news-domain candidates, sample uniformly across domains within the QE band, or apply a domain classifier as a hard pre-filter.
+This generalizes: any post-training step that filters on absolute quality without conditioning on the eval distribution risks moving the model away from where it should land. The fix is not ``better QE'' --- CometKiwi-22 is doing exactly what it should --- but \emph{domain-conditional filtering}: filter by QE within news-domain candidates, sample uniformly across domains within a QE band, or apply a domain classifier as a hard pre-filter.
 
 \subsection{Why the v2-pretraining failure and the FT failure are different mechanisms}
 \label{sec:why_failures_differ}
 
-It is worth distinguishing two failure modes that this paper has now exhibited (Table~\ref{tab:two_failures}).
+It is worth distinguishing the two failure modes the paper has now exhibited (Table~\ref{tab:two_failures}).
 
 \begin{table}[t]
 \centering
@@ -125,20 +125,20 @@ Lesson & filter for noise & match for distribution \\
 \label{tab:two_failures}
 \end{table}
 
-These failures are independent axes. Quality filtering with CometKiwi \emph{does} address the v2 noise problem (visual inspection of low-scored v2 pairs confirms genuine noise concentrates in the bottom of the distribution), but it does not address the distribution-alignment problem, because high-quality translations exist in many domains and our top-K selector does not condition on domain.
+These failures are independent axes. CometKiwi-based quality filtering \emph{does} address the v2 noise problem --- inspection of low-scored v2 pairs confirms that genuine noise concentrates at the bottom of the distribution --- but it does not address the distribution-alignment problem, because high-quality translations exist in many domains and our top-K selector does not condition on domain.
 
-\textbf{Capacity amplifies both failure modes.} Big v2 is worse than Base v2 by 0.87 (noise amplification); Big FT is worse than Base FT by $0.54$--$0.79$ (distribution-shift amplification). The same architectural property --- more parameters, more representational capacity --- that makes Big a better learner of correct supervision on clean in-distribution data also makes Big a more efficient absorber of incorrect supervision and a more pliable conformer to whatever distribution it is fine-tuned on. In both cases, capacity is a force multiplier whose sign depends on the data, not on the model.
+\textbf{Capacity amplifies both failure modes.} Big v2 trails Base v2 by 0.87 (noise amplification); Big FT trails Base FT by $0.54$--$0.79$ (distribution-shift amplification). The same architectural property --- more parameters, more representational capacity --- that makes Big a better learner of correct supervision on clean in-distribution data also makes it a more efficient absorber of incorrect supervision and a more pliable conformer to whatever distribution it is fine-tuned on. In both cases, capacity acts as a force multiplier whose sign depends on the data, not on the model.
 
 \subsection{Limitations}
 \begin{itemize}
 \item \textbf{Single seed.} Variance in FT outcomes is small relative to the $-1.55$ to $-2.33$ effects, but a 3-seed mean would tighten the bound.
-\item \textbf{Did not test low-LR FT.} A peak LR $\leq 5\text{e--}5$ might find a ``shallow FT'' point that improves UN-style without hurting newstest. We expect the effect to scale with effective FT distance from baseline; very-low-LR FT would be slow to test, and the paper's claim does not require it.
-\item \textbf{Did not test domain-conditional filtering.} Constructing a news-conditioned top-K filter is a nontrivial sub-project (domain classifier $+$ quality scorer $+$ joint sampling). We flag it as the natural fix and leave it for future work.
+\item \textbf{No low-LR FT.} A peak LR $\leq 5\text{e--}5$ might find a ``shallow FT'' point that improves UN-style without hurting newstest. We expect the effect to scale with effective FT distance from baseline; very-low-LR FT is slow to test, and the paper's claim does not require it.
+\item \textbf{No domain-conditional filtering.} Building a news-conditioned top-K filter is a nontrivial sub-project (domain classifier $+$ quality scorer $+$ joint sampling). We flag it as the natural fix and leave it to future work.
 \end{itemize}
 
 \subsection{Headline}
-Quality-filtered FT, by itself, does not improve newstest BLEU when ``quality'' is measured by reference-free QE on a multi-domain corpus. It costs 1.5--2.3 BLEU on Base / Big v1.1. The reason is not that the filter failed --- the filter selected genuinely high-quality pairs --- but that absolute translation quality and alignment to the eval distribution are independent axes of ``quality'', and only the first was optimized. The negative result tightens the paper's prescription:
+Quality-filtered FT, on its own, does not improve newstest BLEU when ``quality'' is measured by reference-free QE on a multi-domain corpus. It costs 1.5--2.3 BLEU on Base / Big v1.1. The cause is not filter failure --- the filter selected genuinely high-quality pairs --- but that absolute translation quality and alignment to the eval distribution are independent axes of ``quality'', and only the first was optimized. The negative result tightens the paper's prescription:
 
 \begin{quote}
-\textbf{Filter first (for noise), match the evaluation distribution second (for register/domain), and only then scale capacity.} Skipping the second step undoes capacity returns from the first.
+\textbf{Filter first (for noise), match the evaluation distribution second (for register/domain), and only then scale capacity.} Skipping the second step undoes the capacity returns from the first.
 \end{quote}
