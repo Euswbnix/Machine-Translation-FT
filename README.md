@@ -1,4 +1,4 @@
-# Machine-Translation-SFT
+# Machine-Translation-FT
 
 SFT (Supervised Fine-Tuning) on top of the from-scratch Transformer
 checkpoints from
