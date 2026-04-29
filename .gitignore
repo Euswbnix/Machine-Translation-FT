@@ -17,3 +17,6 @@ paper/*.pdf
 paper/*.synctex.gz
 paper/*.fdb_latexmk
 paper/*.fls
+
+# Local Overleaf upload staging dir
+paper_emnlp_upload/
