@@ -183,22 +183,39 @@ def main() -> int:
     avail = np.flatnonzero(~reserved)
     print(f"\npool after reserving held-out: {len(avail):,}")
 
-    # ---- 2. the three FT sets, all identical size ----------------------
-    # With pool <= n_ft the three sets are the same rows; with pool < 2*n_ft
-    # ft_topk and ft_bottom overlap. Either way the "controls" stop being
-    # controls, and a warning is not enough — the run would look valid.
-    if len(avail) < 2 * args.n_ft:
-        sys.exit(f"pool {len(avail):,} < 2 x n_ft ({2*args.n_ft:,}): ft_topk and "
-                 "ft_bottom would overlap and the comparison would be vacuous. "
-                 "Lower --n-ft or use a larger corpus.")
-    k = args.n_ft
-
+    # ---- 2. the three FT sets: same UNIQUE size, each duplicate-free ----
+    # The paper's FT set was built as top-n_ft rows by QE, THEN exact (src, tgt)
+    # dedup: "Sorting and unique-ing the top-1M yields 931,366 unique (src, tgt)
+    # pairs ... All SFT below uses this 931K-pair deduplicated set"
+    # (paper_section_7.md:17). ft_topk reproduces that rule exactly. The controls
+    # must match it in UNIQUE size and be duplicate-free themselves; otherwise
+    # ft_random / ft_bottom carry repeated pairs the top-k arm does not, and the
+    # arms differ in effective data, not only in QE.
     order = avail[np.argsort(-scores[avail], kind="stable")]
+    top_sel = order[:args.n_ft]
+    _, first = np.unique(row_h[top_sel], return_index=True)
+    topk = top_sel[np.sort(first)]                      # score order, first copy kept
+    k = len(topk)
+
+    _, first_all = np.unique(row_h[avail], return_index=True)
+    uniq = avail[np.sort(first_all)]                    # one row per distinct pair
+    # With a unique pool < 2k, ft_topk and ft_bottom overlap and the controls stop
+    # being controls. A warning is not enough — the run would look valid.
+    if len(uniq) < 2 * k:
+        sys.exit(f"unique pool {len(uniq):,} < 2 x unique set size ({2*k:,}): ft_topk "
+                 "and ft_bottom would overlap and the comparison would be vacuous. "
+                 "Lower --n-ft or use a larger corpus.")
+    uorder = uniq[np.argsort(-scores[uniq], kind="stable")]
     sets = {
-        "ft_topk":   order[:k],                       # the paper's selection
-        "ft_bottom": order[-k:],                      # lowest QE, same size
-        "ft_random": rng.choice(avail, k, replace=False),  # same size, uniform
+        "ft_topk":   topk,                                   # the paper's rule
+        "ft_bottom": uorder[-k:],                            # lowest-QE unique pairs
+        "ft_random": rng.choice(uniq, k, replace=False),     # uniform over unique pairs
     }
+    manifest["n_ft_selected"] = int(args.n_ft)
+    manifest["n_unique_per_set"] = int(k)
+    manifest["topk_duplicates_removed"] = int(len(top_sel) - k)
+    print(f"  top-{args.n_ft:,} by QE -> {k:,} unique pairs "
+          f"({len(top_sel) - k:,} duplicates removed); all three sets use {k:,}")
 
     for name, idx in sets.items():
         write_pair(str(out / name), [(src[i], tgt[i]) for i in idx],
@@ -223,10 +240,13 @@ def main() -> int:
     top_s, bot_s, rnd_s = (set(v.tolist()) for v in
                            (sets["ft_topk"], sets["ft_bottom"], sets["ft_random"]))
     assert not (top_s & bot_s), "ft_topk and ft_bottom overlap"
+    for name, idx in sets.items():
+        assert len(np.unique(row_h[idx])) == len(idx), f"{name} contains duplicate pairs"
+        assert len(idx) == k, f"{name} has {len(idx)} rows, expected {k}"
     ov = len(rnd_s & top_s)
     print(f"  ✓ ft_topk n ft_bottom = 0"
           f"   |   ft_random n ft_topk = {ov:,} ({ov/k*100:.2f}%, expected "
-          f"{k/len(avail)*100:.2f}% by chance)")
+          f"{k/len(uniq)*100:.2f}% by chance)")
     manifest["ft_random_topk_overlap"] = ov
 
     with open(out / "manifest.json", "w", encoding="utf-8") as f:

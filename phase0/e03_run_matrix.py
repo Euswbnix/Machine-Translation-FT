@@ -99,6 +99,10 @@ def main() -> int:
                     help="the converged Base v1.1 checkpoint to fine-tune from")
     ap.add_argument("--src-ext", default="en")
     ap.add_argument("--tgt-ext", default="fr")
+    ap.add_argument("--swanlab-cloud", action="store_true",
+                    help="keep SwanLab cloud logging. OFF by default: the base SFT configs "
+                         "set enabled: true / mode: cloud, which on a freshly rented GPU box "
+                         "with no SwanLab login blocks every run at startup")
     args = ap.parse_args()
 
     out = Path(args.out_dir)
@@ -148,7 +152,13 @@ def main() -> int:
             cfg["data"]["train_src"] = f"{args.data_dir}/{cond}.{args.src_ext}"
             cfg["data"]["train_tgt"] = f"{args.data_dir}/{cond}.{args.tgt_ext}"
             cfg["checkpoint"]["dir"] = f"checkpoints/phase0/{tag}"
-            cfg.setdefault("logging", {}).setdefault("swanlab", {})["experiment"] = f"phase0_{tag}"
+            sw = cfg.setdefault("logging", {}).setdefault("swanlab", {})
+            sw["experiment"] = f"phase0_{tag}"
+            # Inherited from sft_base_enfr.yaml as enabled: true, mode: cloud. On a
+            # rented box with no login that stalls every run in swanlab.init, so it
+            # is disabled unless explicitly requested. TensorBoard logs and the
+            # dev-CE trace are unaffected.
+            sw["enabled"] = bool(args.swanlab_cloud)
             p = out / f"{tag}.yaml"
             yaml.safe_dump(cfg, open(p, "w", encoding="utf-8"),
                            sort_keys=False, allow_unicode=True)

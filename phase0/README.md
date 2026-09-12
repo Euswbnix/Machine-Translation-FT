@@ -148,8 +148,19 @@ does not survive.
 
 **Drop control (d).** Remaining controls for the go/no-go gate:
 
-- (a) random-1M control at matched size, identical schedule
-- (b) bottom-1M-by-QE control
+- (a) random control at matched **unique** size, identical schedule
+- (b) bottom-by-QE control at the same unique size
+
+**Deduplication rule (added 2026-09-12).** The paper's FT set was not "top-1M": it
+was top-1M by QE **then exact (src, tgt) dedup**, giving 931,366 unique pairs
+(`paper_section_7.md:17`: "All SFT below uses this 931K-pair deduplicated set").
+The first version of `e03_build_controls.py` did not dedup at all, so ft_random
+and ft_bottom would have carried repeated pairs the top-k arm did not, making the
+arms differ in effective data as well as in QE. Now: ft_topk reproduces the
+paper's rule exactly; ft_bottom and ft_random are drawn from the deduplicated pool
+at that same unique size; all three are asserted duplicate-free. The regression
+suite reconstructs the paper's rule independently and a mutation that disables
+dedup is caught.
 - (c) LR sweep spanning >= 1 decade, including a rate low enough that BLEU is flat
 - (e) held-out UN/legislative **and** Europarl test sets, to show the in-domain
       *gain* the domain story predicts

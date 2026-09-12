@@ -240,10 +240,33 @@ def suite_e01_e03(d: Path):
           and all(text2src[p] == "europarl" for p in held["europarl"]))
     check("ft_topk and ft_bottom are disjoint by text", not (ft["ft_topk"] & ft["ft_bottom"]))
 
+    # dedup semantics, recomputed independently of the script
+    sizes = {k: len(read_pairs(ctrl / k)) for k in ft}
+    check("every FT set is duplicate-free by text",
+          all(len(ft[k]) == sizes[k] for k in ft), str({k: (sizes[k], len(ft[k])) for k in ft}))
+    check("all three FT sets have the same unique size", len(set(sizes.values())) == 1, str(sizes))
+    scored = []
+    for line in open(d / "scores.tsv"):
+        sc, s_, t_ = line.rstrip("\n").split("\t")
+        scored.append((float(sc), s_, t_))
+    held_all = held["un"] | held["europarl"]
+    avail = [i for i, (_, s_, t_) in enumerate(scored) if (s_, t_) not in held_all]
+    top = sorted(avail, key=lambda i: -scored[i][0])[:4000]
+    seen, want = set(), []
+    for i in top:
+        pr = (scored[i][1], scored[i][2])
+        if pr not in seen:
+            seen.add(pr); want.append(pr)
+    check("ft_topk == top-4000 by QE then exact-pair dedup (the paper's rule), recomputed",
+          set(want) == ft["ft_topk"] and len(want) == sizes["ft_topk"],
+          f"recomputed {len(want)} vs script {sizes['ft_topk']}")
+    check("the fixture actually exercises dedup (top-4000 contained duplicates)",
+          len(want) < 4000, f"{len(want)} unique of 4000")
+
     rc, _ = run([ROOT / "phase0/e03_build_controls.py", "--qe-scores", d / "scores.tsv",
                  "--provenance", d / "prov_labels.npy", "--out-dir", d / "c_small",
                  "--n-ft", "12000", "--n-heldout", "300"])
-    check("hard-fails when pool < 2 x n_ft", rc == 1, f"rc={rc}")
+    check("hard-fails when unique pool < 2 x unique set size", rc == 1, f"rc={rc}")
     rc, _ = run([ROOT / "phase0/e03_build_controls.py", "--qe-scores", d / "scores.tsv",
                  "--provenance", d / "prov_labels.npy", "--sources", "europarl,un,commoncrawl,giga",
                  "--out-dir", d / "c_order", "--n-ft", "4000", "--n-heldout", "300"])
@@ -268,7 +291,7 @@ def suite_run_matrix(d: Path):
                          "patience": 5, "eval_interval": 2000, "eval_interval_min": 1000},
             "data": {"train_src": "x.en", "train_tgt": "x.fr", "valid_src": "v.en"},
             "checkpoint": {"dir": "ck", "keep_last": 5},
-            "logging": {"swanlab": {"experiment": "sft"}}}
+            "logging": {"swanlab": {"enabled": True, "mode": "cloud", "experiment": "sft"}}}
     json.dump(base, open(d / "base.yaml", "w"))
     out_dir = d / "matrix"
     rc, out = run([ROOT / "phase0/e03_run_matrix.py", "--base-config", d / "base.yaml",
@@ -281,6 +304,9 @@ def suite_run_matrix(d: Path):
     tr = json.load(open(out_dir / "ft_topk_lr0.15.yaml"))["training"]
     check("early stopping disabled and eval grid pinned",
           tr["early_stopping"] is False and tr["eval_interval"] == tr["eval_interval_min"], str(tr))
+    sw = json.load(open(out_dir / "ft_topk_lr0.15.yaml")).get("logging", {}).get("swanlab", {})
+    check("swanlab disabled by default (cloud mode would block a rented box with no login)",
+          sw.get("enabled") is False, str(sw))
     import re
     runs = []
     for sh in ("run_stage1.sh", "run_stage2.sh"):
