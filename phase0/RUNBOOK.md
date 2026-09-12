@@ -8,7 +8,60 @@ repo at `~/Machine-Translation-SFT`, adjust paths as needed.
 
 ---
 
-## 0. Inventory the training machine, then pull what is irreplaceable (no GPU)
+## Primary path: run all of Phase 0 on a rented GPU box
+
+**The original training machine is not required.** The paper fine-tuned the
+averaged Base v1.1 / Big v1.1 checkpoints, and those are exactly the public HF
+releases: `config.json` records `training.steps` 105000 / 210000 and BLEU
+30.52/35.31 and 31.14/35.87, matching `paper_wmt_upload/sections/05_sft.tex:26,29`
+digit for digit. `phase0/hf_to_ckpt.py` restores the keys the trainer needs. Every
+dataset is public (HF `wmt/wmt14`, statmt constituents). Step 0 below — pulling
+from the old box — is now optional, useful only for the original training logs
+and the paper's exact scored file.
+
+Everything is driven by one staged script, cloned with the rest of this branch:
+
+```bash
+git clone -b wmt2027-phase0 https://github.com/Euswbnix/Machine-Translation-FT.git ~/mt/Machine-Translation-SFT
+```
+
+Keep the directory name `Machine-Translation-SFT`: the SFT configs hard-code
+`../Machine-Translation-SFT/...` paths even though the GitHub repo was renamed.
+
+| stage | what | needs |
+|---|---|---|
+| `env` | clone training repo, install deps, apply trainer patch, run `tests/regress.py` | refuses to continue if pip replaced the image's CUDA torch |
+| `accept` | rebuild Base v1.1 from HF, reproduce test BLEU 35.31 ± 0.15 | **stops** if it does not reproduce — do not run E0.3 |
+| `data` | WMT14 fr-en → v2 cleaned corpus | **stops** unless it has exactly 30,129,500 rows, as in the paper |
+| `score` | CometKiwi-22 over 30M pairs (paper: 13.8 h on one 5090) | your HF login (below) |
+| `provenance` | statmt constituents → `e01` hash-join | archive contents discovered, never assumed |
+| `controls` | E0.3 sets (dedup-matched, 931K-scale) + run matrix | |
+| `stage1` | 4-run LR sweep, one GPU per run, resumable | |
+| `stage2 <lr>` | 3 conditions × 3 seeds at the chosen `lr_scale` | |
+| `gate <lr>` | `e03_collect` evaluates all 30 cells, then `e03_decide` | refuses to judge a partial collection |
+
+```bash
+bash ~/mt/Machine-Translation-SFT/phase0/rental_setup.sh env
+```
+
+**Things only you can do** (they involve your accounts; the scripts never touch
+credentials):
+
+1. Rent the box and give access. Suggested: **4× RTX 5090, ≥ 150 GB disk**. Scoring
+   parallelises across GPUs, and `run_parallel.py` runs one fine-tuning run per GPU.
+2. Before `score`: accept the terms of the gated
+   [Unbabel/wmt22-cometkiwi-da](https://huggingface.co/Unbabel/wmt22-cometkiwi-da)
+   (auto-approved, CC-BY-NC-SA-4.0), then on the box run `hf auth login` yourself.
+3. After `stage1`: the script prints every per-eval validation BLEU. The lr_scale
+   is chosen by the pre-registered rule — the largest value whose BLEU does not
+   decline monotonically from the first eval — not by preference.
+
+Honest status: the offline parts of this path (`provenance`, run parallelism,
+collection, the gate, the patch-state logic) are exercised by `tests/regress.py`
+against fixtures. `env`, `accept`, `data`, `score` and real training have **not
+yet run on a GPU box**. Expect the first run to surface environment issues.
+
+## 0. (Optional) Inventory the training machine, then pull what is irreplaceable (no GPU)
 
 **Nothing needed for Phase 0 is on the Mac** (checked 2026-09-12): no data
 directories, no checkpoints, no tokenizer caches, no QE scores, no training logs.

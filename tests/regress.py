@@ -30,7 +30,8 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parent.parent
 PY = sys.executable
-MT_REPO = Path("/Users/euswbnic/Machine_translation")
+# Override on another machine: MT_REPO=~/mt/Machine_translation python3 tests/regress.py
+MT_REPO = Path(os.environ.get("MT_REPO", "/Users/euswbnic/Machine_translation")).expanduser()
 RESULTS: list[tuple[str, str, str]] = []
 
 
@@ -417,6 +418,9 @@ def suite_inventory_fetch(d: Path):
         lying = [p for p, s in repos.items() if s.get("errors") and s.get("dirty_files") == 0]
         check("a repo git cannot read is never reported as clean (dirty_files 0)", not lying, str(lying))
 
+    if shutil.which("rsync") is None:
+        skip("fetch pull (local)", "rsync not installed on this machine")
+        return
     box = d / "box"
     for rel, data in (("ckpt/averaged.pt", b"w"), ("ckpt/step_104000.pt", b"r"),
                       ("logs/sft.log", b"LR = 2.73e-04\n"), ("data/v2_scored.tsv", os.urandom(3_000_000)),
@@ -441,20 +445,258 @@ def suite_inventory_fetch(d: Path):
               {Path(f["path"]).name for f in m["not_pulled"]} == {"step_104000.pt", "v2_scored.tsv"})
 
 
-def suite_patch():
-    print("\n== trainer patch ==")
-    patch = ROOT / "phase0/trainer_token_accounting.patch"
-    if not (MT_REPO / "src/training/trainer.py").exists():
-        skip("patch applies", f"{MT_REPO} not present")
+def suite_collect(d: Path):
+    print("\n== e03_collect (assembles the gate's input) ==")
+    mt, sf = d / "col_mt", d / "col_sft"
+    for p in (mt / "scripts", mt / "data_enfr_v1", mt / "ckpt_hf", sf / "configs/phase0", sf / "data/phase0"):
+        p.mkdir(parents=True, exist_ok=True)
+    for x in ("test.en", "test.fr"):
+        (mt / "data_enfr_v1" / x).write_text("line\n")
+    for x in ("heldout_un.en", "heldout_un.fr", "heldout_europarl.en", "heldout_europarl.fr"):
+        (sf / "data/phase0" / x).write_text("line\n")
+    (mt / "ckpt_hf/base.pt").write_text("w")
+    (sf / "configs/sft_base_enfr.yaml").write_text('{"model": {}}')
+    counter = d / "col_count"; counter.write_text("")
+    (mt / "scripts/fake_eval.py").write_text(
+        "import argparse, hashlib, os\n"
+        "ap = argparse.ArgumentParser()\n"
+        "for f in ('--ckpt','--config','--src','--ref','--beam','--length-penalty'): ap.add_argument(f)\n"
+        "a = ap.parse_args()\n"
+        "open(os.environ['EVAL_COUNTER'], 'a').write('x\\n')\n"
+        "h = int(hashlib.md5((a.ckpt + a.src).encode()).hexdigest(), 16)\n"
+        "print(f'BLEU (fr, sacrebleu 13a): {30 + h % 1000 / 100:.2f}')\n")
+    (mt / "scripts/broken_eval.py").write_text("import sys\nprint('crashed', file=sys.stderr)\nsys.exit(1)\n")
+    lines = ["#!/usr/bin/env bash", 'LR="${1:?}"']
+    for c in ("ft_topk", "ft_random", "ft_bottom"):
+        (sf / f"configs/phase0/{c}_lr0.15.yaml").write_text(json.dumps(
+            {"checkpoint": {"dir": f"checkpoints/phase0/{c}_lr0.15"},
+             "training": {"max_steps": 115000}, "model": {}}))
+        for sd in (42, 1, 2):
+            lines.append(f"python train.py --config {sf}/configs/phase0/{c}_lr${{LR}}.yaml "
+                         f"--resume ckpt_hf/base.pt --reset-optimizer --seed {sd} --suffix _s{sd}_st2")
+            ck = mt / f"checkpoints/phase0/{c}_lr0.15_s{sd}_st2"
+            ck.mkdir(parents=True, exist_ok=True)
+            if (c, sd) != ("ft_bottom", 2):
+                (ck / "final.pt").write_text("w")
+    (sf / "configs/phase0/run_stage2.sh").write_text("\n".join(lines) + "\n")
+    out = sf / "results/phase0_bleu.tsv"
+    args = [ROOT / "phase0/e03_collect.py", "--mt-root", mt, "--runner", sf / "configs/phase0/run_stage2.sh",
+            "--lr-scale", "0.15", "--baseline-ckpt", "ckpt_hf/base.pt",
+            "--baseline-config", sf / "configs/sft_base_enfr.yaml", "--controls-dir", sf / "data/phase0",
+            "--out", out, "--jobs", "3"]
+    env = {"EVAL_COUNTER": str(counter)}
+    rc, _ = run([*args, "--eval-script", "scripts/fake_eval.py"], env=env)
+    n1 = len(counter.read_text().splitlines())
+    check("a missing final.pt -> exit 1 and ONLY a .partial.tsv",
+          rc == 1 and not out.exists() and out.with_suffix(".partial.tsv").exists(), f"rc={rc}")
+    check("still evaluates everything present (8 runs x 3 + 3 baseline = 27)", n1 == 27, str(n1))
+    (mt / "checkpoints/phase0/ft_bottom_lr0.15_s2_st2/final.pt").write_text("w")
+    rc, _ = run([*args, "--eval-script", "scripts/fake_eval.py"], env=env)
+    n2 = len(counter.read_text().splitlines())
+    check("complete -> exit 0 and canonical TSV", rc == 0 and out.exists(), f"rc={rc}")
+    check("resume decodes only the new run (3), the rest from cache", n2 - n1 == 3, str(n2 - n1))
+    if out.exists():
+        import collections
+        rows = [l.split("\t") for l in out.read_text().splitlines()[1:]]
+        cnt = collections.Counter((r[0], r[2]) for r in rows)
+        ts = ("newstest2014", "heldout_un", "heldout_europarl")
+        check("30 rows: 1 baseline and 3 seeds per condition, per test set",
+              len(rows) == 30 and all(cnt[("baseline", t)] == 1 for t in ts)
+              and all(cnt[(c, t)] == 3 for c in ("ft_topk", "ft_random", "ft_bottom") for t in ts),
+              str(dict(cnt)))
+        rc, _ = run([ROOT / "phase0/e03_decide.py", "--results", out])
+        check("e03_decide accepts the collected TSV (exit 0/1, not 2)", rc in (0, 1), f"rc={rc}")
+    out.unlink(missing_ok=True)
+    (sf / "results/.e03_collect_cache.json").unlink(missing_ok=True)
+    rc, _ = run([*args, "--eval-script", "scripts/broken_eval.py"], env=env)
+    check("failed evaluations -> exit 1 and no canonical TSV", rc == 1 and not out.exists(), f"rc={rc}")
+    rc, o = run([*[x if x != "ckpt_hf/base.pt" else "ckpt_hf/nope.pt" for x in args],
+                 "--eval-script", "scripts/fake_eval.py"], env=env)
+    check("missing baseline checkpoint -> clear error", rc == 1 and "baseline checkpoint" in o, o[-150:])
+
+
+def suite_run_parallel(d: Path):
+    print("\n== run_parallel (one GPU per run, resumable) ==")
+    cwd = d / "par"; (cwd / "cfg").mkdir(parents=True)
+    (cwd / "train.py").write_text(
+        "import argparse, json, os, sys, time\n"
+        "ap = argparse.ArgumentParser()\n"
+        "ap.add_argument('--config'); ap.add_argument('--resume')\n"
+        "ap.add_argument('--reset-optimizer', action='store_true')\n"
+        "ap.add_argument('--seed'); ap.add_argument('--suffix')\n"
+        "a = ap.parse_args()\n"
+        "cfg = json.load(open(a.config))\n"
+        "t0 = time.time(); time.sleep(0.5)\n"
+        "open(os.environ['PAR_LOG'], 'a').write("
+        "f\"{os.environ.get('CUDA_VISIBLE_DEVICES')} {t0} {time.time()} {a.config}{a.suffix}\\n\")\n"
+        "if 'ft_bottom' in a.config and a.suffix == '_s2_st2' and not os.path.exists('fixed'):\n"
+        "    sys.exit(3)\n"
+        "dd = cfg['checkpoint']['dir'] + a.suffix\n"
+        "os.makedirs(dd, exist_ok=True); open(dd + '/final.pt', 'w').write('w')\n")
+    lines = ["#!/usr/bin/env bash", 'LR="${1:?}"', 'VALID="1 0.5 0.15 0.05"']
+    for c in ("ft_topk", "ft_random", "ft_bottom"):
+        (cwd / f"cfg/{c}_lr0.15.yaml").write_text(json.dumps({"checkpoint": {"dir": f"ck/{c}_lr0.15"}}))
+        for sd in (42, 1, 2):
+            lines.append(f"python train.py --config cfg/{c}_lr${{LR}}.yaml --resume base.pt "
+                         f"--reset-optimizer --seed {sd} --suffix _s{sd}_st2")
+    runner = cwd / "run_stage2.sh"; runner.write_text("\n".join(lines) + "\n")
+    log = d / "par_log"; log.write_text("")
+    args = [ROOT / "phase0/run_parallel.py", "--runner", runner, "--lr-scale", "0.15",
+            "--gpus", "3", "--cwd", cwd, "--logdir", d / "par_logs"]
+    env = {"PAR_LOG": str(log)}
+    rc, o = run(args, env=env)
+    ents = [l.split() for l in log.read_text().splitlines()]
+    check("a failing run -> exit 1", rc == 1, f"rc={rc} {o[-200:]}")
+    check("all 9 runs launched", len(ents) == 9, str(len(ents)))
+    check("only GPUs 0-2 leased", {e[0] for e in ents} <= {"0", "1", "2"}, str({e[0] for e in ents}))
+    iv = [(float(e[1]), float(e[2])) for e in ents]
+    peak = max(sum(1 for a0, b0 in iv if a0 <= x < b0) for x, _ in iv) if iv else 0
+    check("never more than 3 runs at once, and genuinely parallel", 1 < peak <= 3, f"peak={peak}")
+    check("successful runs wrote final.pt (8)", sum(1 for _ in (cwd / "ck").rglob("final.pt")) == 8)
+    (cwd / "fixed").write_text("")
+    rc, _ = run(args, env=env)
+    added = len(log.read_text().splitlines()) - len(ents)
+    check("rerun retries ONLY the run without final.pt, and succeeds", rc == 0 and added == 1,
+          f"rc={rc} relaunched={added}")
+    rc, o = run([*args[:4], "0.150", *args[5:]], env=env)
+    check("an lr_scale not in the runner's VALID list is refused", rc == 1 and "VALID" in o, o[-150:])
+
+
+def suite_rental_provenance(d: Path):
+    print("\n== rental_setup.sh provenance (offline, real e01) ==")
+    if shutil.which("bash") is None:
+        skip("rental provenance", "bash not available")
         return
-    r = subprocess.run(["git", "apply", "--check", "-p1", str(patch)], cwd=MT_REPO,
-                       capture_output=True, text=True)
-    if r.returncode != 0 and "xcrun" in r.stderr:
-        r = subprocess.run(["patch", "--dry-run", "-p1", "-i", str(patch)], cwd=MT_REPO,
-                           capture_output=True, text=True)
-        check("patch applies (patch --dry-run; git unusable in this env)", r.returncode == 0, r.stderr[-200:])
+    import gzip
+    import io
+    import tarfile
+    work = d / "rent"
+    sft, mt = work / "Machine-Translation-SFT", work / "Machine_translation"
+    shutil.copytree(ROOT / "phase0", sft / "phase0")
+    (mt / "data_enfr_v2").mkdir(parents=True)
+    bindir = d / "rent_bin"; bindir.mkdir()
+    (bindir / "python").symlink_to(PY)
+    rng = random.Random(3)
+    pairs = []
+
+    def rows(lab, n):
+        o = [(f"{lab} en {i} {rng.random()}", f"{lab} fr {i} {rng.random()}") for i in range(n)]
+        pairs.extend(o)
+        return o
+
+    def txt(r, k):
+        return ("\n".join(x[k] for x in r) + "\n").encode()
+
+    layout = {
+        "europarl": ("training-parallel-europarl-v7.tgz", "w:gz", lambda r: [
+            ("training/europarl-v7.fr-en.en", txt(r, 0)), ("training/europarl-v7.fr-en.fr", txt(r, 1)),
+            ("training/europarl-v7.de-en.en", b"decoy\n"), ("training/europarl-v7.de-en.de", b"decoy\n")]),
+        "commoncrawl": ("training-parallel-commoncrawl.tgz", "w:gz", lambda r: [
+            ("commoncrawl.fr-en.en", txt(r, 0)), ("commoncrawl.fr-en.fr", txt(r, 1)),
+            ("commoncrawl.de-en.en", b"decoy\n")]),
+        "un": ("training-parallel-un.tgz", "w:gz", lambda r: [
+            ("un/undoc.2000.fr-en.en", txt(r, 0)), ("un/undoc.2000.fr-en.fr", txt(r, 1)),
+            ("un/undoc.2000.es-en.en", b"decoy\n")]),
+        "news-commentary": ("training-parallel-nc-v9.tgz", "w:gz", lambda r: [
+            ("training/news-commentary-v9.fr-en.en", txt(r, 0)),
+            ("training/news-commentary-v9.fr-en.fr", txt(r, 1))]),
+        "giga-fren": ("training-giga-fren.tar", "w", lambda r: [
+            ("giga-fren.release2.fixed.en.gz", gzip.compress(txt(r, 0))),
+            ("giga-fren.release2.fixed.fr.gz", gzip.compress(txt(r, 1)))]),
+    }
+    for lab, n in (("europarl", 300), ("commoncrawl", 400), ("un", 500),
+                   ("news-commentary", 200), ("giga-fren", 600)):
+        fn, mode, members = layout[lab]
+        dd = work / "statmt" / lab; dd.mkdir(parents=True)
+        with tarfile.open(dd / fn, mode) as tf:
+            for name, data in members(rows(lab, n)):
+                ti = tarfile.TarInfo(name); ti.size = len(data)
+                tf.addfile(ti, io.BytesIO(data))
+    sub = rng.sample(pairs, int(len(pairs) * 0.9))
+    with open(mt / "data_enfr_v2/train.clean.en", "w") as fa, open(mt / "data_enfr_v2/train.clean.fr", "w") as fb:
+        for a_, b_ in sub:
+            fa.write(a_ + "\n"); fb.write(b_ + "\n")
+    env = {**os.environ, "WORK": str(work), "STATMT_OFFLINE": "1",
+           "PATH": f"{bindir}{os.pathsep}{os.environ.get('PATH', '')}"}
+
+    def prov():
+        r = subprocess.run(["bash", str(ROOT / "phase0/rental_setup.sh"), "provenance"],
+                           env=env, capture_output=True, text=True)
+        return r.returncode, r.stdout + r.stderr
+
+    rc, o = prov()
+    rep_p = sft / "phase0/provenance_report.json"
+    check("provenance stage runs offline end to end", rc == 0 and rep_p.exists(), o[-300:])
+    if rep_p.exists():
+        rep = json.load(open(rep_p))
+        check("label order is the declared order and match rate is 100% (decoys, gz-in-tar handled)",
+              rep["sources"] == ["europarl", "commoncrawl", "un", "news-commentary", "giga-fren"]
+              and rep["match_rate"] == 1.0, f"{rep['sources']} {rep['match_rate']}")
+    (work / "statmt/un/un/extra.fr-en.en").write_text("x\n")
+    rc, o = prov()
+    check("ambiguous inner files -> STOP, never a guess",
+          rc != 0 and "STOP: un: expected exactly one" in o, o[-200:])
+    shutil.rmtree(work / "statmt/europarl")
+    rc, o = prov()
+    check("missing archive with STATMT_OFFLINE=1 -> STOP, no download",
+          rc != 0 and "STATMT_OFFLINE=1" in o, o[-200:])
+
+
+PATCH = ROOT / "phase0/trainer_token_accounting.patch"
+
+
+def patch_state(repo: Path):
+    """'applies' | 'applied' | 'diverged', plus the tool used."""
+    def dry(reverse: bool):
+        r = subprocess.run(["git", "apply", "--check", "-p1", *(["--reverse"] if reverse else []),
+                            str(PATCH)], cwd=repo, capture_output=True, text=True)
+        tool = "git apply --check"
+        if r.returncode != 0 and "xcrun" in r.stderr:          # macOS CLT shim broken in subprocess
+            # -N on the forward check: BSD patch otherwise detects a previously
+            # applied patch, silently assumes -R, and exits 0 -- reporting an
+            # already-patched tree as "applies cleanly".
+            r = subprocess.run(["patch", "--dry-run", "-p1", *(["-R"] if reverse else ["-N"]),
+                                "-i", str(PATCH)], cwd=repo, capture_output=True, text=True)
+            tool = "patch --dry-run"
+        return r, tool
+
+    fwd, tool = dry(False)
+    if fwd.returncode == 0:
+        return "applies", tool
+    rev, tool = dry(True)
+    if rev.returncode == 0:
+        return "applied", tool
+    return "diverged", f"{tool}: {(fwd.stderr or fwd.stdout)[-160:]}"
+
+
+def suite_patch(d: Path):
+    print("\n== trainer patch ==")
+    if not (MT_REPO / "src/training/trainer.py").exists():
+        skip("patch state", f"{MT_REPO} not present (set MT_REPO)")
+        return
+    state, tool = patch_state(MT_REPO)
+    check(f"training repo is patch-clean or exactly patched ({state}; {tool})",
+          state in ("applies", "applied"), tool)
+    if shutil.which("patch") is None:
+        skip("patch state on applied/unapplied/diverged copies", "patch(1) not installed")
+        return
+    base = d / "patch_base"
+    shutil.copytree(MT_REPO / "src", base / "src")
+    if state == "applied":                                     # normalise the copy to UNpatched
+        subprocess.run(["patch", "-s", "-p1", "-R", "-i", str(PATCH)], cwd=base, check=True)
+    applied = d / "patch_applied"; shutil.copytree(base, applied)
+    subprocess.run(["patch", "-s", "-p1", "-N", "-i", str(PATCH)], cwd=applied, check=True)
+    diverged = d / "patch_diverged"; shutil.copytree(base, diverged)
+    tr = diverged / "src/training/trainer.py"
+    anchor = "            while self.global_step < self.max_steps:"
+    txt = tr.read_text()
+    if txt.count(anchor) != 1:
+        skip("diverged-copy check", "anchor not found in unpatched trainer")
     else:
-        check("patch applies (git apply --check)", r.returncode == 0, r.stderr[-200:])
+        tr.write_text(txt.replace(anchor, anchor.replace("<", "<=") + "  # diverged"))
+        check("diverged copy -> 'diverged'", patch_state(diverged)[0] == "diverged")
+    check("unpatched copy -> 'applies'", patch_state(base)[0] == "applies")
+    check("patched copy -> 'applied' (never a false 'applies')", patch_state(applied)[0] == "applied")
 
 
 def main() -> int:
@@ -473,7 +715,10 @@ def main() -> int:
         suite_calibrate(d, cache)
         suite_converge(d)
         suite_inventory_fetch(d)
-        suite_patch()
+        suite_collect(d)
+        suite_run_parallel(d)
+        suite_rental_provenance(d)
+        suite_patch(d)
     finally:
         if not a.keep:
             shutil.rmtree(d, ignore_errors=True)
