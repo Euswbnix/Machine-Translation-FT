@@ -1,0 +1,314 @@
+# Phase 1 pre-registration — WMT 2027
+
+**Status: DRAFT. Not yet frozen. No Phase 1 training run may start before this
+file is git-tagged.**
+
+### Implementation status
+
+| § | Requirement | State |
+|---|---|---|
+| 2.1 | cumulative never-reset token counter | ✅ `phase0/trainer_token_accounting.patch` |
+| 2.2 | token-keyed training gate + eval cadence | ✅ same patch. `max_steps` is **not consulted** in token-keyed runs (an audit found it silently pre-empting the budget, arm-dependently); regression I6/I6b in `phase0/test_token_counter.py` |
+| 4.1 | dev cross-entropy evaluator | ✅ `_evaluate_ce()` in the same patch — fp32, teacher-forced, label smoothing off; writes `dev_ce_trace.tsv` (§7) |
+| 2.3 | disable adaptive eval interval | ✅ same patch (`eval_every_tokens` bypasses `_update_eval_interval`) |
+| 3.2 | effective-batch calibration | ✅ `phase1/calibrate_batch.py` — **must be re-run on the real cache** |
+| 4.3 | post-hoc argmin decision script | ✅ `phase1/converge.py` (6 scenarios tested) |
+| 4.4 | δ calibrated from a seed pilot | ⬜ **blocking** — needs GPU |
+| 5.1 | LR probe sweep | ⬜ config generator not written |
+| 6.x | reporting | partially — `converge.py` emits 6.2 and 6.3 |
+
+**Two blockers remain before this file can be tagged:** the §3.2 calibration must
+be run against the real length cache (the numbers below are from synthetic
+lengths and are placeholders), and §4.4's δ must come from the seed pilot rather
+than the 0.002 working prior.
+
+Decided 2026-09-04 by a judge panel over three independently-argued protocols
+(equal tokens / equal tokens-per-param / each-to-convergence), following a
+six-lens adversarial audit of Phase 0. Every code claim below marked ✅ was
+re-verified by hand against the source before being written here.
+
+---
+
+## The decision
+
+**Primary alignment: run-to-overshoot with post-hoc argmin (RTO-PA).**
+
+Not naive "train each cell until it stops improving" — that form was **rejected**,
+and it was the session's prior working assumption. On this codebase it is
+indefensible, for three verified reasons:
+
+- ✅ `TransformerScheduler._get_lr` (optimizer.py:36-43) is open-ended inverse-sqrt
+  floored at `min_lr`, with no horizon and no decay to zero. Validation loss creeps
+  down asymptotically; a run never converges, it gets *stopped when patience
+  expires*.
+- ✅ `_update_eval_interval` (trainer.py:237-269) interpolates the eval interval
+  from an EMA of **training loss**. Training loss is a function of capacity. So
+  patience — counted in evaluations (trainer.py:376) — would differ between Base
+  and Big by up to an order of magnitude, driven by the exact variable under study.
+- ✅ The stopping signal is beam-5 corpus BLEU (trainer.py:356 → :508-522), noisy
+  and non-monotone, whose argmax carries a winner's curse that grows with the
+  number of evaluations, which differs by arm.
+
+Under naive convergence the headline result would be an artifact of
+trainer.py:237-269, and a reviewer holding the code release could prove it. That
+is a worse outcome than the original rejection.
+
+**What RTO-PA changes:** the run never stops. Every cell runs far past any
+plausible stopping point, the full dev-CE-vs-cumulative-token trace is published,
+and "convergence" is an argmin computed mechanically by a git-tagged script over
+released data. *A stopping rule you never execute cannot bias anything.* The
+paper's most attackable design choice becomes its most auditable artifact.
+
+This move is available only because compute is not a constraint here.
+
+### Why not the other two
+
+- **Equal tokens** is the reviewer default and needs no defense — but at any single
+  budget it under-trains the larger model, *in the same direction as the confound
+  that got the paper rejected*, merely reduced from ~4.6x to ~3.5x. Its own
+  advocate conceded this. There is no budget at which both models sit comparably
+  on their own loss curves; that is arithmetic, not judgment.
+- **Equal tokens/param** is the right *coordinate* but requires hard-coding a
+  constant (R≈38) anchored to "Base capped sits exactly on the Vaswani reference"
+  — which the audit showed was an artifact of the `e02:179` bug applied to
+  synthetic lengths. **Hard-coding an unmeasured constant into the design of a
+  paper whose rejection was caused by unverified arithmetic is the same error
+  again.** Nothing inside this protocol could detect it if R were wrong.
+
+**RTO-PA is the strict superset.** Run to overshoot and publish the curves, and
+both other comparisons are vertical slices off the same data at zero marginal
+cost. Neither can reciprocate. Under no compute constraint, choosing the subset
+destroys information for no reason, and neither advocate supplied a positive
+argument for doing so.
+
+---
+
+## Blocking corrections before any Phase 1 run
+
+- **0.1** Correct `phase0/README.md`: Claim B's *consequence* is refuted. ✅
+  `scheduler.step()` executes only inside the accumulation-boundary branch
+  (trainer.py:461,472), so pretraining's true scheduler state at global_step
+  105000 was ~26250 and trainer.py:577 is the **correct** reconstruction. 2.73e-4
+  is LR **continuity** (pretraining was at 2.741e-4 immediately prior), not a 2x
+  overshoot. ✅ Corroboration: `sft_big_enfr.yaml:3-4`'s "~2e-4" matches
+  `1.5 * 1024**-0.5 * (210000//4)**-0.5 = 2.05e-4` — the Big comment used `//4`
+  correctly; only the Base comment forgot it. "Restart LR too high → catastrophic
+  forgetting" is **demoted to an unconfirmed rival hypothesis**. Live rivals: the
+  Adam moment reset (trainer.py:572-579), the averaged checkpoint, and data shift.
+  Claim A (the 4x) stands. *(done)*
+- **0.2** Fix `e02_token_accounting.py` to `true_tok = steps *
+  mean_nonpad_tgt_per_microbatch`. Re-run on the **real** cache. Publish the
+  corrected tok/param table as descriptive only — it does **not** feed the Phase 1
+  design. Registered in advance: corrected figures are expected LOWER than
+  33.9/7.3/166.5/11.7/63.8/13.1, and "Base capped sits exactly on the Vaswani
+  reference" is retracted. *(script fixed; real-cache re-run pending)*
+- **0.3** Before asserting any effective-LR figure in print, grep the real SFT log
+  for the value printed at ✅ trainer.py:580-581.
+
+## 1. Protocol and unit of account
+
+- **1.1** Primary alignment RTO-PA. No cell stopped early; every cell runs to the
+  §4.2 ceiling; the full trace is released.
+- **1.2** Unit of account: **cumulative non-pad target tokens**, the running sum of
+  ✅ `(tgt_labels != PAD_ID).sum()` (trainer.py:487), over micro-batches whose
+  gradient is actually applied. Never the sampler budget — ✅ dataset.py:265
+  computes `(len(batch)+1) * new_max` over `max(src_len, tgt_len)`, a padded budget
+  over the longer side.
+- **1.3** Set `loss_spike_ratio: 0` in every Phase 1 config so no effective batch is
+  dropped and the token counter cannot diverge from applied gradients. ✅ Verified
+  that 0 *disables* the guard rather than tripping it: trainer.py:448 tests
+  `self.loss_spike_ratio > 0` first. Report the (expected zero) skip count anyway.
+
+## 2. Mandatory trainer patch, identical in all cells
+
+- **2.1** Cumulative never-reset `cumulative_target_tokens`; ✅ the existing
+  accumulator is zeroed every log interval at trainer.py:352 and is unusable.
+  Checkpoint it; make it the x-axis of every published figure.
+  *(implemented)* The patch tracks two counters, not one: `total_train_tokens`
+  (processed — the MFU denominator) and `applied_target_tokens` (gradient
+  actually applied — the learning-curve x-axis). They coincide when the spike
+  guard is off per §1.3; tracking both makes any divergence visible instead of
+  forcing a silent choice between two different quantities.
+- **2.2** Replace the loop gate at trainer.py:308-310 with a **token-keyed** gate.
+  Never key any control to `global_step`, which ✅ counts micro-batches
+  (trainer.py:441) and therefore means different things across arms once
+  `accumulate_steps` differs. *(implemented: `_should_continue` / `_eval_due`;
+  `max_target_tokens` and `eval_every_tokens` default to 0, preserving the old
+  step-keyed behaviour for non-Phase-1 runs.)*
+
+  Concretely, `phase0/test_token_counter.py` demonstrates the failure the gate
+  removes: **4,000 micro-steps gives 10.0M applied tokens on a Base-like arm and
+  3.3M on a Big-like one.** Under a step-keyed gate the two arms were never
+  running the same experiment.
+
+  A sharper version (invariant I6b), illustrated with `accumulate_steps` 12 vs 17
+  at 98,304 applied tokens per optimizer step: an inherited `max_steps` of 800,000
+  micro-batches — the largest in any existing config — stops one arm at **6.55B**
+  and the other at **4.63B** applied tokens. Ratio 17/12 = 1.417x, a 29% budget
+  deficit, silent. The size of the gap depends on the calibrated
+  `accumulate_steps`; the existence of the gap does not — any difference between
+  the arms produces one.
+  An audit found the first version of this gate consulted `max_steps`
+  unconditionally, reintroducing exactly that; `max_steps` is now **not consulted
+  at all** in token-keyed runs, and only an explicitly configured
+  `max_micro_steps_backstop` can pre-empt the token budget — loudly, with the
+  shortfall printed and the stop reason recorded as `step_backstop`.
+- **2.3** Disable the adaptive eval interval: set `eval_interval_min ==
+  eval_interval_max` so `_update_eval_interval` is a no-op. Publish the config
+  diff. Methods-section rationale: cadence must not be a function of training
+  loss, because training loss is a function of capacity.
+- **2.4** Evaluate every 50M cumulative non-pad target tokens, identically in every
+  cell.
+
+## 3. Held fixed across all cells
+
+- **3.1** One joint SentencePiece model, vocab 32000, fit once on the union of both
+  corpus regimes, reused byte-identically. Non-negotiable: token counts are
+  otherwise not commensurable.
+- **3.2** Effective optimizer batch — defined as **measured** mean non-pad target
+  tokens per optimizer step — target 98,304, matched across arms to within 2%.
+  *(implemented: `phase1/calibrate_batch.py`)* It searches `max_sentences` —
+  **not** `batch_size`, which is a `max_tokens` cap that almost never binds — and
+  solves jointly: both arms inside tolerance of the target **and** their mutual
+  spread inside tolerance, then maximise throughput among survivors. Selecting
+  per-arm on |error| alone is wrong twice: it picks a tiny micro-batch with a huge
+  `accumulate_steps`, and two arms each within tolerance can still be 2x tolerance
+  apart from each other, which is the quantity that actually has to match.
+
+  Placeholder output on synthetic lengths (Base `max_sentences` 192 /
+  `accumulate_steps` 16, measured 6,153 tgt/micro; Big 384 / 17, measured 5,847;
+  spread 0.97%). **Re-run on the real cache before writing any config** — these
+  numbers are from a lognormal length model, not from the corpus. This repairs the ✅ 98,304 vs 32,768 mismatch between the
+  two SFT configs — **Big trained at one third of Base's effective batch**, while
+  Vaswani held it constant.
+- **3.3** Warmup as a fixed **fraction** (4%) of planned optimizer steps in every
+  cell. Repairs the uncontrolled ✅ 4000 vs 8000 difference.
+- **3.4** `max_seq_len` 256, `data.max_tokens` 256, dropout 0.1, label_smoothing
+  0.1, clip_grad_norm 1.0, bf16, Adam betas (0.9,0.98) eps 1e-9, beam 5 /
+  length_penalty 1.0 at eval, identical frozen valid/test sets, identical corpus,
+  identical data-order seed set.
+- **3.5** Exactly 5 seeds per cell: {1,2,3,4,5}.
+
+## 4. Stopping metric, ceiling, argmin
+
+- **4.1** Convergence metric: held-out token-level **cross-entropy in nats per
+  non-pad target token**, label smoothing off, teacher-forced, fp32, on the full
+  frozen newstest2013. Beam BLEU is **retired as a stopping signal** and kept only
+  for reporting.
+- **4.2** Ceiling: compute a provisional point P = first evaluation at which dev CE
+  has failed to improve on its running best by ≥ δ for a continuous window of 300M
+  tokens. **The run does not stop at P.** It continues to
+  `min(4 × tokens(P), 20B)` and never less than `P + 2B`.
+- **4.3** Convergence is defined **post hoc** as the argmin of the 3-point
+  median-smoothed dev-CE trace over the whole run, ties toward fewer tokens,
+  computed by the tagged script with no human in the loop.
+  *(implemented: `phase1/converge.py`.)* It emits all three §6.2 slices, applies
+  the §6.3 null rule, and flags §4.5 non-convergence. Note what it exposes about
+  slice (c): with a 3.5x parameter ratio, equal tok/param **cannot** put both
+  cells at their own convergence points unless their convergence budgets happen
+  to differ by that same 3.5x. The script prints each cell's budget as a fraction
+  of its own convergence point so this cannot be glossed over.
+- **4.4** δ is **calibrated, not guessed.** Pilot: 5 seeds of Base-capped to the
+  ceiling; in the plateau region take the max between-seed |ΔCE| at matched token
+  counts; set δ at that measured floor. Working prior 0.002 nats. The measured
+  floor is recorded here **before** the main matrix runs; if it exceeds the prior,
+  δ rises and that is recorded, not absorbed.
+- **4.5** If any cell's argmin falls in the final 20% of its trace, that cell is
+  declared **not converged**, the ceiling doubles, and the extension is reported as
+  a documented deviation.
+
+## 5. Learning rate
+
+- **5.1** Symmetric per **architecture**, not per cell. Identical grid
+  `lr_scale ∈ {0.25, 0.5, 1.0, 2.0}`, identical 500M-token probe, 1 seed,
+  selection by dev CE at probe end. Full sweep published. No arm gets a hand-tuned
+  schedule. Do **not** inherit lr_scale 1.0 vs 1.5 — that compensation for the
+  Noam `d_model**-0.5` term was never validated.
+- **5.2** If a selected value lands at a grid **endpoint**, extend the grid one step
+  and re-probe. Committed here so it is not a post-hoc rescue.
+- **5.3** Methods note: ✅ the optimizer is constructed with `lr=0.0` (trainer.py:76,
+  comment "will be set by scheduler") and the scheduler overwrites
+  `param_group["lr"]` every step, so the `lr: 0.0007` field in both configs is
+  **dead** and `lr_scale` is the only real handle.
+
+## 6. Reporting, frozen before results are seen
+
+- **6.1** Per cell: total non-pad target tokens at convergence; tok/param against
+  the re-measured reference; **optimizer** steps (not micro-batches); measured mean
+  non-pad target tokens per optimizer step; **epochs over corpus**; wall clock; MFU
+  from the corrected token count.
+- **6.2** The headline contrast reported **three ways off the identical curves**:
+  (a) post-hoc convergence argmin [primary]; (b) equal total non-pad target tokens
+  at the minimum convergence-token count across cells [co-primary]; (c) equal
+  tokens/param [third slice]. The paper states explicitly whether the **sign** of
+  the Big−Base effect is invariant across all three, and if not, where it inverts.
+- **6.3** Null rule, frozen: any Big−Base difference smaller than 2× the pooled
+  within-cell seed standard deviation is **reported as null**, not as a trend.
+  Per-seed values reported, never means alone.
+- **6.4** Metrics: chrF2 and COMET-22 primary on newstest2014, BLEU secondary with
+  the full sacreBLEU signature verbatim (✅ `src/evaluate.py:23` pins
+  `tokenize="13a"` for non-zh). Validation cross-entropy in nats/token as the
+  scaling-side quantity.
+- **6.5** Checkpoint selection: report **both** the single checkpoint at argmin and
+  the average of the 5 checkpoints centred on it. Both, regardless of which wins.
+- **6.6** A section titled "Deviations from pre-registration" appears in the
+  submitted paper whether or not it is empty.
+- **6.7** Every pre-registered cell is reported regardless of outcome.
+
+## 7. Release
+
+Every dev-CE and dev-BLEU trace, every cell, every seed, against cumulative
+non-pad target tokens, as CSVs; plus the tagged decision script, the trainer
+patch, and all config diffs. The decision script consumes only released traces and
+emits the convergence points and the Big-vs-Base verdict with no human input, so
+any reviewer can re-derive the result **under their own preferred stopping rule**.
+
+---
+
+## Surviving attacks, to be conceded in the paper rather than left for a reviewer
+
+1. **Regularization is confounded with capacity, and no protocol here fixes it.**
+   ✅ Dropout is 0.1 in both configs across a 3.5x capacity difference, so Big
+   overfits the capped corpus sooner and "trained to convergence" partly measures
+   time-to-overfit. Holding dropout fixed is defensible but it *is* a choice.
+   Mitigation: name it in Section 3, and add dropout ∈ {0.1, 0.3} as a secondary
+   axis for Big on the capped cells. This is the one attack RTO-PA has no
+   structural answer to — do not leave it unaddressed.
+2. **The argmin is still a selection over a stochastic process.** Run lengths
+   differ, so the number of evaluations differs, so winner's-curse magnitude
+   differs by cell in a way correlated with capacity. Median smoothing and CE-over-
+   BLEU shrink it; they do not remove it. Mitigation: also report dev CE at a fixed
+   token grid common to all cells, and report the seed-spread of the argmin
+   *location*.
+3. **Fixed modest corpus + overshoot = heavy repetition.** Running to 4x the
+   provisional point on a 1M-pair corpus means many epochs, and memorization
+   confounds the late trace differently for 209M than 60M. §6.1 makes it visible;
+   visibility is not a fix. Report train−dev CE gap alongside the CE trace.
+4. **No precedent for the packaged protocol.** Pre-registration is close to absent
+   from MT methodology. The literature supports the *components* — per-configuration
+   budgets, early stopping on held-out loss, publishing learning curves — not the
+   package. Present RTO-PA as a synthesis of standard components; do **not** claim
+   it as an established named protocol. Overreach there is exactly what produced
+   the last rejection.
+5. **The LR probe length is a degree of freedom.** 500M tokens may be too short to
+   rank schedules over a 20B-token run. Mitigation: re-probe the two best
+   `lr_scale` values at 5B tokens on one cell and report whether the ranking held.
+6. **Originality is not solved by any alignment protocol.** ← *most likely to be
+   underweighted.* The prior scores were Originality 1/4/2: the paper was not
+   rejected solely for the confound, it was rejected for being an uninteresting
+   null *with* a confound. RTO-PA makes the null **defensible**; it does not make
+   it **interesting**. The contribution has to be the **curve** — whether and where
+   the Big−Base sign inverts as a function of budget, and whether that inversion
+   point is invariant across the three alignments (§6.2). That is only visible
+   under RTO-PA, which is a further reason to choose it, but **the paper must be
+   framed around it rather than around the null.**
+
+## A non-reviewer risk
+
+Every literature citation produced during this design carries an explicit caveat
+that the papers were **not opened** — including the Vaswani step counts and D/N
+arithmetic. Combined with the two arithmetic errors confirmed in Phase 0, this
+project's demonstrated failure mode is asserting unverified numbers and unverified
+attributions. **Every citation must be opened and every number re-derived on the
+real cache before submission.** That is not a hypothetical risk; it has already
+materialized twice.

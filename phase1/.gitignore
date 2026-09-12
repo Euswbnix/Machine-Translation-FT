@@ -1,0 +1,4 @@
+# Calibration output is machine- and corpus-specific. Regenerate it with
+# calibrate_batch.py against the real cache; never commit a synthetic run,
+# it would be mistaken for a real measurement.
+batch_calibration.json

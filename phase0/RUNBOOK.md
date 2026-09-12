@@ -1,0 +1,235 @@
+# Phase 0 runbook — what to run on the server
+
+Ordered by cost. Step 1 costs seconds and can settle a headline claim on its own;
+do not skip ahead to GPU time.
+
+Everything below assumes the training repo at `~/Machine_translation` and this
+repo at `~/Machine-Translation-SFT`, adjust paths as needed.
+
+---
+
+## 0. Inventory the training machine, then pull what is irreplaceable (no GPU)
+
+**Nothing needed for Phase 0 is on the Mac** (checked 2026-09-12): no data
+directories, no checkpoints, no tokenizer caches, no QE scores, no training logs.
+They live on the Linux side of the training machine.
+
+The public HuggingFace releases (`euswbnix/transformer-wmt14-{enfr,ende}-{base,big}`)
+are **not a substitute** for E0.3. `scripts/prepare_hf_release.py:256-265` saves
+only the bare `state_dict`, while `trainer.load_checkpoint` reads `ckpt["model"]`
+and `ckpt["global_step"]` — and `global_step` is what places the scheduler on its
+decay curve at resume. Use the original `averaged.pt`.
+
+Authentication is key-only; `fetch.py` runs every ssh/rsync with `BatchMode=yes`
+and will fail rather than prompt for a password.
+
+```bash
+ssh-copy-id <host>
+```
+
+```bash
+python3 phase0/fetch.py inventory --host <host> --inspect-ckpt
+```
+
+This streams `phase0/inventory.py` over ssh (nothing is copied to the box first),
+lists every relevant file by priority, reads `global_step` / `accumulate_steps` /
+`lr_scale` out of each averaged/best checkpoint, greps every log for the trainer's
+own `LR = …` / `Resumed from step` lines, and reports whether the code on the box
+matches GitHub (dirty files, unpushed commits). **Read it before pulling.**
+
+```bash
+python3 phase0/fetch.py pull --host <host> --prio P0
+```
+
+That is a dry run. It prints the plan and, separately, everything it will NOT pull.
+Then add `--go`.
+
+| priority | what | pull to the Mac? |
+|---|---|---|
+| P0 | training logs/reports, averaged/best checkpoints, eval traces | **yes** — irreplaceable |
+| P1 | `*scored*.tsv` (≈12 GPU-hours to rebuild, per `score_with_comet.py:6`) | **confirm it exists**; pull if space allows |
+| P1 | `.cached_*.npz`, SPM models, `sft_train.*`, the 30M cleaned corpus | leave on the box; run e01/e02 **there** |
+| P2 | rotating `step_*.pt`, dev/test sets, other logs | no |
+
+If the inventory shows the code on the box has uncommitted changes or unpushed
+commits, those are what actually ran — capture them before anything else.
+
+## 1. Confirm the fine-tuning LR from the log (seconds, no GPU)
+
+`trainer.py:580-581` prints the true LR at checkpoint load:
+
+```bash
+grep -rn "Optimizer/scheduler RESET" ~/Machine_translation/ ~/Machine-Translation-SFT/ 2>/dev/null
+```
+
+| printed value | meaning |
+|---|---|
+| `2.73e-04` | as derived. Note this is **not** an anomaly — it equals the LR pretraining ended at (see below) |
+| `1.36e-04` | the `// 4` reconstruction was not applied; tell me, the analysis changes |
+| `6.99e-04` | the scheduler restarted at warmup peak — that WOULD be the catastrophic case |
+| no match | stdout was not captured; skip to step 2 |
+
+**Read this before interpreting the result.** An earlier version of this runbook
+said `2.73e-04` would "confirm" that fine-tuning ran at an anomalously high
+restart LR. That was wrong and is retracted. `scheduler.step()` is called only at
+accumulation boundaries (trainer.py:461,472), so pretraining's scheduler had
+already reached ~26250 and 2.73e-4 is the **continuation** of the LR it was
+already training at — a 0.5% change, not a 2x jump. What is genuinely wrong is
+only the comment in `configs/sft_base_enfr.yaml:3-6` (the Big config's equivalent
+comment is correct). Details in `phase0/README.md`, section "CORRECTED: the LR
+framing was wrong".
+
+Worth grepping regardless, since the real boundary discontinuity is the discarded
+Adam state and the eval cadence:
+
+```bash
+grep -rn "Resumed from step" ~/Machine_translation/ 2>/dev/null | tail -20
+```
+
+## 2. Apply the cumulative token-accounting patch (minutes, no GPU)
+
+Makes the compute budget a MEASURED quantity instead of one reconstructed from
+`steps x batch_size`, which is what produced the 4x error. The patch now does four
+things (16 hunks):
+
+1. **Two** cumulative counters — `total_train_tokens` (processed, the MFU
+   denominator) and `applied_target_tokens` (gradient actually applied, the
+   learning-curve x-axis) — plus a real `optimizer_steps` count, since
+   `global_step // accumulate_steps` overcounts whenever the spike guard drops a
+   batch. All persist in checkpoints.
+2. A **token-keyed training gate**. Set `max_target_tokens` and `max_steps` is no
+   longer consulted: it counts micro-batches, so equal `max_steps` hands arms with
+   different `accumulate_steps` different token budgets. A deliberate
+   `max_micro_steps_backstop` can still stop a runaway, loudly.
+3. A **token-keyed eval cadence** (`eval_every_tokens`), bypassing
+   `_update_eval_interval`, whose interval is a function of training loss and
+   therefore of capacity.
+4. `_evaluate_ce()` — held-out cross-entropy in nats per non-pad target token,
+   fp32, teacher-forced, label smoothing off — appended to
+   `<ckpt_dir>/dev_ce_trace.tsv`. This is the file `phase1/converge.py` consumes.
+
+All four default to the old behaviour when the new config keys are absent, so
+existing runs are unaffected.
+
+```bash
+cd ~/Machine_translation
+git apply --check -p1 ~/Machine-Translation-SFT/phase0/trainer_token_accounting.patch
+```
+
+If that prints nothing, it applies cleanly. Then:
+
+```bash
+cd ~/Machine_translation && git checkout -b phase0-token-accounting
+git apply -p1 ~/Machine-Translation-SFT/phase0/trainer_token_accounting.patch
+git diff --stat
+```
+
+Note: resuming from a checkpoint saved BEFORE this patch leaves the counter short
+by everything prior. The patch prints a warning and marks the report `UNDERCOUNT`
+rather than reporting a wrong number silently. Phase 1 runs start fresh, so they
+are unaffected.
+
+## 3. Re-measure the padding factor on the real cache (~10 min, no GPU)
+
+The `/ 4` correction is exact and data-independent. The padding factor is NOT —
+it was measured on synthetic lengths (0.68–0.72) and must be re-measured on the
+real length arrays before any number goes in a paper.
+
+```bash
+cd ~/Machine_translation
+python ~/Machine-Translation-SFT/phase0/e02_token_accounting.py \
+    --cache data_enfr_v1/train.cached_256.npz \
+    --seeds 3 \
+    --json-out ~/Machine-Translation-SFT/phase0/e02_enfr.json
+```
+
+`--cache` is the `.cached_256.npz` that `TranslationDataset` writes; if it is not
+on disk, pass `--src/--tgt/--spm` instead and it will tokenize. `--seeds 3` repeats
+the sampler with different shuffles so the padding factor comes with a spread
+rather than a single point estimate. Repeat for en-de.
+
+## 4. Provenance hash-join (~1 hour, mostly download, no GPU)
+
+**This gates E0.3 criterion 2.** Without provenance labels there are no in-domain
+held-out sets, so the domain claim is untestable and `e03_decide.py` CANNOT return
+GO — it will exit 2. Do this before spending any GPU time on E0.3.
+
+Download the constituent corpora separately (Europarl v7, Common Crawl, UN, News
+Commentary, Giga-FrEn for en-fr), then:
+
+`--corpus` is repeated once per constituent, in `LABEL:SRC:TGT` form. The label
+order defines the integer codes in the `.npy`, so **keep it identical** to the
+`--sources` list you later pass to `e03_build_controls.py`:
+
+```bash
+cd ~/Machine_translation
+python ~/Machine-Translation-SFT/phase0/e01_provenance.py \
+    --clean-src data/v2_clean.en --clean-tgt data/v2_clean.fr \
+    --corpus europarl:raw/europarl.en:raw/europarl.fr \
+    --corpus commoncrawl:raw/commoncrawl.en:raw/commoncrawl.fr \
+    --corpus un:raw/un.en:raw/un.fr \
+    --corpus news-commentary:raw/nc.en:raw/nc.fr \
+    --corpus giga-fren:raw/giga.en:raw/giga.fr \
+    --qe-scores data/v2_scored.tsv \
+    --norm exact \
+    --out ~/Machine-Translation-SFT/phase0/provenance
+```
+
+Writes `provenance_labels.npy` (consumed by `e03_build_controls.py --provenance`)
+and `provenance_report.json` (the table that replaces the tilde-hedged
+`tab:qe_source` in the paper).
+
+Start with `--norm exact`. `clean_data_enfr.py` is a pure filter — it writes the
+ORIGINAL line and only strips for length/ratio computation — so exact matching
+should already be high. If it is not, escalate to `strip` then `collapse_ws` and
+**report which normalizer you needed**: needing a loose one is itself a finding
+about the pipeline, not a detail to bury.
+
+Below a 95% match rate the script says the labels are not trustworthy. If it lands
+there, STOP and tell me — it would mean the cleaned corpus is not a pure subset of
+what we think it is, which is paper-relevant on its own.
+
+## 5. E0.3 controls and the gate (~7 GPU-hours)
+
+Only after 4 succeeds.
+
+```bash
+python ~/Machine-Translation-SFT/phase0/e03_build_controls.py \
+    --qe-scores data/v2_scored.tsv \
+    --provenance phase0/provenance_labels.npy \
+    --sources europarl,commoncrawl,un,news-commentary,giga-fren \
+    --out-dir data/phase0
+
+python ~/Machine-Translation-SFT/phase0/e03_run_matrix.py \
+    --base-config ~/Machine-Translation-SFT/configs/sft_base_enfr.yaml \
+    --data-dir data/phase0 --out-dir configs/phase0
+
+bash configs/phase0/run_stage1.sh            # 4 runs, LR sweep on ft_topk
+```
+
+Pick the largest `lr_scale` whose newstest BLEU does NOT fall monotonically from
+the first eval, then:
+
+```bash
+bash configs/phase0/run_stage2.sh 0.15       # 9 runs, 3 conditions x 3 seeds
+```
+
+Evaluate **every** run on `newstest2014` AND `heldout_un` AND `heldout_europarl`,
+collect into a TSV (`condition seed testset bleu`, plus `baseline - <testset> <bleu>`
+rows for the pre-FT checkpoint), then:
+
+```bash
+python ~/Machine-Translation-SFT/phase0/e03_decide.py --results results/phase0_bleu.tsv
+echo "exit=$?"      # 0 = GO, 1 = NO-GO, 2 = cannot decide (missing inputs)
+```
+
+---
+
+## The thing to hold on to
+
+The gate can come back NO-GO. That is a real outcome, not a failure of execution:
+it would mean the data-quality/domain angle does not carry a WMT 2027 submission
+and the program rests on the compute-alignment work instead. `e03_decide.py` was
+written before the runs specifically so that outcome cannot be argued away
+afterwards. Do not reframe it post-hoc — that is the failure mode that produced
+the rejected paper.

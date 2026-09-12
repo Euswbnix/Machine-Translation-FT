@@ -1,0 +1,331 @@
+--- a/src/training/trainer.py
++++ b/src/training/trainer.py
+@@ -39,6 +39,22 @@
+         self.device = device
+         self.global_step = 0
+         self.best_bleu = 0.0
++
++        # ---- token accounting -------------------------------------------------
++        # global_step counts MICRO-batches, so `steps x batch_size x accumulate_steps`
++        # double-counts accumulation AND means different things across arms whose
++        # accumulate_steps differ. These counters make the budget a MEASURED quantity.
++        #   total_train_tokens    : non-pad target LABEL tokens processed (MFU denominator)
++        #   applied_target_tokens : those whose gradient was actually applied
++        #                           (the x-axis of every learning curve)
++        #   optimizer_steps       : real optimizer steps; global_step // accumulate_steps
++        #                           OVERCOUNTS whenever the spike guard drops a batch
++        self.total_train_tokens = 0
++        self.applied_target_tokens = 0
++        self.optimizer_steps = 0
++        self._pending_tokens = 0
++        self._dropped_tokens = 0
++        self._stopped_on_backstop = False
+         self.patience_counter = 0
+ 
+         # Model
+@@ -139,6 +155,24 @@
+ 
+         # Config shortcuts
+         self.max_steps = train_cfg["max_steps"]
++        # Token-keyed controls. 0 = disabled, preserving the step-keyed behaviour
++        # exactly for every existing config.
++        self.max_target_tokens = int(train_cfg.get("max_target_tokens", 0))
++        self.eval_every_tokens = int(train_cfg.get("eval_every_tokens", 0))
++        self._next_eval_tokens = self.eval_every_tokens
++        # In a token-keyed run max_steps is NOT consulted: it counts micro-batches,
++        # so equal max_steps hands arms with different accumulate_steps different
++        # token budgets -- the exact incommensurability the token gate removes.
++        # A backstop is available but must be set deliberately, in micro-batches.
++        self.max_micro_steps_backstop = int(train_cfg.get("max_micro_steps_backstop", 0))
++        if self.max_target_tokens:
++            print(f"  Gate: TOKEN-keyed, {self.max_target_tokens:,} applied target tokens"
++                  + (f" (backstop {self.max_micro_steps_backstop:,} micro-steps)"
++                     if self.max_micro_steps_backstop else " (no step backstop)"))
++            if not self.max_micro_steps_backstop:
++                print("        max_steps is IGNORED in token-keyed runs; set "
++                      "max_micro_steps_backstop if you want a runaway guard.")
++        self.dev_ce_trace = None      # opened lazily by _log_dev_ce
+         self.accumulate_steps = train_cfg.get("accumulate_steps", 1)
+         self.clip_grad_norm = train_cfg.get("clip_grad_norm", 1.0)
+         # Loss-spike guard: if a step's loss is > ema_loss * spike_ratio, skip its
+@@ -305,9 +339,9 @@
+         start_time = time.time()
+ 
+         try:
+-            while self.global_step < self.max_steps:
++            while self._should_continue():
+                 for batch in self.train_loader:
+-                    if self.global_step >= self.max_steps:
++                    if not self._should_continue():
+                         break
+ 
+                     # Check for graceful interrupt
+@@ -332,13 +366,24 @@
+                             f"Step {self.global_step:>7d} | "
+                             f"Loss {avg_loss:.4f} | "
+                             f"LR {lr:.2e} | "
+-                            f"Tok/s {tok_per_sec:.0f}"
++                            f"Tok/s {tok_per_sec:.0f} | "
++                            f"Tok(applied) {self.applied_target_tokens / 1e9:.4f}B"
+                         )
+                         self.writer.add_scalar("train/loss", avg_loss, self.global_step)
+                         self.writer.add_scalar("train/lr", lr, self.global_step)
+                         self.writer.add_scalar("train/tok_per_sec", tok_per_sec, self.global_step)
++                        self.writer.add_scalar(
++                            "train/applied_target_tokens", self.applied_target_tokens, self.global_step
++                        )
+                         self._swanlab_log(
+-                            {"train/loss": avg_loss, "train/lr": lr, "train/tok_per_sec": tok_per_sec},
++                            {
++                                "train/loss": avg_loss,
++                                "train/lr": lr,
++                                "train/tok_per_sec": tok_per_sec,
++                                "train/total_tokens": self.total_train_tokens,
++                                "train/applied_target_tokens": self.applied_target_tokens,
++                                "train/optimizer_steps": self.optimizer_steps,
++                            },
+                             step=self.global_step,
+                         )
+ 
+@@ -352,10 +397,23 @@
+                         total_tokens = 0
+                         start_time = time.time()
+ 
+-                    if self.global_step >= self._next_eval_step and self.global_step > 0:
++                    if self._eval_due():
+                         bleu = self._evaluate()
+                         # Schedule next eval based on current adaptive interval
+                         self._next_eval_step = self.global_step + self._current_eval_interval
++                        if self.eval_every_tokens:
++                            # Advance to the next multiple so a long micro-batch
++                            # cannot desynchronise the grid across runs.
++                            while self._next_eval_tokens <= self.applied_target_tokens:
++                                self._next_eval_tokens += self.eval_every_tokens
++                            dev_ce, dev_ntok = self._evaluate_ce()
++                            print(f"Step {self.global_step:>7d} | dev CE {dev_ce:.4f} "
++                                  f"nats/tok over {dev_ntok:,} tokens "
++                                  f"@ {self.applied_target_tokens/1e9:.4f}B applied")
++                            self.writer.add_scalar("valid/dev_ce", dev_ce, self.global_step)
++                            self._swanlab_log({"valid/dev_ce": dev_ce},
++                                              step=self.global_step)
++                            self._log_dev_ce(dev_ce, dev_ntok, bleu)
+                         if bleu is None:
+                             # Eval was aborted by Ctrl+C; let the next loop
+                             # iteration see self._interrupted and save.
+@@ -409,7 +467,9 @@
+                 print(f"{'='*60}")
+ 
+             self._save_checkpoint("final.pt")
+-            self._generate_report("max_steps_reached")
++            self._generate_report(
++                "step_backstop" if self._stopped_on_backstop else
++                ("token_budget_reached" if self.max_target_tokens else "max_steps_reached"))
+             print(f"Training complete. Best BLEU: {self.best_bleu:.2f}")
+ 
+         finally:
+@@ -440,6 +500,16 @@
+ 
+         self.global_step += 1
+ 
++        # Non-pad target LABEL tokens for this micro-batch -- the quantity the loss
++        # averages over. NOTE tgt_labels = tgt[:, 1:], so a cached sequence of
++        # length L contributes L-1 label tokens, not L; anything that counts cached
++        # lengths instead overcounts by one per SENTENCE (~3% at WMT lengths).
++        # Computed here rather than at the end of the function because the
++        # accumulation boundary below decides whether these tokens count as applied.
++        n_tokens = (tgt_labels != PAD_ID).sum().item()
++        self.total_train_tokens += n_tokens
++        self._pending_tokens += n_tokens
++
+         # Loss-spike guard: detect any toxic micro-batch within the current effective
+         # batch. If ANY micro-batch spikes, the entire accumulated grad is dropped
+         # at the boundary so the toxic gradient doesn't corrupt weights.
+@@ -463,6 +533,7 @@
+                 # Drop the polluted accumulated grads for this effective-batch.
+                 # Do not step the optimizer/scheduler, do not update scaler state.
+                 self.optimizer.zero_grad()
++                self._dropped_tokens += self._pending_tokens
+             else:
+                 self.scaler.unscale_(self.optimizer)
+                 nn.utils.clip_grad_norm_(self.model.parameters(), self.clip_grad_norm)
+@@ -470,6 +541,9 @@
+                 self.scaler.update()
+                 self.optimizer.zero_grad()
+                 self.scheduler.step()
++                self.applied_target_tokens += self._pending_tokens
++                self.optimizer_steps += 1
++            self._pending_tokens = 0
+             # Reset flag for next effective batch
+             self._current_batch_spike = False
+ 
+@@ -484,7 +558,6 @@
+                     + (1 - self._loss_ema_alpha) * self._loss_ema
+                 )
+ 
+-        n_tokens = (tgt_labels != PAD_ID).sum().item()
+         return loss.item() * self.accumulate_steps, n_tokens
+ 
+     @torch.no_grad()
+@@ -548,6 +621,10 @@
+                 "scaler": self.scaler.state_dict(),
+                 "global_step": self.global_step,
+                 "best_bleu": self.best_bleu,
++                "total_train_tokens": self.total_train_tokens,
++                "applied_target_tokens": self.applied_target_tokens,
++                "optimizer_steps": self.optimizer_steps,
++                "dropped_tokens": self._dropped_tokens,
+                 "config": self.config,
+                 # Persist history so training curves span across resumes.
+                 "history": self.history,
+@@ -556,6 +633,95 @@
+         )
+         # Atomic rename: POSIX guarantees this is either fully done or not done.
+         tmp_path.replace(path)
++
++    def _should_continue(self) -> bool:
++        """Primary training gate.
++
++        max_steps counts micro-batches. Two arms with different accumulate_steps
++        are therefore NOT comparable under it: at accumulate_steps 12 vs 17, equal
++        max_steps gives the first arm 17/12 = 1.42x more applied tokens. So when
++        max_target_tokens is set, max_steps is not consulted at all; only an
++        explicitly configured micro-step backstop can pre-empt the token budget,
++        and when it does it says so.
++        """
++        if self.max_target_tokens:
++            if self.applied_target_tokens >= self.max_target_tokens:
++                return False
++            if (self.max_micro_steps_backstop
++                    and self.global_step >= self.max_micro_steps_backstop):
++                if not self._stopped_on_backstop:
++                    print(f"  STOPPED ON STEP BACKSTOP at {self.global_step:,} "
++                          f"micro-steps with only {self.applied_target_tokens:,} of "
++                          f"{self.max_target_tokens:,} target tokens applied "
++                          f"({self.applied_target_tokens/self.max_target_tokens*100:.1f}%). "
++                          "The token budget was NOT reached.")
++                self._stopped_on_backstop = True
++                return False
++            return True
++        return self.global_step < self.max_steps
++
++    def _eval_due(self) -> bool:
++        """Token-keyed eval cadence when configured, else the step-keyed one.
++
++        The step-keyed path runs through _update_eval_interval, which derives the
++        interval from an EMA of TRAINING LOSS -- i.e. from model capacity. Any
++        experiment comparing capacities must use the token-keyed path, or the eval
++        grid becomes a function of the variable under study.
++        """
++        if self.eval_every_tokens:
++            return self.applied_target_tokens >= self._next_eval_tokens
++        return self.global_step >= self._next_eval_step and self.global_step > 0
++
++    @torch.no_grad()
++    def _evaluate_ce(self):
++        """Held-out cross-entropy in NATS per non-pad target token.
++
++        Deliberately not the training criterion:
++          - label smoothing OFF (it adds a constant that depends on vocabulary
++            support, so smoothed losses are not comparable as a convergence signal)
++          - fp32 (bf16 accumulation over a whole dev set loses precision the
++            post-hoc argmin depends on)
++          - teacher-forced (no beam, no search noise, monotone in fit)
++        Beam BLEU is retained for reporting but is NOT a convergence signal: it is
++        noisy and non-monotone, and an argmax over it is upward-biased by an amount
++        that grows with the number of evaluations, which differs across arms.
++
++        Returns (nats_per_token, n_tokens).
++        """
++        was_training = self.model.training
++        self.model.eval()
++        ce = nn.CrossEntropyLoss(ignore_index=PAD_ID, reduction="sum",
++                                 label_smoothing=0.0)
++        total, ntok = 0.0, 0
++        for batch in self.valid_loader:
++            src = batch["src"].to(self.device)
++            tgt = batch["tgt"].to(self.device)
++            logits = self.model(src, tgt[:, :-1])          # fp32: no autocast here
++            labels = tgt[:, 1:]
++            total += ce(logits.float().reshape(-1, logits.size(-1)),
++                        labels.contiguous().view(-1)).item()
++            ntok += int((labels != PAD_ID).sum().item())
++        if was_training:
++            self.model.train()
++        return (total / ntok if ntok else float("nan")), ntok
++
++    def _log_dev_ce(self, ce: float, ntok: int, bleu):
++        """Append one row to the released dev-CE trace (PROTOCOL 7)."""
++        if self.dev_ce_trace is None:
++            path = self.ckpt_dir / "dev_ce_trace.tsv"
++            new = not path.exists()
++            self.dev_ce_trace = open(path, "a", encoding="utf-8")
++            if new:
++                self.dev_ce_trace.write(
++                    "cell\tseed\ttokens\tdev_ce\tdev_ce_ntok\tdev_bleu\t"
++                    "optimizer_steps\tglobal_step\n")
++        cell = self.ckpt_dir.name
++        seed = self.config["training"].get("seed", 0)
++        self.dev_ce_trace.write(
++            f"{cell}\t{seed}\t{self.applied_target_tokens}\t{ce:.6f}\t{ntok}\t"
++            f"{'' if bleu is None else f'{bleu:.4f}'}\t{self.optimizer_steps}\t"
++            f"{self.global_step}\n")
++        self.dev_ce_trace.flush()
+ 
+     def load_checkpoint(self, path: str, reset_optimizer: bool = False):
+         """Load a checkpoint to resume training.
+@@ -586,6 +752,24 @@
+ 
+         self.global_step = ckpt["global_step"]
+         self.best_bleu = ckpt.get("best_bleu", 0.0)
++        # Checkpoints predating this patch leave the counters short by everything
++        # before the resume. Say so rather than reporting a wrong budget. A partial
++        # effective batch in flight at save time is discarded, matching the fact
++        # that its gradient was never applied.
++        self._tokens_were_measured = "applied_target_tokens" in ckpt
++        self.total_train_tokens = ckpt.get("total_train_tokens", 0)
++        self.applied_target_tokens = ckpt.get("applied_target_tokens", 0)
++        self.optimizer_steps = ckpt.get("optimizer_steps", self.global_step // self.accumulate_steps)
++        self._dropped_tokens = ckpt.get("dropped_tokens", 0)
++        self._pending_tokens = 0
++        self._current_batch_spike = False
++        if self.eval_every_tokens:
++            self._next_eval_tokens = self.eval_every_tokens
++            while self._next_eval_tokens <= self.applied_target_tokens:
++                self._next_eval_tokens += self.eval_every_tokens
++        if not self._tokens_were_measured:
++            print("  WARNING: checkpoint predates token accounting; the cumulative "
++                  "counters restart at 0 and UNDERCOUNT this run.")
+ 
+         # Restore history so training curves span resumes. Older checkpoints
+         # without this field just start fresh (we lose the pre-resume curve
+@@ -636,6 +820,30 @@
+         lines.append(f"Total steps:     {self.global_step:,}")
+         lines.append(f"Training time:   {elapsed_str}")
+         lines.append(f"Best BLEU:       {self.best_bleu:.2f}")
++        _note = "" if getattr(self, "_tokens_were_measured", True) else \
++            "  (UNDERCOUNT: resumed from a pre-patch checkpoint)"
++        lines.append(
++            f"Target tokens:   {self.applied_target_tokens:,} applied "
++            f"({self.applied_target_tokens / 1e9:.4f}B, non-pad labels){_note}"
++        )
++        if self._dropped_tokens:
++            lines.append(
++                f"                 {self._dropped_tokens:,} dropped by the spike guard "
++                f"({self._dropped_tokens / max(self.total_train_tokens, 1) * 100:.3f}%)"
++            )
++        if n_params:
++            lines.append(f"Tokens/param:    {self.applied_target_tokens / n_params:.1f}")
++        # Real optimizer steps, NOT global_step // accumulate_steps, which
++        # overcounts by one per effective batch the spike guard dropped.
++        lines.append(
++            f"Optimizer steps: {self.optimizer_steps:,} "
++            f"(global_step {self.global_step:,} counts MICRO-batches)"
++        )
++        if self.optimizer_steps:
++            lines.append(
++                f"Tokens/opt step: {self.applied_target_tokens / self.optimizer_steps:,.0f} "
++                "(the MEASURED effective batch)"
++            )
+         spike_ratio_cfg = train_cfg.get("loss_spike_ratio", 1.3)
+         lines.append(
+             f"Spike-guard skips: {self._skip_count} "
