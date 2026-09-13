@@ -695,6 +695,58 @@ def suite_rental_provenance(d: Path):
           rc != 0 and "STATMT_OFFLINE=1" in o, o[-200:])
 
 
+def suite_rebuild(d: Path):
+    print("\n== rebuild_corpus (legacy must equal the ORIGINAL cleaner, fixed must stay aligned) ==")
+    cleaner = MT_REPO / "scripts/clean_data_enfr.py"
+    if not cleaner.exists():
+        skip("rebuild_corpus vs original cleaner", f"{cleaner} not present (set MT_REPO)")
+        return
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("rebuild_mod", ROOT / "phase0/rebuild_corpus.py")
+    rb = importlib.util.module_from_spec(spec); spec.loader.exec_module(rb)
+    rows = []
+    for i in range(40):
+        rows.append((f"  ID{i} this is english sentence number {i} ok  ", f"ID{i} ceci est la phrase numero {i} ok"))
+    rows[3] = ("ID3 hope of a \r de facto\r bail-out would be costly", "ID3 un sauvetage de fait serait couteux")
+    rows[9] = ("ID9 plain english line with words", "ID9 ligne\r francaise coupee en deux ici")
+    rows[14] = ("ID14 double\r\r carriage return here now", "ID14 double retour chariot ici")
+    rows[20] = ("", "ID20 empty source")
+    rows[21] = ("ID21 short", "ID21 court")
+    for i in (25, 26, 27):
+        rows[i] = (f"ID{i} boilerplate english {i} text", "boilerplate francais identique repete")
+    rows[30] = ("ID30 non latin ТЕКСТ ПОЛНОСТЬЮ КИРИЛЛИЦЕЙ ЗДЕСЬ", "ID30 texte latin normal ici")
+    raw = d / "rb"; raw.mkdir()
+    # write train.* exactly as download_wmt_enfr.py's _save_split does
+    with open(raw / "train.en", "w", encoding="utf-8") as fs, open(raw / "train.fr", "w", encoding="utf-8") as ft:
+        for en, fr in rows:
+            en = en.strip().replace("\n", " "); fr = fr.strip().replace("\n", " ")
+            if en and fr:
+                fs.write(en + "\n"); ft.write(fr + "\n")
+    rc = subprocess.run([PY, str(cleaner), "--src", str(raw / "train.en"), "--tgt", str(raw / "train.fr"),
+                         "--out-src", str(raw / "orig.en"), "--out-tgt", str(raw / "orig.fr"), "--dup-threshold", "2"],
+                        capture_output=True, text=True).returncode
+    check("original clean_data_enfr.py runs on the synthetic corpus", rc == 0)
+    quiet = lambda *a, **k: None
+    rb.rebuild(lambda: iter(rows), "legacy", str(raw / "legacy.en"), str(raw / "legacy.fr"), dup_threshold=2, log=quiet)
+    same = ((raw / "orig.en").read_bytes() == (raw / "legacy.en").read_bytes()
+            and (raw / "orig.fr").read_bytes() == (raw / "legacy.fr").read_bytes())
+    check("legacy mode is BYTE-IDENTICAL to the original cleaner (CR splits, zip shift, filters, dups)", same,
+          f"orig {(raw/'orig.en').read_bytes()[:80]!r} vs legacy {(raw/'legacy.en').read_bytes()[:80]!r}")
+    import re as _re
+    ids = lambda path: [(_re.match(rb"\s*(ID\d+)", l) or [None, b"-"])[1] for l in path.read_bytes().splitlines()]
+    orig_mis = sum(a != b for a, b in zip(ids(raw / "orig.en"), ids(raw / "orig.fr")))
+    check("the synthetic corpus actually triggers the misalignment in the original cleaner", orig_mis > 0, str(orig_mis))
+    st = rb.rebuild(lambda: iter(rows), "fixed", str(raw / "fixed.en"), str(raw / "fixed.fr"), dup_threshold=2, log=quiet)
+    fe, ff = ids(raw / "fixed.en"), ids(raw / "fixed.fr")
+    check("fixed mode: every kept pair carries the same ID on both sides", len(fe) == len(ff) and fe == ff, f"{fe} vs {ff}")
+    check("fixed mode keeps the CR-bearing pairs whole and has zero line offset",
+          st["line_offset_src_minus_tgt"] == 0 and b"ID3" in (raw / "fixed.en").read_bytes()
+          and b"\r" not in (raw / "fixed.en").read_bytes() + (raw / "fixed.fr").read_bytes(), str(st))
+    check("latin_ratio equals the original per-character definition",
+          all(abs(rb.latin_ratio(x) - (sum(1 for c in x if c.isascii() or 0x00C0 <= ord(c) <= 0x017F) / len(x))) < 1e-12
+              for x in ("abc", "é ü ł", "ТЕКСТ abc", "日本語 x", "aĀſƀ")))
+
+
 PATCH = ROOT / "phase0/trainer_token_accounting.patch"
 
 
@@ -771,6 +823,7 @@ def main() -> int:
         suite_collect(d)
         suite_run_parallel(d)
         suite_rental_provenance(d)
+        suite_rebuild(d)
         suite_patch(d)
     finally:
         if not a.keep:
