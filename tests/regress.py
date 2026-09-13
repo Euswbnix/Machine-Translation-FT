@@ -847,6 +847,27 @@ def suite_patch(d: Path):
     check("patched copy -> 'applied' (never a false 'applies')", patch_state(applied)[0] == "applied")
 
 
+def run_external_suites(d: Path):
+    """Run tests/suites/*.py. Each module defines suite(ctx); ctx carries a fresh
+    fixture dir plus check/skip/run/ROOT/PY/MT_REPO/np. Separate files let several
+    changes add tests without editing this file; a crashing suite is a FAIL."""
+    import importlib.util
+    import traceback
+    import types
+    for sp in sorted((ROOT / "tests" / "suites").glob("*.py")):
+        sd = d / f"suite_{sp.stem}"
+        sd.mkdir()
+        print(f"\n== tests/suites/{sp.name} ==")
+        try:
+            spec = importlib.util.spec_from_file_location(f"regress_suite_{sp.stem}", sp)
+            mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(mod)
+            mod.suite(types.SimpleNamespace(d=sd, check=check, skip=skip, run=run, ROOT=ROOT,
+                                            PY=PY, MT_REPO=MT_REPO, np=np))
+        except Exception:
+            check(f"tests/suites/{sp.name} ran without crashing", False, traceback.format_exc()[-600:])
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--keep", action="store_true")
@@ -869,6 +890,7 @@ def main() -> int:
         suite_rebuild(d)
         suite_rescore(d)
         suite_patch(d)
+        run_external_suites(d)
     finally:
         if not a.keep:
             shutil.rmtree(d, ignore_errors=True)
