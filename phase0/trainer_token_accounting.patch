@@ -1,6 +1,6 @@
 --- a/src/training/trainer.py
 +++ b/src/training/trainer.py
-@@ -39,6 +39,22 @@
+@@ -39,6 +39,29 @@
          self.device = device
          self.global_step = 0
          self.best_bleu = 0.0
@@ -20,10 +20,17 @@
 +        self._pending_tokens = 0
 +        self._dropped_tokens = 0
 +        self._stopped_on_backstop = False
++        # Session baselines, set at load. A checkpoint that predates this patch
++        # restores optimizer_steps as the cumulative global_step // accumulate_steps
++        # but restarts the token counters at 0; dividing one by the other reported an
++        # "effective batch" of 77 tokens on the first real run. Per-session deltas are
++        # correct whether or not the checkpoint carried measured counters.
++        self._session_opt_base = 0
++        self._session_tok_base = 0
          self.patience_counter = 0
  
          # Model
-@@ -139,6 +155,24 @@
+@@ -139,6 +162,24 @@
  
          # Config shortcuts
          self.max_steps = train_cfg["max_steps"]
@@ -48,7 +55,7 @@
          self.accumulate_steps = train_cfg.get("accumulate_steps", 1)
          self.clip_grad_norm = train_cfg.get("clip_grad_norm", 1.0)
          # Loss-spike guard: if a step's loss is > ema_loss * spike_ratio, skip its
-@@ -305,9 +339,9 @@
+@@ -305,9 +346,9 @@
          start_time = time.time()
  
          try:
@@ -60,7 +67,7 @@
                          break
  
                      # Check for graceful interrupt
-@@ -332,13 +366,24 @@
+@@ -332,13 +373,24 @@
                              f"Step {self.global_step:>7d} | "
                              f"Loss {avg_loss:.4f} | "
                              f"LR {lr:.2e} | "
@@ -87,7 +94,7 @@
                              step=self.global_step,
                          )
  
-@@ -352,10 +397,23 @@
+@@ -352,10 +404,23 @@
                          total_tokens = 0
                          start_time = time.time()
  
@@ -112,7 +119,7 @@
                          if bleu is None:
                              # Eval was aborted by Ctrl+C; let the next loop
                              # iteration see self._interrupted and save.
-@@ -409,7 +467,9 @@
+@@ -409,7 +474,9 @@
                  print(f"{'='*60}")
  
              self._save_checkpoint("final.pt")
@@ -123,7 +130,7 @@
              print(f"Training complete. Best BLEU: {self.best_bleu:.2f}")
  
          finally:
-@@ -440,6 +500,16 @@
+@@ -440,6 +507,16 @@
  
          self.global_step += 1
  
@@ -140,7 +147,7 @@
          # Loss-spike guard: detect any toxic micro-batch within the current effective
          # batch. If ANY micro-batch spikes, the entire accumulated grad is dropped
          # at the boundary so the toxic gradient doesn't corrupt weights.
-@@ -463,6 +533,7 @@
+@@ -463,6 +540,7 @@
                  # Drop the polluted accumulated grads for this effective-batch.
                  # Do not step the optimizer/scheduler, do not update scaler state.
                  self.optimizer.zero_grad()
@@ -148,7 +155,7 @@
              else:
                  self.scaler.unscale_(self.optimizer)
                  nn.utils.clip_grad_norm_(self.model.parameters(), self.clip_grad_norm)
-@@ -470,6 +541,9 @@
+@@ -470,6 +548,9 @@
                  self.scaler.update()
                  self.optimizer.zero_grad()
                  self.scheduler.step()
@@ -158,7 +165,7 @@
              # Reset flag for next effective batch
              self._current_batch_spike = False
  
-@@ -484,7 +558,6 @@
+@@ -484,7 +565,6 @@
                      + (1 - self._loss_ema_alpha) * self._loss_ema
                  )
  
@@ -166,7 +173,7 @@
          return loss.item() * self.accumulate_steps, n_tokens
  
      @torch.no_grad()
-@@ -548,6 +621,10 @@
+@@ -548,6 +628,10 @@
                  "scaler": self.scaler.state_dict(),
                  "global_step": self.global_step,
                  "best_bleu": self.best_bleu,
@@ -177,7 +184,7 @@
                  "config": self.config,
                  # Persist history so training curves span across resumes.
                  "history": self.history,
-@@ -556,6 +633,95 @@
+@@ -556,6 +640,95 @@
          )
          # Atomic rename: POSIX guarantees this is either fully done or not done.
          tmp_path.replace(path)
@@ -273,7 +280,7 @@
  
      def load_checkpoint(self, path: str, reset_optimizer: bool = False):
          """Load a checkpoint to resume training.
-@@ -586,6 +752,24 @@
+@@ -586,6 +759,26 @@
  
          self.global_step = ckpt["global_step"]
          self.best_bleu = ckpt.get("best_bleu", 0.0)
@@ -288,6 +295,8 @@
 +        self._dropped_tokens = ckpt.get("dropped_tokens", 0)
 +        self._pending_tokens = 0
 +        self._current_batch_spike = False
++        self._session_opt_base = self.optimizer_steps
++        self._session_tok_base = self.applied_target_tokens
 +        if self.eval_every_tokens:
 +            self._next_eval_tokens = self.eval_every_tokens
 +            while self._next_eval_tokens <= self.applied_target_tokens:
@@ -298,7 +307,7 @@
  
          # Restore history so training curves span resumes. Older checkpoints
          # without this field just start fresh (we lose the pre-resume curve
-@@ -636,6 +820,30 @@
+@@ -636,6 +829,33 @@
          lines.append(f"Total steps:     {self.global_step:,}")
          lines.append(f"Training time:   {elapsed_str}")
          lines.append(f"Best BLEU:       {self.best_bleu:.2f}")
@@ -314,17 +323,20 @@
 +                f"({self._dropped_tokens / max(self.total_train_tokens, 1) * 100:.3f}%)"
 +            )
 +        if n_params:
-+            lines.append(f"Tokens/param:    {self.applied_target_tokens / n_params:.1f}")
++            lines.append(f"Tokens/param:    {self.applied_target_tokens / n_params:.3f}{_note}")
 +        # Real optimizer steps, NOT global_step // accumulate_steps, which
 +        # overcounts by one per effective batch the spike guard dropped.
 +        lines.append(
 +            f"Optimizer steps: {self.optimizer_steps:,} "
 +            f"(global_step {self.global_step:,} counts MICRO-batches)"
 +        )
-+        if self.optimizer_steps:
++        sess_opt = self.optimizer_steps - self._session_opt_base
++        sess_tok = self.applied_target_tokens - self._session_tok_base
++        if sess_opt > 0:
 +            lines.append(
-+                f"Tokens/opt step: {self.applied_target_tokens / self.optimizer_steps:,.0f} "
-+                "(the MEASURED effective batch)"
++                f"Tokens/opt step: {sess_tok / sess_opt:,.0f} "
++                f"(the MEASURED effective batch, this session: {sess_tok:,} tokens / "
++                f"{sess_opt:,} optimizer steps)"
 +            )
          spike_ratio_cfg = train_cfg.get("loss_spike_ratio", 1.3)
          lines.append(
