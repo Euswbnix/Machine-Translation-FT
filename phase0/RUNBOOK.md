@@ -32,9 +32,9 @@ Keep the directory name `Machine-Translation-SFT`: the SFT configs hard-code
 |---|---|---|
 | `env` | clone training repo, install deps, apply trainer patch, run `tests/regress.py` | refuses to continue if pip replaced the image's CUDA torch |
 | `accept` | rebuild Base v1.1 from HF, reproduce test BLEU 35.31 ± 0.15 | **stops** if it does not reproduce — do not run E0.3 |
-| `data` | WMT14 fr-en → v2 cleaned corpus | **stops** unless it has exactly 30,129,500 rows, as in the paper |
-| `score` | CometKiwi-22 over 30M pairs (paper: 13.8 h on one 5090) | your HF login (below) |
-| `provenance` | statmt constituents → `e01` hash-join | archive contents discovered, never assumed |
+| `data` | WMT14 fr-en parquet pinned at `wmt/wmt14@b199e406` → CR-safe v2 corpus (`rebuild_corpus.py --mode fixed`) | **stops** unless both files' sha256 equal the Mac rebuild's (38,275,284 rows). The paper's 30,129,500-row corpus is ~45% misaligned: `README.md`, "CRITICAL" |
+| `score` | with the bundle in `$WORK/rescore/`: CometKiwi-22 over only the 21,628,292 pairs the old scored file lacks, merged with 16,646,992 reused scores (~10 GPU-h on one 5090, ~2.5 h on four); without it, all 38.3M | your HF login (below) |
+| `provenance` | with the bundle: the Mac's e01 labels (exact match 99.40%). Without it: statmt constituents → `e01` hash-join | row count checked against the corpus |
 | `controls` | E0.3 sets (dedup-matched, 931K-scale) + run matrix | |
 | `stage1` | 4-run LR sweep, one GPU per run, resumable | |
 | `stage2 <lr>` | 3 conditions × 3 seeds at the chosen `lr_scale` | |
@@ -49,6 +49,10 @@ credentials):
 
 1. Rent the box and give access. Suggested: **4× RTX 5090, ≥ 150 GB disk**. Scoring
    parallelises across GPUs, and `run_parallel.py` runs one fine-tuning run per GPU.
+   The 82 MB bundle from the Mac (`~/mt_local/rebuild/rental_bundle.tar.gz`, sha256
+   `e9e096c0…`: `plan.json`, `missing_rows.npy`, `reuse_scores.npy`,
+   `provenance_{labels.npy,report.json}`) is copied to `$WORK/rescore/` and unpacked
+   there before `score`. Claude can do the copy once it has ssh access.
 2. Before `score`: accept the terms of the gated
    [Unbabel/wmt22-cometkiwi-da](https://huggingface.co/Unbabel/wmt22-cometkiwi-da)
    (auto-approved, CC-BY-NC-SA-4.0), then on the box run `hf auth login` yourself.
@@ -57,9 +61,11 @@ credentials):
    decline monotonically from the first eval — not by preference.
 
 Honest status: the offline parts of this path (`provenance`, run parallelism,
-collection, the gate, the patch-state logic) are exercised by `tests/regress.py`
-against fixtures. `env`, `accept`, `data`, `score` and real training have **not
-yet run on a GPU box**. Expect the first run to surface environment issues.
+collection, the gate, the patch-state logic, `rescore_plan.py`, `rebuild_corpus.py`) are
+exercised by `tests/regress.py` against fixtures. On a rented RTX 5090 (2026-09-13),
+`env` and `accept` ran (test BLEU 35.31, exact) and the patched trainer passed a smoke
+run. The corpus rebuild, the rescore plan and e01 ran on the Mac. The rental `data`
+stage and `score`, `controls` and real training have **not yet run on a GPU box**.
 
 ## 0. (Optional) Inventory the training machine, then pull what is irreplaceable (no GPU)
 
