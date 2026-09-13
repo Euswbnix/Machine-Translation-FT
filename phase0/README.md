@@ -46,7 +46,16 @@ weight comparison.
    80,000 of the *v1.0* checkpoint at LR 3.13e-4, has no evaluations, and was
    written 2026-06-09 — after the paper. The paper's Base FT stdout was not
    captured; `final.pt` (step 111,000, best BLEU 29.8259 = v1.1's) is the record.
-4. **Per-seed translations were never saved.** `outputs/` holds only two files
+4. **The starting point reproduces on a fresh rented GPU.** On an RTX 5090 (vast.ai,
+   torch 2.11.0+cu128), `phase0/hf_to_ckpt.py` rebuilt Base v1.1 from
+   `euswbnix/transformer-wmt14-enfr-base` @ `8a58dcc4205991a5…` (strict load, 60.5M
+   parameters, global_step 105,000; weights sha256 `4d7eb2bbfecd31cc…`); the release's
+   SentencePiece model is byte-identical to the original machine's
+   `spm_enfr_v1_fixed.model` (`d1c10ea80fb95984…`); and `scripts/eval_bleu.py` on
+   newstest2014 (beam 5, lp 1.0, sacrebleu 13a, 3,003 sentences, 41 s) gives
+   **35.31 — exactly the released value.** Requires the training repo root on
+   PYTHONPATH (a fresh clone is not pip-installed).
+5. **Per-seed translations were never saved.** `outputs/` holds only two files
    from 2026-04-19. Regenerating per-sentence outputs for the old runs needs the
    `best.pt` files, which exist only on that machine (≈36 GB; not pulled).
 
