@@ -24,6 +24,78 @@ Plan: `../WMT2027_PLAN.md`
 
 ---
 
+## Findings from the original training machine (2026-09-12)
+
+Pulled read-only from the Linux box; mirror at `~/mt_fetch/` (not committed —
+data and logs). Nothing below required loading or re-running a model except the
+weight comparison.
+
+### Settled
+
+1. **The public HF releases ARE the paper's fine-tuning start, tensor for tensor.**
+   sha256 over every tensor of `checkpoints/base_enfr_v1_redo/averaged.pt` and of
+   `euswbnix/transformer-wmt14-enfr-base/pytorch_model.bin` are identical
+   (`120aca446121d003…`); likewise Big v1.1 (`04ed81785ad86709…`). E0.3 on a
+   rented box from HF weights is running the paper's exact starting point.
+2. **The fine-tuning LR was continuous, confirmed from the checkpoints' own
+   records.** `sft_base_enfr/final.pt` history: LR 2.728e-4 at pretraining step
+   105,000, 2.653e-4 at FT step 111,000 (= 512^-0.5 · 27750^-0.5 exactly). Big:
+   2.046e-4 → 2.017e-4. The retracted "restart LR" framing is now disproven by data,
+   not only by code reading.
+3. **`logs/sft_base.log` is not the paper's run.** It records a resume from step
+   80,000 of the *v1.0* checkpoint at LR 3.13e-4, has no evaluations, and was
+   written 2026-06-09 — after the paper. The paper's Base FT stdout was not
+   captured; `final.pt` (step 111,000, best BLEU 29.8259 = v1.1's) is the record.
+4. **Per-seed translations were never saved.** `outputs/` holds only two files
+   from 2026-04-19. Regenerating per-sentence outputs for the old runs needs the
+   `best.pt` files, which exist only on that machine (≈36 GB; not pulled).
+
+### New confound in the published 2×2 table — to verify at matched steps
+
+The 2×2 means come from `results/summary.json` (the Base-capped cell reproduces the
+paper's "35.11 ± 0.20" exactly). Each seed's number is the `best.pt` of its own
+run, and **runs within a cell were trained to very different lengths.** The seed-42
+runs are the originals; seeds 1–3 were re-runs with raised `max_steps` (the
+uncommitted config edits on the box: `base_en_fr_v1_redo` 100K→150K,
+`base_en_de` 100K→300K, `big_en_de` 300K→800K), and several runs of either kind
+stopped early or were interrupted.
+
+**In 5 of 6 cells the shortest run is also the lowest-BLEU run.** The shortest
+run is not always seed 42 (Big capped: s3 at 181K; Base en-de: s1 at 168K), so
+"drop seed 42" is the wrong cut — an earlier draft of this note used it and it
+misattributes the effect.
+
+| cell | best.pt steps | spread | shortest run | its BLEU | lowest BLEU | same run? | sd (4 runs) | sd (without shortest) |
+|---|---|---|---|---|---|---|---|---|
+| Base capped | 120,000–149,000 | 19% | s42 @ 120,000 | 34.84 | s42 (34.84) | yes | 0.20 | 0.10 |
+| Big capped | 181,000–274,000 | 34% | s3 @ 181,000 | 34.18 | s3 (34.18) | yes | 0.62 | 0.27 |
+| Base full-stream | 537,000–579,000 | 7% | s42 @ 537,000 | 33.45 | s3 (33.24) | no | 0.19 | 0.24 |
+| Big full-stream | 374,000–775,000 | 52% | s42 @ 374,000 | 32.55 | s42 (32.55) | yes | 0.77 | 0.38 |
+| Base en-de | 168,000–300,000 | 44% | s1 @ 168,000 | 23.44 | s1 (23.44) | yes | 0.26 | 0.21 |
+| Big en-de | 458,000–784,000 | 42% | s42 @ 458,000 | 22.18 | s42 (22.18) | yes | 0.39 | 0.13 |
+
+Big / Base seed-sd ratio (the paper's "Big has 3–4× higher seed variance"):
+
+| regime | all 4 runs | without each cell's shortest run |
+|---|---|---|
+| capped | 3.1× | 2.7× |
+| full-stream | 4.0× | 1.6× |
+| en-de | 1.5× | 0.6× |
+
+**Status: a lead, not a conclusion.** Removing the shortest run is also post hoc,
+and sds from 3 values are noisy. Removing one run moves the full-stream ratio from
+4.0× to 1.6× and the en-de ratio from 1.5× to 0.6×, which is itself the point: this
+variance statistic is not stable enough to carry a headline. (Removing seed 42
+instead, the cut an earlier draft used, would even raise the capped ratio to 7.5×.) What the data does establish is that the
+paper's between-seed variance mixes seed noise with run-length differences of up to
+~50%, and that `best.pt` selection over runs of different length adds a
+winner's-curse term that also grows with length.
+
+The clean test needs no GPU: `~/mt_fetch/extracted/mt_histories.json.gz` holds
+every run's in-training validation BLEU at every eval step, so runs can be compared
+at a common step. Not yet run. Either way this reinforces PROTOCOL.md's
+run-to-overshoot design and its per-cell reporting of run length.
+
 ## E0.2 — FINDING: the reported token budgets are far too high, and EVERY cell is under-trained
 
 > **Corrected 2026-09-04** after an adversarial audit found a second, independent
