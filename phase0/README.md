@@ -96,6 +96,35 @@ every run's in-training validation BLEU at every eval step, so runs can be compa
 at a common step. Not yet run. Either way this reinforces PROTOCOL.md's
 run-to-overshoot design and its per-cell reporting of run length.
 
+### Matched-step check (descriptive, 2026-09-12)
+
+From the pulled checkpoint histories: for each cell, the common step C is the last
+step every run reached; "best ≤ C" is each run's best in-training validation BLEU
+up to C, i.e. the same `best.pt` selection the paper used, but at equal length.
+
+| cell | common step C | seed sd, best overall (paper-like) | seed sd, best ≤ C |
+|---|---|---|---|
+| Base capped | 122,000 | 0.27 | 0.14 |
+| Big capped | 211,000 | 0.28 | 0.11 |
+| Base full-stream | 590,000 | 0.13 | 0.13 |
+| Big full-stream | 416,000 | 0.47 | 0.15 |
+| Base en-de | 208,000 | 0.18 | 0.05 |
+| Big en-de | 458,000 | 0.46 | 0.11 |
+
+| Big / Base seed-sd ratio | best overall | best ≤ C |
+|---|---|---|
+| capped | 1.0× | 0.8× |
+| full-stream | 3.5× | 1.1× |
+| en-de | 2.5× | 2.2× |
+
+Reading: in full-stream, Big's excess seed variance **mostly disappears once runs
+are compared at equal length**; in en-de part of it remains; in capped there is
+little excess on this metric either way. Caveats, all material: this is in-training
+validation BLEU on newstest2013, not the paper's newstest2014 test BLEU; each sd is
+over 4 values; and truncating at C compares every run at the shortest run's length,
+which is short of convergence for some. It supports treating the paper's variance
+headline as unreliable; it is not a replacement estimate.
+
 ## E0.2 — FINDING: the reported token budgets are far too high, and EVERY cell is under-trained
 
 > **Corrected 2026-09-04** after an adversarial audit found a second, independent
