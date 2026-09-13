@@ -224,6 +224,23 @@ def suite_e01_e03(d: Path):
     wrong = sum(1 for i in range(0, n, 7) if rep["sources"][labels[i]] != text2src[pairs[i]])
     check("e01 labels agree with independent text->source lookup", wrong == 0, f"{wrong} mislabelled")
 
+    # REGRESSION for the universal-newline bug. The reference corpus has a carriage return
+    # inside one English line; the "cleaned" corpus is what a universal-newline cleaner
+    # produced from it (the CR became a line break, so English is ahead by one line from
+    # there on). Correct provenance must match only the first pair. A reader using
+    # universal newlines splits the reference identically and falsely matches all four.
+    cr = d / "cr"; cr.mkdir()
+    (cr / "ref.en").write_bytes(b"x one\np two\rq two\nx three\nx four\n")
+    (cr / "ref.fr").write_bytes(b"X UN\nP DEUX\nX TROIS\nX QUATRE\n")
+    (cr / "clean.en").write_bytes(b"x one\np two\nq two\nx three\n")
+    (cr / "clean.fr").write_bytes(b"X UN\nP DEUX\nX TROIS\nX QUATRE\n")
+    rc, o = run([ROOT / "phase0/e01_provenance.py", "--clean-src", cr / "clean.en", "--clean-tgt", cr / "clean.fr",
+                 "--corpus", f"nc:{cr / 'ref.en'}:{cr / 'ref.fr'}", "--top-k", "1", "--out", cr / "prov"])
+    crep = json.load(open(cr / "prov_report.json")) if (cr / "prov_report.json").exists() else {}
+    clab = np.load(cr / "prov_labels.npy").tolist() if (cr / "prov_labels.npy").exists() else []
+    check("e01 does not reproduce a CR line-shift on the reference side (1 of 4 pairs match, not 4)",
+          crep.get("match_rate") == 0.25 and clab == [0, 255, 255, 255], f"rc={rc} rate={crep.get('match_rate')} labels={clab}")
+
     # e01_compare_labels: recovery vs relabelling, on hand-built label arrays
     rep_sources = rep["sources"]
     base = np.array([0, 1, 2, 255, 255, 255, 3, 4], dtype=np.uint8)

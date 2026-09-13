@@ -65,6 +65,13 @@ NORMALIZERS = {
 }
 
 
+# Every corpus file is opened with newline="\n". Python's default text mode uses
+# universal newlines, which treats a carriage return INSIDE a line as a line break.
+# That is exactly the bug that misaligned the v2 en-fr and en-de training corpora
+# (clean_data_enfr.py read train.en/train.fr that way). The first version of this
+# script read the statmt constituents the same way, so it split news-commentary lines
+# identically, reproduced the misalignment on the reference side, and reported the
+# shifted pairs as exact matches -- placing the onset ~99k rows too late.
 def h64(s: str, t: str) -> np.uint64:
     d = hashlib.blake2b(f"{s}\x00{t}".encode(), digest_size=8).digest()
     return np.uint64(int.from_bytes(d, "big"))
@@ -72,8 +79,8 @@ def h64(s: str, t: str) -> np.uint64:
 
 def hash_corpus(src_path: str, tgt_path: str, norm) -> np.ndarray:
     out = []
-    with open(src_path, encoding="utf-8", errors="replace") as fs, \
-         open(tgt_path, encoding="utf-8", errors="replace") as ft:
+    with open(src_path, encoding="utf-8", errors="replace", newline="\n") as fs, \
+         open(tgt_path, encoding="utf-8", errors="replace", newline="\n") as ft:
         for s, t in zip(fs, ft):
             a, b = norm(s, t)
             out.append(h64(a, b))
@@ -153,8 +160,8 @@ def main() -> int:
     # ---- 2. look up the cleaned corpus ---------------------------------
     UNMATCHED = np.uint8(255)
     prov, n = [], 0
-    with open(args.clean_src, encoding="utf-8", errors="replace") as fs, \
-         open(args.clean_tgt, encoding="utf-8", errors="replace") as ft:
+    with open(args.clean_src, encoding="utf-8", errors="replace", newline="\n") as fs, \
+         open(args.clean_tgt, encoding="utf-8", errors="replace", newline="\n") as ft:
         for s, t in zip(fs, ft):
             a, b = norm(s, t)
             k = h64(a, b)
@@ -190,7 +197,7 @@ def main() -> int:
 
     if args.qe_scores:
         scores = np.fromiter(
-            (float(l.split("\t", 1)[0]) for l in open(args.qe_scores, encoding="utf-8")),
+            (float(l.split("\t", 1)[0]) for l in open(args.qe_scores, encoding="utf-8", newline="\n")),
             dtype=np.float32)
         if len(scores) != len(prov):
             print(f"\n  ⚠️  QE rows ({len(scores):,}) != corpus rows ({len(prov):,}); "

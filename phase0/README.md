@@ -24,6 +24,106 @@ Plan: `../WMT2027_PLAN.md`
 
 ---
 
+## CRITICAL (2026-09-13): the v2 en-fr and en-de training corpora are misaligned by a pipeline bug
+
+**Status: verified.** Found while running E0.1; then attacked by nine independent
+refutation agents (one per claim plus an alternative-explanations critic and a
+completeness critic). No claim was refuted; the corrections they made are
+incorporated below.
+
+### What is wrong
+
+- **v2 en-fr (`data/train.clean.{en,fr}`, 30,129,500 rows, the full-stream corpus).**
+  From 1-based line **16,575,777** to the end, English line *i* is paired with a French
+  line that is not its translation. Up to about line 16,674,600 (inside
+  news-commentary) the offset wanders and occasionally returns to zero; from there to
+  the end it is a steady **+28 source lines** against the statmt originals.
+  About **13.55M rows (45.0%)** are misaligned.
+- **en-de (`data_ende/train.clean.{en,de}`, 4,174,104 rows).** From 1-based line
+  **4,060,956** to the end: **113,149 rows (2.71%)**, offset drifting to about 100 lines.
+- **v1.1 en-fr capped (`data_enfr_v1`, 9,312,233 rows): aligned.** 99.66% of its rows
+  are byte-identical statmt pairs and a full offset scan finds k=0 everywhere. Not yet
+  excluded: isolated 1-2 row slips from pairs carrying a CR on *both* sides.
+
+### Why
+
+1. `download_wmt_enfr.py` / `download_wmt_ende.py` write each pair after `strip()` and
+   `replace("\n", " ")`, so a carriage return **inside** a line survives into
+   `train.en` / `train.fr`. The HF wmt14 fr-en stream has 244 English and 225 French
+   pairs with an internal CR; de-en has 327 / 265.
+2. `clean_data_enfr.py` / `clean_data_ende.py` read those files with `open()` in default
+   text mode. **Universal newlines treat an internal CR as a line break**, so one side
+   yields extra lines, `zip()` pairs line *i* with line *i+k*, and every later kept pair
+   is shifted. The first event is a news-commentary sentence, "Encouraging weak
+   countries … hope of a `\r` de facto`\r` bail-out", with two CRs in the English.
+3. The QE scorer and the trainer (`dataset.py` builds `.cached_256.npz` once and reuses
+   it) read the already-shifted, now CR-free files, so nothing downstream can see it.
+   Cleaning ran per-pair length filters *after* the shift, so the damage cannot be
+   repaired by shifting one file back.
+
+### Evidence (independent lines)
+
+| check | aligned region | misaligned region |
+|---|---|---|
+| exact (src,tgt) match to statmt originals | 97-100% per 1M rows | ~0% |
+| CometKiwi-22 median | 0.875 | 0.402 (94.5% < 0.6, 0.0% > 0.85) |
+| digit agreement across sides | 92% | 10% (statmt giga-fren's *own* pairs: 60-80%) |
+| cache src/tgt length correlation | 0.96 | 0.54-0.66 |
+| true translation location | row *i* | row *i*+28 in 286-300 of 300 rows per window |
+| CR offset simulated from local statmt NC files | — | +28 fr-en, +147 de-en; matches the HF-stream scan exactly |
+
+Fingerprints: orphan fragments with a leading space sit exactly where the CRs were
+("␣bail-out would be very costly…" at v2 line 16,575,777; the English cut at "hope of
+a" at en-de line 4,060,956). The "giga-fren is just noisy" alternative is refuted: every
+sampled post-onset English and French line exists verbatim in statmt giga-fren, but
+never next to its partner.
+
+**This repo had the same bug.** The first `e01_provenance.py` read the statmt files in
+text mode, split news-commentary identically, and reported shifted pairs as exact
+matches, placing the onset ~99k rows too late (16,674,601). Fixed: every corpus read
+uses `newline="\n"`; a regression test builds a CR-bearing reference corpus and requires
+1 of 4 pairs to match, not 4 (mutation-tested).
+
+### What this invalidates or weakens in the rejected paper
+
+| claim | status |
+|---|---|
+| full-stream Base/Big en-fr cells (tab:two_by_two, seed tables, seed_variability figure) | **trained on a ~45% misaligned corpus**: all 8 runs, confirmed from configs, file mtimes and decoded cache pairs |
+| "corpus expansion hurts" (−1.5 BLEU regime drop, ANOVA, Welch tests) | the regime axis is really *clean* vs *55% clean + 45% random pairs* |
+| full-stream Big/Base variance 4.0× (F(3,3)=15.77, p=0.049) | rests on the corrupted runs |
+| QE source composition (UN ~1.7×, Giga-fren eliminated) | largely QE rejecting misaligned rows; over the aligned prefix UN enrichment is ~1.13× |
+| keep-rate 93% vs 74% as evidence of source noise | inflated: the length filters rejected shifted pairs |
+| en-de Big < Base (p=0.007) | confounded by a 2.7% misaligned news-commentary tail |
+| capped cells, v1.1 Base-vs-Big comparison | **unaffected** |
+| QE-filtered fine-tuning result | **essentially unaffected**: starting checkpoints are v1.1; ≤215 of the top-1M rows (0.02%) come from the misaligned region |
+| dev/test sets | **unaffected** (0 CRs, correct line counts) |
+
+Separately surfaced: the two regimes also use **different SentencePiece models**
+(`spm_enfr` vs `spm_enfr_v1_fixed`), an extra confound on the regime axis.
+
+### What this does to Phase 0 / the WMT 2027 plan
+
+- **E0.3 as built is uninterpretable.** From the whole v2 pool, `ft_random` would be ~47%
+  misaligned and `ft_bottom` ~93%, so the gate would compare an aligned set against
+  random pairs. The builder would also refuse to run (exact match rate 0.55 < 0.95).
+- The e01 provenance labels must be regenerated with the fixed reader.
+- The 30M CometKiwi-scored corpus and the planned provenance+QE index are ~45% invalid.
+  Rows before the onset should be byte-identical after a correct rebuild, so only the
+  ~13.5M changed rows need re-scoring (about 6 GPU-hours on one RTX 5090).
+- The matched-step seed-variance check below uses the corrupted full-stream runs; its
+  full-stream rows are not evidence.
+- E0.2's aligned-token accounting: about 44% of full-stream target tokens carry no
+  parallel signal.
+
+### Required before anything downstream
+
+1. Make the pipeline CR-safe (downloader replaces `\r`; cleaners read with
+   `newline="\n"`), re-clean v2 and en-de from raw, and confirm the rows before each
+   onset are byte-identical to the current files.
+2. Re-score only the changed v2 rows with CometKiwi-22.
+3. Re-run `e01_provenance.py` (fixed) and require an exact match rate ≥ 95%.
+4. Rebuild the E0.3 controls from the corrected corpus.
+
 ## Findings from the original training machine (2026-09-12)
 
 Pulled read-only from the Linux box; mirror at `~/mt_fetch/` (not committed —
@@ -106,6 +206,10 @@ at a common step. Not yet run. Either way this reinforces PROTOCOL.md's
 run-to-overshoot design and its per-cell reporting of run length.
 
 ### Matched-step check (descriptive, 2026-09-12)
+
+> **Warning (2026-09-13):** the full-stream en-fr runs in this table were trained on the
+> misaligned v2 corpus (see the CRITICAL section above), and the en-de runs on a corpus
+> with a 2.7% misaligned tail. Only the capped rows are clean evidence.
 
 From the pulled checkpoint histories: for each cell, the common step C is the last
 step every run reached; "best ≤ C" is each run's best in-training validation BLEU

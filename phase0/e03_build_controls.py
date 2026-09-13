@@ -93,7 +93,7 @@ def main() -> int:
 
     print("reading scored corpus…")
     scores, src, tgt = [], [], []
-    with open(args.qe_scores, encoding="utf-8") as f:
+    with open(args.qe_scores, encoding="utf-8", newline="\n") as f:  # never universal newlines on corpus text
         for line in f:
             parts = line.rstrip("\n").split("\t")
             if len(parts) < 3:
