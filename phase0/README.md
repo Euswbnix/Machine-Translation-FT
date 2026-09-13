@@ -42,8 +42,9 @@ incorporated below.
 - **en-de (`data_ende/train.clean.{en,de}`, 4,174,104 rows).** From 1-based line
   **4,060,956** to the end: **113,149 rows (2.71%)**, offset drifting to about 100 lines.
 - **v1.1 en-fr capped (`data_enfr_v1`, 9,312,233 rows): aligned.** 99.66% of its rows
-  are byte-identical statmt pairs and a full offset scan finds k=0 everywhere. Not yet
-  excluded: isolated 1-2 row slips from pairs carrying a CR on *both* sides.
+  are byte-identical statmt pairs and a full offset scan finds k=0 everywhere. Isolated
+  slips are also excluded: its first 10M raw pairs contain no CR, and the CR-safe rebuild
+  is byte-identical to the published file (see "Rebuild results" below).
 
 ### Why
 
@@ -108,8 +109,11 @@ Separately surfaced: the two regimes also use **different SentencePiece models**
   random pairs. The builder would also refuse to run (exact match rate 0.55 < 0.95).
 - The e01 provenance labels must be regenerated with the fixed reader.
 - The 30M CometKiwi-scored corpus and the planned provenance+QE index are ~45% invalid.
-  Rows before the onset should be byte-identical after a correct rebuild, so only the
-  ~13.5M changed rows need re-scoring (about 6 GPU-hours on one RTX 5090).
+  Rows before the first CR-bearing pair are byte-identical after the rebuild, so only
+  pairs absent from the old scored file need scoring: **21,628,292** of 38,275,284
+  (about 10 GPU-hours on one RTX 5090 at the paper's 13.8 h / 30.1M rate). The earlier
+  "~13.5M rows, 6 GPU-hours" estimate predates the rebuild, which recovers ~8.1M
+  aligned pairs the length filters had rejected.
 - The matched-step seed-variance check below uses the corrupted full-stream runs; its
   full-stream rows are not evidence.
 - E0.2's aligned-token accounting: about 44% of full-stream target tokens carry no
@@ -131,6 +135,50 @@ Separately surfaced: the two regimes also use **different SentencePiece models**
    sha256 differs from the plan's).
 3. Re-run `e01_provenance.py` (fixed) and require an exact match rate ≥ 95%.
 4. Rebuild the E0.3 controls from the corrected corpus.
+
+### Rebuild results (2026-09-13, Mac, `rebuild_corpus.py`)
+
+Source: WMT14 parquet at `wmt/wmt14@b199e406`. **Legacy mode reproduces all three
+published corpora byte for byte** (sha256), so the rebuild starts from exactly the rows
+the paper used, and fixed mode differs from them only through CR handling.
+
+| corpus | published (legacy rebuild, sha256 identical) | fixed (CR-safe) | first differing line |
+|---|---|---|---|
+| v2 en-fr full stream | 30,129,500 rows; src runs 28 lines ahead at EOF; `bad_ratio` drops 9,142,232 | **38,275,284** rows; offset 0; `bad_ratio` 1,067,052 | 16,573,212 |
+| v1.1 (first 10M pairs) | 9,312,233 | identical to legacy (no CRs in range) | none |
+| en-de | 4,174,104; offset +147 | **4,238,227**; offset 0 | 4,058,219 |
+
+- The first differing line is a **CR merge, not a shift**, on both sides of both corpora
+  (checked mechanically: the published line's text is contained in the fixed line). Example:
+  the raw pair `'Work schedule.\r Design labor time…' / 'Horaires de travail.\r Planifier…'`
+  has one CR per side. The old cleaner split both sides evenly, dropped the 2-token headings
+  as too short and kept the rest aligned. Differences can therefore start a few thousand
+  lines before the misalignment onset measured by e01 (16,575,777 / 4,060,956).
+- Keep rate for v2 goes from 73.8% to **93.7%** of 40,836,715 raw pairs.
+- **e01 on the fixed v2: exact match rate 99.40%** (38,045,508 / 38,275,284; was 55%).
+  Cross-source duplicate keys: 119,858 (label arbitrary). Source composition:
+
+  | source | rows | share |
+  |---|---|---|
+  | giga-fren | 21,226,420 | 55.46% |
+  | un | 11,598,490 | 30.30% |
+  | commoncrawl | 3,055,442 | 7.98% |
+  | europarl | 1,930,749 | 5.04% |
+  | news-commentary | 234,407 | 0.61% |
+  | unmatched | 229,776 | 0.60% |
+
+  giga-fren comes last in the HF stream, entirely after the onset, so the paper's
+  full-stream corpus contained almost no correctly paired giga-fren (old run: 4,355
+  exact matches). **The corrected full-stream corpus is majority giga-fren.** Any
+  regime or QE-composition claim has to be re-derived on it, not patched.
+- Re-score plan: 16,646,992 rows keep their old CometKiwi score (every row before
+  16,573,212, plus ~74k identical pairs after it); 21,628,292 need scoring. A new
+  top-1M QE set may differ from the paper's, because the recovered giga-fren pairs were
+  never scored.
+
+Artifacts (Mac, not committed): `~/mt_local/rebuild/{v2,v1,ende}_{legacy,fixed}/`,
+`~/mt_local/rebuild/v2_rescore/` (`plan.json`, `missing_rows.npy`, `reuse_scores.npy`),
+`~/mt_local/rebuild/prov_v2_fixed/provenance_{labels.npy,report.json}`.
 
 ## Findings from the original training machine (2026-09-12)
 

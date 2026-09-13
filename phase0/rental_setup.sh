@@ -9,6 +9,8 @@
 #                                     (made on the Mac by rescore_plan.py plan), only the pairs
 #                                     the old scored file lacks are scored, then merged
 #   bash rental_setup.sh provenance   statmt constituents + e01 hash-join              (CPU; can run during score)
+#                                     with $WORK/rescore/provenance_{labels.npy,report.json} present
+#                                     (e01 run on the Mac over the same sha-checked corpus), those are used
 #   bash rental_setup.sh controls     E0.3 control sets + run matrix                   (CPU)
 #   bash rental_setup.sh stage1       4-run LR sweep, one GPU per run                   (GPUs)
 #   bash rental_setup.sh stage2 <lr>  3 conditions x 3 seeds at the chosen lr_scale     (GPUs)
@@ -172,6 +174,16 @@ stage_provenance() {
   # expansion under set -u), so this stage can be exercised offline on a Mac.
   cd "$MT"
   [ -s data_enfr_v2/train.clean.en ] || die "run 'data' first"
+  if [ -s "$WORK/rescore/provenance_labels.npy" ] && [ -s "$WORK/rescore/provenance_report.json" ]; then
+    # Row order is fixed by the corpus, and 'data' already required its sha256 to equal
+    # the Mac rebuild's, so labels computed there index these exact rows.
+    [ "$(python -c 'import numpy as n,sys; print(len(n.load(sys.argv[1], mmap_mode="r")))' "$WORK/rescore/provenance_labels.npy")" \
+      = "$(wc -l < data_enfr_v2/train.clean.en | tr -d ' ')" ] || die "uploaded provenance labels do not match the corpus row count"
+    cp "$WORK/rescore/provenance_labels.npy" "$SFT/phase0/provenance_labels.npy"
+    cp "$WORK/rescore/provenance_report.json" "$SFT/phase0/provenance_report.json"
+    echo "using uploaded provenance labels from the Mac (match rate $(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["match_rate"])' "$WORK/rescore/provenance_report.json"))"
+    return 0
+  fi
   local R="$WORK/statmt" lab d f pat en fr n_en n_fr
   mkdir -p "$R"
   local args=()
