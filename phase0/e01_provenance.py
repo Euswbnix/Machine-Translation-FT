@@ -90,12 +90,11 @@ def main() -> int:
     ap.add_argument("--top-k", type=int, default=1_000_000,
                     help="reproduce the paper's top-K QE selection for the cross-tab")
     ap.add_argument("--norm", choices=list(NORMALIZERS), default="exact")
-    ap.add_argument("--compare-norms", action="store_true",
-                    help="also run the looser normalizers and report, for each, how "
-                         "many rows are NEWLY matched and how many CHANGE label. A "
-                         "looser normalizer that mostly changes existing labels is "
-                         "merging distinct lines, not recovering lost ones — that is "
-                         "a reason to reject it, not to adopt it.")
+    # Escalating --norm maximises the match rate, which is also an ambiguity-maximising
+    # search. Never adopt a looser normalizer on its match rate alone: rerun with a new
+    # --out and compare the two runs with phase0/e01_compare_labels.py, which reports
+    # rows newly matched versus rows whose label changed. (An earlier version declared a
+    # --compare-norms flag here that was never implemented.)
     ap.add_argument("--out", default="phase0/provenance")
     args = ap.parse_args()
 

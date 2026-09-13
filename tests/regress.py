@@ -224,6 +224,24 @@ def suite_e01_e03(d: Path):
     wrong = sum(1 for i in range(0, n, 7) if rep["sources"][labels[i]] != text2src[pairs[i]])
     check("e01 labels agree with independent text->source lookup", wrong == 0, f"{wrong} mislabelled")
 
+    # e01_compare_labels: recovery vs relabelling, on hand-built label arrays
+    rep_sources = rep["sources"]
+    base = np.array([0, 1, 2, 255, 255, 255, 3, 4], dtype=np.uint8)
+    good = np.array([0, 1, 2, 0, 255, 2, 3, 4], dtype=np.uint8)          # 2 recovered, 0 relabelled
+    bad = np.array([1, 1, 2, 0, 255, 2, 3, 4], dtype=np.uint8)           # 2 recovered, 1 relabelled
+    for tag, arr in (("cmp_a", base), ("cmp_good", good), ("cmp_bad", bad)):
+        np.save(d / f"{tag}_labels.npy", arr)
+        json.dump({"sources": rep_sources, "normalizer": tag}, open(d / f"{tag}_report.json", "w"))
+    rc, o = run([ROOT / "phase0/e01_compare_labels.py", "--a", d / "cmp_a", "--b", d / "cmp_good"])
+    check("compare_labels: pure recovery -> ADOPT (exit 0)",
+          rc == 0 and "newly matched: 2" in o and "relabelled:    0" in o, o[-200:])
+    rc, o = run([ROOT / "phase0/e01_compare_labels.py", "--a", d / "cmp_a", "--b", d / "cmp_bad"])
+    check("compare_labels: a relabelled row -> REVIEW (exit 1)",
+          rc == 1 and "relabelled:    1" in o and "REVIEW" in o, o[-200:])
+    rc, o = run([ROOT / "phase0/e01_provenance.py", "--help"])
+    check("e01 no longer accepts an unimplemented --compare-norms flag (checked via --help, not grep)",
+          rc == 0 and "--compare-norms" not in o, o[-200:])
+
     ctrl = d / "ctrl"
     rc, out = run([ROOT / "phase0/e03_build_controls.py", "--qe-scores", d / "scores.tsv",
                    "--provenance", d / "prov_labels.npy", "--out-dir", ctrl,
