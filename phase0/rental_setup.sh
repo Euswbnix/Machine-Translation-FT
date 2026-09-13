@@ -83,6 +83,8 @@ stage_accept() {
   # the SFT config points spm_model at data_enfr_v1/spm_enfr_v1_fixed.model
   cp ckpt_hf/enfr_base_v1.1_averaged.sentencepiece.model data_enfr_v1/spm_enfr_v1_fixed.model
   log "acceptance: reproduce the released test BLEU before any fine-tuning"
+  # scripts/*.py import src.*; a fresh clone is not pip-installed (the original box was)
+  export PYTHONPATH="$MT${PYTHONPATH:+:$PYTHONPATH}"
   python scripts/eval_bleu.py --ckpt ckpt_hf/enfr_base_v1.1_averaged.pt \
       --config "$SFT/configs/sft_base_enfr.yaml" \
       --src data_enfr_v1/test.en --ref data_enfr_v1/test.fr \

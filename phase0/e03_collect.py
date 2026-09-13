@@ -150,7 +150,12 @@ def main() -> int:
         dev = devices.get()
         try:
             src, ref = tests[ts]
-            env = {**os.environ, "CUDA_VISIBLE_DEVICES": str(dev)}
+            # scripts/eval_bleu.py imports `src.*`, and `python scripts/x.py` puts only
+            # scripts/ on sys.path. The original training box had the repo pip-installed
+            # (an egg-info and an untracked pyproject.toml); a fresh clone does not, so
+            # without this every evaluation dies with "No module named 'src'".
+            env = {**os.environ, "CUDA_VISIBLE_DEVICES": str(dev),
+                   "PYTHONPATH": os.pathsep.join(filter(None, [str(mt), os.environ.get("PYTHONPATH")]))}
             p = subprocess.run([sys.executable, a.eval_script, "--ckpt", str(ckpt),
                                 "--config", str(cfg_path), "--src", str(src), "--ref", str(ref),
                                 "--beam", "5", "--length-penalty", "1.0"],

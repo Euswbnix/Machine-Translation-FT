@@ -470,7 +470,12 @@ def suite_collect(d: Path):
     (mt / "ckpt_hf/base.pt").write_text("w")
     (sf / "configs/sft_base_enfr.yaml").write_text('{"model": {}}')
     counter = d / "col_count"; counter.write_text("")
+    # a real `src` package, imported by the fake evaluator exactly as eval_bleu.py does,
+    # so a collector that forgets PYTHONPATH fails here instead of on the GPU box
+    (mt / "src").mkdir(exist_ok=True)
+    (mt / "src/__init__.py").write_text("")
     (mt / "scripts/fake_eval.py").write_text(
+        "import src  # noqa: F401  -- fails unless the repo root is on PYTHONPATH\n"
         "import argparse, hashlib, os\n"
         "ap = argparse.ArgumentParser()\n"
         "for f in ('--ckpt','--config','--src','--ref','--beam','--length-penalty'): ap.add_argument(f)\n"
