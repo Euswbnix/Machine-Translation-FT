@@ -63,6 +63,17 @@ yet run on a GPU box**. Expect the first run to surface environment issues.
 
 ## 0. (Optional) Inventory the training machine, then pull what is irreplaceable (no GPU)
 
+> **Done 2026-09-12.** Everything Phase 0 needs was pulled read-only and verified
+> (sizes, line counts, sha256) into `~/mt_fetch/` on the Mac, mirroring the box's
+> absolute paths: the paper's `v2_scored.tsv` (30,129,500 rows, sha256 match), the
+> v2 / v1.1 / en-de cleaned corpora (30,129,500 / 9,312,233 / 4,174,104 rows), all
+> tokenizer caches and SPM models, dev/test sets, `results/`, training reports, SFT
+> logs, tensorboard events, swanlog, and every checkpoint's `history` + `config`
+> (`~/mt_fetch/extracted/mt_histories.json.gz`). Not pulled, deliberately: checkpoint
+> weights (~118 GB) — only needed to re-decode old runs. Findings are in
+> `phase0/README.md`, "Findings from the original training machine". The sections
+> below are kept for reference.
+
 **Nothing needed for Phase 0 is on the Mac** (checked 2026-09-12): no data
 directories, no checkpoints, no tokenizer caches, no QE scores, no training logs.
 They live on the Linux side of the training machine.
@@ -108,6 +119,12 @@ If the inventory shows the code on the box has uncommitted changes or unpushed
 commits, those are what actually ran — capture them before anything else.
 
 ## 1. Confirm the fine-tuning LR from the log (seconds, no GPU)
+
+> **Answered 2026-09-12, from the checkpoints rather than the log.** The paper's
+> Base FT stdout was not captured (`logs/sft_base.log` is a later v1.0 re-run), but
+> `sft_base_enfr/final.pt` records its own LR: 2.728e-4 at step 105,000 continuing to
+> 2.653e-4 at 111,000; Big 2.046e-4 → 2.017e-4 (and `sft_big.log` prints
+> `LR = 2.05e-04`). LR was continuous, as derived.
 
 `trainer.py:580-581` prints the true LR at checkpoint load:
 
