@@ -38,8 +38,9 @@ BRANCH="${BRANCH:-wmt2027-phase0}"
 # "CRITICAL (2026-09-13)". 'data' builds the CR-safe corpus instead and checks it against
 # the sha256 of the same rebuild on the Mac, so both boxes hold byte-identical data.
 HF_WMT14_REV=b199e406369ec1b7634206d3ded5ba45de2fe696   # wmt/wmt14 main, lastModified 2024-04-03
-EXPECTED_V2_FIXED_SHA_EN=""        # filled from ~/mt_local/rebuild/v2_fixed/rebuild_stats.json
-EXPECTED_V2_FIXED_SHA_FR=""
+# Mac rebuild 2026-09-13 (~/mt_local/rebuild/v2_fixed/rebuild_stats.json): 38,275,284 rows
+EXPECTED_V2_FIXED_SHA_EN=c8cc665c8fc9971bf689bb02d7409bc76bbb489cb7b7dab6b35d13778863e655
+EXPECTED_V2_FIXED_SHA_FR=e4f5301af4c49b8cd91ff81807db08116a7da94f952ba0ee3962e82c0618421a
 EXPECTED_BASE_TEST_BLEU=35.31      # HF config.json and 05_sft.tex:26
 BLEU_TOL=0.15                      # decode batch size can move BLEU by a few hundredths
 
