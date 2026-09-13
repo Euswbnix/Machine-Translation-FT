@@ -747,6 +747,34 @@ def suite_rebuild(d: Path):
               for x in ("abc", "é ü ł", "ТЕКСТ abc", "日本語 x", "aĀſƀ")))
 
 
+def suite_rescore(d: Path):
+    print("\n== rescore_plan (reuse unchanged scores, score only new pairs, merge back) ==")
+    r = d / "rs"; r.mkdir()
+    # old scored TSV: tabs inside text were replaced by spaces when scored
+    old = [("0.900000", "a\tb one", "A UN"), ("0.100000", "x shifted", "WRONG"), ("0.800000", "c three", "C TROIS")]
+    (r / "old.tsv").write_text("".join(f"{sc}\t{s.replace(chr(9), ' ')}\t{t}\n" for sc, s, t in old), encoding="utf-8")
+    # rebuilt corpus: row0 keeps a raw TAB (must still match), row1 is a new aligned pair, row2 unchanged
+    (r / "new.en").write_text("a\tb one\nx shifted\nc three\n", encoding="utf-8")
+    (r / "new.fr").write_text("A UN\nX DECALE\nC TROIS\n", encoding="utf-8")
+    rc, o = run([ROOT / "phase0/rescore_plan.py", "plan", "--old-scored", r / "old.tsv",
+                 "--new-src", r / "new.en", "--new-tgt", r / "new.fr", "--out-dir", r / "plan"])
+    pj = json.load(open(r / "plan/plan.json")) if (r / "plan/plan.json").exists() else {}
+    check("plan reuses unchanged pairs (incl. one whose text holds a TAB) and schedules only the new one",
+          rc == 0 and pj.get("reused") == 2 and pj.get("to_score") == 1 and pj.get("first_missing_row") == 1, str(pj))
+    check("to_score files hold exactly the new pair",
+          (r / "plan/to_score.en").read_text() == "x shifted\n" and (r / "plan/to_score.fr").read_text() == "X DECALE\n")
+    (r / "new_scores.tsv").write_text("0.850000\tx shifted\tX DECALE\n", encoding="utf-8")
+    rc, o = run([ROOT / "phase0/rescore_plan.py", "merge", "--plan-dir", r / "plan", "--new-scores", r / "new_scores.tsv",
+                 "--new-src", r / "new.en", "--new-tgt", r / "new.fr", "--out", r / "merged.tsv"])
+    got = (r / "merged.tsv").read_text().splitlines() if (r / "merged.tsv").exists() else []
+    check("merge writes every row in rebuilt order with reused and new scores",
+          rc == 0 and [g.split("\t")[0] for g in got] == ["0.900000", "0.850000", "0.800000"], str(got))
+    (r / "short.tsv").write_text("", encoding="utf-8")
+    rc, o = run([ROOT / "phase0/rescore_plan.py", "merge", "--plan-dir", r / "plan", "--new-scores", r / "short.tsv",
+                 "--new-src", r / "new.en", "--new-tgt", r / "new.fr", "--out", r / "bad.tsv"])
+    check("merge refuses when the scorer returned the wrong number of scores", rc == 1 and "refusing" in o, o[-120:])
+
+
 PATCH = ROOT / "phase0/trainer_token_accounting.patch"
 
 
@@ -824,6 +852,7 @@ def main() -> int:
         suite_run_parallel(d)
         suite_rental_provenance(d)
         suite_rebuild(d)
+        suite_rescore(d)
         suite_patch(d)
     finally:
         if not a.keep:
