@@ -51,6 +51,26 @@ SKIP_DIRS = {".git", "__pycache__", "node_modules", "site-packages", ".vscode-se
              "anaconda3", ".local", ".mozilla", ".thunderbird", "Trash", ".Trash"}
 SECRET = re.compile(r"(^\.env|id_rsa|id_ed25519|\.pem$|\.key$|credential|secret|token\.json|"
                     r"\.netrc|\.pgpass|authorized_keys|known_hosts)", re.I)
+# Credentials hide in VALUES, not only in files: a git remote like
+# https://user:github_pat_...@github.com/... puts a live token into
+# `git remote get-url`. The first version printed that verbatim and wrote it to
+# inventory.json. Redact userinfo and known token shapes everywhere a value is
+# reported, and FLAG it, so the owner knows to rotate rather than never finding out.
+CRED_URL = re.compile(r"(\b[a-z][a-z0-9+.-]*://)[^/@\s]+@", re.I)
+TOKEN = re.compile(r"\b(github_pat_[A-Za-z0-9_]{20,}|gh[pousr]_[A-Za-z0-9]{20,}|"
+                   r"hf_[A-Za-z0-9]{20,}|glpat-[A-Za-z0-9_-]{20,}|sk-[A-Za-z0-9_-]{20,})")
+
+
+def has_credential(text) -> bool:
+    return bool(text) and bool(CRED_URL.search(text) or TOKEN.search(text))
+
+
+def redact(text):
+    if not text:
+        return text
+    return TOKEN.sub("<redacted-token>", CRED_URL.sub(r"\1<redacted>@", text))
+
+
 LOG_LINES = re.compile(r"(Optimizer/scheduler RESET.*|Resumed from step.*|Starting training for.*|"
                        r"Stop reason:.*|Total steps:.*|Best BLEU:.*)")
 MAX_LOG_BYTES = 512 * 1024 * 1024
@@ -106,15 +126,16 @@ def git_state(path: str):
         return r.stdout.strip()
 
     head = g("log", "--oneline", "-1")
-    remote = g("remote", "get-url", "origin")
+    remote_raw = g("remote", "get-url", "origin")
     status = g("status", "--porcelain")
     unpushed = g("rev-list", "--count", "@{u}..HEAD")   # fails legitimately with no upstream
     return {
-        "head": head,
-        "remote": remote,
+        "head": redact(head),
+        "remote": redact(remote_raw),
+        "remote_embeds_credential": has_credential(remote_raw),
         "dirty_files": None if status is None else len(status.splitlines()),
         "unpushed_commits": unpushed,
-        "errors": errors or None,
+        "errors": [redact(e) for e in errors] or None,
     }
 
 
@@ -185,7 +206,7 @@ def main() -> int:
             continue
         try:
             with open(f["path"], "r", errors="replace") as fh:
-                hits = [m.group(1).strip() for line in fh for m in [LOG_LINES.search(line)] if m]
+                hits = [redact(m.group(1).strip()) for line in fh for m in [LOG_LINES.search(line)] if m]
         except OSError:
             continue
         if hits:
@@ -208,6 +229,10 @@ def main() -> int:
         print(f"  {p}")
         for k, v in s.items():
             print(f"      {k:17s} {v}")
+        if s.get("remote_embeds_credential"):
+            print("      ⚠️  the origin URL EMBEDS A CREDENTIAL (redacted above). Anyone who can read "
+                  "this repo's .git/config — or any log that ran `git remote -v` — has it. "
+                  "Revoke it, and switch the remote to a token-free URL with a credential helper or SSH.")
     for prio in ("P0", "P1", "P2"):
         items = sorted((f for f in found if f["prio"] == prio), key=lambda f: (f["kind"], f["path"]))
         total = sum(f["size"] for f in items)

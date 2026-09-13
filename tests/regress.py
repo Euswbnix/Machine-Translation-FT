@@ -410,6 +410,19 @@ def suite_converge(d: Path):
 
 def suite_inventory_fetch(d: Path):
     print("\n== inventory + fetch ==")
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("inventory_mod", ROOT / "phase0/inventory.py")
+    inv = importlib.util.module_from_spec(spec); spec.loader.exec_module(inv)
+    # Built at runtime so no token-shaped literal ever sits in this (public) repo,
+    # where secret scanning would flag it or push protection could block the push.
+    fake_tok = "github" + "_pat_" + "11" + "X" * 20 + "_" + "Y" * 40
+    fake = "https://someone:" + fake_tok + "@github.com/x/y.git"
+    red = inv.redact(fake)
+    check("credential in a git remote URL is redacted", "github_pat_" not in red and "euswbnix:" not in red, red)
+    check("and flagged, not silently hidden", inv.has_credential(fake) and not inv.has_credential(red.replace("<redacted>@", "")))
+    check("bare tokens redacted too (ghp_, hf_)",
+          all(t not in inv.redact(f"x {t}{'A'*30} y") for t in ("ghp_", "hf_")))
+    check("a clean URL is left intact", inv.redact("https://github.com/x/y.git") == "https://github.com/x/y.git")
     js = d / "inv.json"
     rc, out = run([ROOT / "phase0/inventory.py", ROOT, "--max-depth", "2", "--json-out", js])
     check("inventory runs", rc == 0, out[-300:])

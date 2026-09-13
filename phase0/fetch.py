@@ -73,11 +73,13 @@ def cmd_inventory(a) -> int:
         flags += " --inspect-ckpt"
     print(f"running inventory.py on {a.host} (streamed over ssh, nothing copied there)…")
     with open(HERE / "inventory.py", "rb") as script:
-        r = subprocess.run(["ssh", *SSH_OPTS, a.host, f"python3 - {extra} {flags}"],
+        r = subprocess.run(["ssh", *SSH_OPTS, a.host, f"{a.remote_python} - {extra} {flags}"],
                            stdin=script)
     if r.returncode != 0:
         return r.returncode
     subprocess.run(["scp", *SSH_OPTS, f"{a.host}:{remote_json}", a.out], check=True)
+    # do not leave a copy of the machine's file map lying in the remote /tmp
+    subprocess.run(["ssh", *SSH_OPTS, a.host, f"rm -f {remote_json}"])
     print(f"\ninventory saved to {a.out}")
     return 0
 
@@ -150,6 +152,8 @@ def main() -> int:
     i.add_argument("--roots", nargs="*", default=["~"])
     i.add_argument("--max-depth", type=int, default=7)
     i.add_argument("--inspect-ckpt", action="store_true")
+    i.add_argument("--remote-python", default="python3",
+                   help="interpreter on the remote; --inspect-ckpt needs one with torch")
     i.add_argument("--out", default="inventory.json")
     p = sub.add_parser("pull")
     p.add_argument("--host", required=True)
