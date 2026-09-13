@@ -3,8 +3,11 @@
 # USAGE-BEGIN
 #   bash rental_setup.sh env          clone, install, apply trainer patch, self-test   (no GPU)
 #   bash rental_setup.sh accept       rebuild Base v1.1 from HF, reproduce test BLEU    (1 GPU, minutes)
-#   bash rental_setup.sh data         download WMT14 fr-en, rebuild the v2 corpus      (CPU, ~1 h)
+#   bash rental_setup.sh data         pinned WMT14 parquet -> CR-safe v2 corpus, sha-checked (CPU, ~1 h)
 #   bash rental_setup.sh score        CometKiwi-22 over v2 (needs YOUR hf login)        (all GPUs)
+#                                     with $WORK/rescore/{missing_rows.npy,plan.json} present
+#                                     (made on the Mac by rescore_plan.py plan), only the pairs
+#                                     the old scored file lacks are scored, then merged
 #   bash rental_setup.sh provenance   statmt constituents + e01 hash-join              (CPU; can run during score)
 #   bash rental_setup.sh controls     E0.3 control sets + run matrix                   (CPU)
 #   bash rental_setup.sh stage1       4-run LR sweep, one GPU per run                   (GPUs)
@@ -31,7 +34,12 @@ MT="$WORK/Machine_translation"
 # directory must keep this name even though the GitHub repo was renamed.
 SFT="$WORK/Machine-Translation-SFT"
 BRANCH="${BRANCH:-wmt2027-phase0}"
-EXPECTED_V2_ROWS=30129500          # paper_section_7.md: "v2's 30,129,500 pairs"
+# The paper's v2 corpus (30,129,500 rows) is ~45% misaligned: see phase0/README.md,
+# "CRITICAL (2026-09-13)". 'data' builds the CR-safe corpus instead and checks it against
+# the sha256 of the same rebuild on the Mac, so both boxes hold byte-identical data.
+HF_WMT14_REV=b199e406369ec1b7634206d3ded5ba45de2fe696   # wmt/wmt14 main, lastModified 2024-04-03
+EXPECTED_V2_FIXED_SHA_EN=""        # filled from ~/mt_local/rebuild/v2_fixed/rebuild_stats.json
+EXPECTED_V2_FIXED_SHA_FR=""
 EXPECTED_BASE_TEST_BLEU=35.31      # HF config.json and 05_sft.tex:26
 BLEU_TOL=0.15                      # decode batch size can move BLEU by a few hundredths
 
@@ -100,17 +108,24 @@ PY
 
 stage_data() {
   cd "$MT"
-  [ -s data_enfr_v2_raw/train.en ] || python scripts/download_wmt_enfr.py --output-dir data_enfr_v2_raw
+  [ -n "$EXPECTED_V2_FIXED_SHA_EN" ] && [ -n "$EXPECTED_V2_FIXED_SHA_FR" ] || die \
+"EXPECTED_V2_FIXED_SHA_* are empty. Fill them from the Mac rebuild before building data here."
+  local P="$WORK/hf_wmt14" fp fs have
+  log "WMT14 fr-en train parquet at pinned revision ${HF_WMT14_REV:0:8}"
+  grep '^fr-en/' "$SFT/phase0/hf_wmt14_filelist.tsv" | while IFS=$'\t' read -r fp fs; do
+    mkdir -p "$P/$(dirname "$fp")"
+    have=$(stat -c %s "$P/$fp" 2>/dev/null || echo 0)
+    if [ "$have" != "$fs" ]; then
+      curl -fL --retry 5 -C - -o "$P/$fp" "https://huggingface.co/datasets/wmt/wmt14/resolve/$HF_WMT14_REV/$fp"
+      [ "$(stat -c %s "$P/$fp")" = "$fs" ] || die "$fp: size mismatch after download"
+    fi
+  done
+  log "CR-safe clean of the full stream (v2)"
   mkdir -p data_enfr_v2
-  log "clean full stream (v2)"
-  python scripts/clean_data_enfr.py --src data_enfr_v2_raw/train.en --tgt data_enfr_v2_raw/train.fr \
-      --out-src data_enfr_v2/train.clean.en --out-tgt data_enfr_v2/train.clean.fr
-  rows=$(wc -l < data_enfr_v2/train.clean.en)
-  if [ "$rows" -ne "$EXPECTED_V2_ROWS" ]; then
-    die "v2 clean corpus has $rows rows, paper says $EXPECTED_V2_ROWS. The pipeline has drifted \
-(HF stream contents, datasets version, or cleaning defaults). Record the difference before using it."
-  fi
-  echo "v2 rows = $rows (matches paper)"
+  python "$SFT/phase0/rebuild_corpus.py" --parquet-dir "$P/fr-en" --src en --tgt fr --mode fixed \
+      --out-dir data_enfr_v2 --expect-sha-src "$EXPECTED_V2_FIXED_SHA_EN" --expect-sha-tgt "$EXPECTED_V2_FIXED_SHA_FR" \
+      || die "rebuilt v2 differs from the Mac rebuild; do not score or train on it"
+  echo "v2 rows = $(wc -l < data_enfr_v2/train.clean.en) (sha256 matches the Mac rebuild)"
 }
 
 stage_score() {
@@ -120,10 +135,23 @@ stage_score() {
   1. accept the terms at https://huggingface.co/Unbabel/wmt22-cometkiwi-da
   2. run 'hf auth login' YOURSELF on this box
 This script never handles your token."
+  [ -s data_enfr_v2/train.clean.en ] || die "run 'data' first"
+  local ngpu R="$WORK/rescore"
   ngpu=$(nvidia-smi -L | wc -l)
-  log "scoring 30M pairs on $ngpu GPU(s) (paper: 13.8 h on one RTX 5090); resumable"
-  python "$SFT/scripts/score_with_comet.py" --src data_enfr_v2/train.clean.en --tgt data_enfr_v2/train.clean.fr \
-      --out data_enfr_v2/v2_scored.tsv --gpus "$ngpu" --resume
+  if [ -s "$R/missing_rows.npy" ] && [ -s "$R/plan.json" ]; then
+    log "re-score: only pairs absent from the old scored file (plan made on the Mac)"
+    python "$SFT/phase0/rescore_plan.py" extract --plan-dir "$R" \
+        --new-src data_enfr_v2/train.clean.en --new-tgt data_enfr_v2/train.clean.fr || die "extract refused"
+    python "$SFT/scripts/score_with_comet.py" --src "$R/to_score.en" --tgt "$R/to_score.fr" \
+        --out "$R/new_scores.tsv" --gpus "$ngpu" --resume
+    python "$SFT/phase0/rescore_plan.py" merge --plan-dir "$R" --new-scores "$R/new_scores.tsv" \
+        --new-src data_enfr_v2/train.clean.en --new-tgt data_enfr_v2/train.clean.fr \
+        --out data_enfr_v2/v2_scored.tsv || die "merge refused"
+  else
+    log "scoring every v2 pair on $ngpu GPU(s) (paper: 13.8 h for 30M on one RTX 5090); resumable"
+    python "$SFT/scripts/score_with_comet.py" --src data_enfr_v2/train.clean.en --tgt data_enfr_v2/train.clean.fr \
+        --out data_enfr_v2/v2_scored.tsv --gpus "$ngpu" --resume
+  fi
 }
 
 statmt_url() {

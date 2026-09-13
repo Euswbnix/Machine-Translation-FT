@@ -120,7 +120,15 @@ Separately surfaced: the two regimes also use **different SentencePiece models**
 1. Make the pipeline CR-safe (downloader replaces `\r`; cleaners read with
    `newline="\n"`), re-clean v2 and en-de from raw, and confirm the rows before each
    onset are byte-identical to the current files.
+   Tool: `rebuild_corpus.py`, reading the WMT14 parquet pinned at `wmt/wmt14@b199e406`
+   (`hf_wmt14_filelist.tsv`). `--mode legacy` must reproduce the published corpora's
+   sha256 exactly, which proves the rebuild starts from the same rows the paper used.
+   `--mode fixed` is then the corrected corpus.
 2. Re-score only the changed v2 rows with CometKiwi-22.
+   Tool: `rescore_plan.py plan` (Mac, against the old `v2_scored.tsv`) → copy
+   `missing_rows.npy` + `plan.json` to the rental's `$WORK/rescore/` →
+   `rental_setup.sh data` then `score` (extract, score, merge; each refuses a corpus whose
+   sha256 differs from the plan's).
 3. Re-run `e01_provenance.py` (fixed) and require an exact match rate ≥ 95%.
 4. Rebuild the E0.3 controls from the corrected corpus.
 

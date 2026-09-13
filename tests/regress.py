@@ -773,6 +773,21 @@ def suite_rescore(d: Path):
     rc, o = run([ROOT / "phase0/rescore_plan.py", "merge", "--plan-dir", r / "plan", "--new-scores", r / "short.tsv",
                  "--new-src", r / "new.en", "--new-tgt", r / "new.fr", "--out", r / "bad.tsv"])
     check("merge refuses when the scorer returned the wrong number of scores", rc == 1 and "refusing" in o, o[-120:])
+    # a rented box rebuilds the same corpus and receives only the plan's .npy + plan.json
+    far = r / "far"; far.mkdir()
+    for n in ("missing_rows.npy", "plan.json"):
+        (far / n).write_bytes((r / "plan" / n).read_bytes())
+    (far / "c.en").write_bytes((r / "new.en").read_bytes()); (far / "c.fr").write_bytes((r / "new.fr").read_bytes())
+    rc, o = run([ROOT / "phase0/rescore_plan.py", "extract", "--plan-dir", far, "--new-src", far / "c.en", "--new-tgt", far / "c.fr"])
+    check("extract on an identical corpus elsewhere reproduces to_score byte for byte",
+          rc == 0 and (far / "to_score.en").read_bytes() == (r / "plan/to_score.en").read_bytes()
+          and (far / "to_score.fr").read_bytes() == (r / "plan/to_score.fr").read_bytes(), o[-160:])
+    (far / "c.fr").write_text("A UN\nX DECALE\nC TROIS!\n", encoding="utf-8")
+    rc, o = run([ROOT / "phase0/rescore_plan.py", "extract", "--plan-dir", far, "--new-src", far / "c.en", "--new-tgt", far / "c.fr"])
+    check("extract refuses a corpus that differs from the one the plan was made on", rc == 1 and "refusing" in o, o[-160:])
+    rc, o = run([ROOT / "phase0/rescore_plan.py", "merge", "--plan-dir", r / "plan", "--new-scores", r / "new_scores.tsv",
+                 "--new-src", r / "new.en", "--new-tgt", far / "c.fr", "--out", r / "bad2.tsv"])
+    check("merge refuses a corpus that differs from the one the plan was made on", rc == 1 and "refusing" in o, o[-160:])
 
 
 PATCH = ROOT / "phase0/trainer_token_accounting.patch"
