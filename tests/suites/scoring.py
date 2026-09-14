@@ -339,14 +339,18 @@ def suite(ctx):
     mmeta = shm.merge_meta(man_, wm, ["0", "1"], "en", "fr")
     check("score_sharded merge_meta lists shards whose resume segments changed stack (only shard 0)",
           mmeta.get("stack_changed_within_shard") == [0], str(mmeta.get("stack_changed_within_shard")))
+    # Count only fsyncs of regular files: the directory fsync after os.replace must not
+    # stand in for the file fsync (a mutation removing the file fsync once went uncaught).
+    import stat as _stat
     fs_calls = []
     real_fsync = os.fsync
     try:
-        os.fsync = lambda fd: (fs_calls.append(fd), real_fsync(fd))[1]
+        os.fsync = lambda fd: (fs_calls.append(_stat.S_ISREG(os.fstat(fd).st_mode)), real_fsync(fd))[1]
         shm.write_json_atomic(d / "fs1.json", {"a": 1})
-        n_sh = len(fs_calls)
+        n_sh = sum(fs_calls)
+        k = len(fs_calls)
         mod.write_json_atomic(d / "fs2.json", {"a": 1})
-        n_swc = len(fs_calls) - n_sh
+        n_swc = sum(fs_calls[k:])
     finally:
         os.fsync = real_fsync
     check("both write_json_atomic copies fsync the file before os.replace (no zero-length meta after a host crash)",

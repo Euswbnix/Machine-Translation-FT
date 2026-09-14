@@ -479,8 +479,11 @@ os.execv(real, [real] + args)
     check("env stops on Python 3.13 ('outside 3.10-3.12') before installing anything",
           rc != 0 and "outside 3.10-3.12" in o and not pip_log.exists(), o[-300:])
     rc, o = rent("env", FAKE_PYVER="3.11", FAKE_META=json.dumps({**json.loads(good_meta), "unbabel-comet": "2.2.6"}), **env_extra)
+    # Must stop AT the pin guard: a later step failing in the fake environment must not
+    # count (a mutation turning this die into '|| true' once went uncaught).
     check("env stops when an installed version differs from its pin (unbabel-comet 2.2.6)",
-          rc != 0 and "NOT PINNED: unbabel-comet==2.2.7 (installed 2.2.6)" in o, o[-300:])
+          rc != 0 and "NOT PINNED: unbabel-comet==2.2.7 (installed 2.2.6)" in o
+          and "installed versions differ from the pins above" in o and "torch before:" not in o, o[-300:])
     pins = pip_log.read_text() if pip_log.exists() else ""
     check("env's pip install carries all four pins",
           all(x in pins for x in ("unbabel-comet==2.2.7", "pytorch-lightning==2.5.5", "transformers==4.57.1", "numpy==1.26.4")),
