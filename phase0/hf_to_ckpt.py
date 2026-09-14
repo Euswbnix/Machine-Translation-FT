@@ -63,16 +63,36 @@ def resolve_revision(repo: str, revision: str) -> str:
         return json.load(r)["sha"]
 
 
-def download(repo: str, sha: str, dest: Path) -> dict:
+def _fetch(repo: str, sha: str, name: str, target: Path) -> None:
+    """Download to <target>.part and rename only when the copy completed, so an
+    interrupted download is never mistaken for a complete file."""
+    part = target.with_name(target.name + ".part")
+    url = f"https://huggingface.co/{repo}/resolve/{sha}/{name}"
+    print(f"  downloading {name} …")
+    with urllib.request.urlopen(url, timeout=600) as r, open(part, "wb") as f:
+        shutil.copyfileobj(r, f)
+        f.flush()
+    part.replace(target)
+
+
+def download(repo: str, sha: str, dest: Path, expect: dict | None = None) -> dict:
+    """expect: {file name: sha256}. A cached file that fails it is deleted and fetched
+    again once; a fresh download that fails it is fatal."""
+    expect = expect or {}
     dest.mkdir(parents=True, exist_ok=True)
     out = {}
     for name in FILES:
         target = dest / name
+        target.with_name(target.name + ".part").unlink(missing_ok=True)
         if not target.exists():
-            url = f"https://huggingface.co/{repo}/resolve/{sha}/{name}"
-            print(f"  downloading {name} …")
-            with urllib.request.urlopen(url, timeout=600) as r, open(target, "wb") as f:
-                shutil.copyfileobj(r, f)
+            _fetch(repo, sha, name, target)
+        if name in expect and sha256(target) != expect[name]:
+            print(f"  cached {name} fails its sha256 check; deleting and downloading again")
+            target.unlink()
+            _fetch(repo, sha, name, target)
+            got = sha256(target)
+            if got != expect[name]:
+                sys.exit(f"{name}: sha256 {got} != expected {expect[name]} after a fresh download; refusing")
         out[name] = target
     return out
 
@@ -80,12 +100,21 @@ def download(repo: str, sha: str, dest: Path) -> dict:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--repo", required=True)
-    ap.add_argument("--revision", default="main")
+    ap.add_argument("--revision", default="main",
+                    help="HF commit sha; rental_setup.sh pins it. 'main' is resolved and recorded, but unpinned")
+    ap.add_argument("--expect-sha", action="append", default=[], metavar="NAME=SHA256",
+                    help="required sha256 of a release file, e.g. pytorch_model.bin=4d7e...; repeatable")
     ap.add_argument("--mt-root", required=True, help="clone of Machine_translation")
     ap.add_argument("--train-config", help="yaml the FT run will use; architecture is cross-checked")
     ap.add_argument("--download-dir", default="hf_cache")
     ap.add_argument("--out", required=True)
     a = ap.parse_args()
+    expect = {}
+    for x in a.expect_sha:
+        name, _, hexd = x.partition("=")
+        if name not in FILES or len(hexd) != 64:
+            sys.exit(f"--expect-sha {x!r}: want NAME=<64 hex> with NAME in {FILES}")
+        expect[name] = hexd.lower()
 
     import torch
 
@@ -95,7 +124,9 @@ def main() -> int:
 
     sha = resolve_revision(a.repo, a.revision)
     print(f"{a.repo} @ {sha}")
-    files = download(a.repo, sha, Path(a.download_dir) / a.repo.replace("/", "__") / sha)
+    if a.revision == "main":
+        print("  WARNING: --revision main is not pinned; pass the release commit sha")
+    files = download(a.repo, sha, Path(a.download_dir) / a.repo.replace("/", "__") / sha, expect)
     cfg = json.load(open(files["config.json"]))
 
     missing = [k for k in ARCH_KEYS if k not in cfg]

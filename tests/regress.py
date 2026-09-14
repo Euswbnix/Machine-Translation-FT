@@ -122,6 +122,9 @@ ft_topk 2 newstest2014 36.50
 ft_topk 42 heldout_un 34.50
 ft_topk 1 heldout_un 34.60
 ft_topk 2 heldout_un 34.40
+ft_topk 42 heldout_europarl 32.50
+ft_topk 1 heldout_europarl 32.60
+ft_topk 2 heldout_europarl 32.40
 ft_random 42 newstest2014 36.50
 ft_random 1 newstest2014 36.70
 ft_random 2 newstest2014 36.60
@@ -130,12 +133,16 @@ ft_random 2 newstest2014 36.60
     "falsego": ("""condition seed testset bleu
 baseline - newstest2014 38.21
 baseline - heldout_un 35.00
+baseline - heldout_europarl 33.00
 ft_topk 42 newstest2014 39.50
 ft_topk 1 newstest2014 39.60
 ft_topk 2 newstest2014 39.40
 ft_topk 42 heldout_un 36.50
 ft_topk 1 heldout_un 36.60
 ft_topk 2 heldout_un 36.40
+ft_topk 42 heldout_europarl 33.50
+ft_topk 1 heldout_europarl 33.60
+ft_topk 2 heldout_europarl 33.40
 ft_random 42 newstest2014 40.80
 ft_random 1 newstest2014 40.90
 ft_random 2 newstest2014 40.70
@@ -148,7 +155,7 @@ ft_topk 2 newstest2014 36.50
 ft_random 42 newstest2014 37.90
 ft_random 1 newstest2014 38.00
 ft_random 2 newstest2014 37.80
-""", 1, "NO DATA"),
+""", 2, "NO DECISION"),   # fail-closed: gate sets absent -> cannot decide (was exit 1)
     "junk": ("""condition seed testset bleu
 baseline - newstest2014 38.21
 ft_topk 42 newstest2014 bad
@@ -330,11 +337,53 @@ def suite_run_matrix(d: Path):
             "logging": {"swanlab": {"enabled": True, "mode": "cloud", "experiment": "sft"}}}
     json.dump(base, open(d / "base.yaml", "w"))
     out_dir = d / "matrix"
+    env = {"PYTHONPATH": str(shim)}
     rc, out = run([ROOT / "phase0/e03_run_matrix.py", "--base-config", d / "base.yaml",
-                   "--out-dir", out_dir], env={"PYTHONPATH": str(shim)})
+                   "--data-dir", d / "no_controls", "--out-dir", d / "matrix_nomanifest"], env=env)
+    check("e03_run_matrix refuses to fingerprint a data dir without manifest.json", rc != 0 and "manifest.json" in out,
+          out[-200:])
+    ctl = d / "controls"; ctl.mkdir()
+    written = [f"{c}.{e}" for c in ("ft_topk", "ft_random", "ft_bottom", "heldout_un") for e in ("en", "fr")]
+    for i, n in enumerate(written):
+        (ctl / n).write_text(f"row {i}\n")
+    json.dump({"written": written + ["manifest.json"], "heldout_sets": {"heldout_un": {}}}, open(ctl / "manifest.json", "w"))
+    import hashlib
+    def fp_indep():
+        names = sorted(set(written) | {"manifest.json"})
+        blob = "".join(f"{n}\t{hashlib.sha256((ctl / n).read_bytes()).hexdigest()}\n" for n in names)
+        return hashlib.sha256(blob.encode()).hexdigest()
+    rc, out = run([ROOT / "phase0/e03_run_matrix.py", "--base-config", d / "base.yaml", "--data-dir", ctl,
+                   "--out-dir", out_dir, "--keep-last", "1"], env=env)
     check("e03_run_matrix runs", rc == 0, out[-300:])
     if rc != 0:
         return
+    mj = json.load(open(out_dir / "matrix.json"))
+    sha = fp_indep()
+    check("matrix.json controls_sha equals an independent sha256 over manifest + written files",
+          mj.get("controls_sha") == sha, f"{mj.get('controls_sha')} vs {sha}")
+    ck = json.load(open(out_dir / "ft_random_lr0.5.yaml"))["checkpoint"]
+    check("checkpoint dir carries the controls fingerprint and keep_last is applied",
+          ck["dir"] == f"checkpoints/phase0/{sha[:12]}/ft_random_lr0.5" and ck["keep_last"] == 1, str(ck))
+    (ctl / "heldout_un.fr").write_text("row CHANGED\n")
+    rc, _ = run([ROOT / "phase0/e03_run_matrix.py", "--base-config", d / "base.yaml", "--data-dir", ctl,
+                 "--out-dir", d / "matrix2"], env=env)
+    sha2 = json.load(open(d / "matrix2/matrix.json")).get("controls_sha") if rc == 0 else None
+    check("a changed control file changes the fingerprint and hence every checkpoint dir",
+          rc == 0 and sha2 == fp_indep() and sha2 != sha
+          and json.load(open(d / "matrix2/ft_topk_lr1.yaml"))["checkpoint"]["dir"].startswith(f"checkpoints/phase0/{sha2[:12]}/"))
+    rc, _ = run([ROOT / "phase0/e03_run_matrix.py", "--base-config", d / "base.yaml", "--data-dir", ctl,
+                 "--out-dir", d / "matrix3", "--budget", "tokens", "--target-tokens", "5000000", "--spike-ratio", "0"], env=env)
+    tr3 = json.load(open(d / "matrix3/ft_bottom_lr0.15.yaml"))["training"] if rc == 0 else {}
+    tr_steps = json.load(open(out_dir / "ft_bottom_lr0.15.yaml"))["training"]
+    check("--budget tokens sets the patch's token gate (eval every budget/10, backstop 125000) and --spike-ratio 0",
+          rc == 0 and tr3.get("max_target_tokens") == 5000000 and tr3.get("eval_every_tokens") == 500000
+          and tr3.get("max_micro_steps_backstop") == 125000 and tr3.get("loss_spike_ratio") == 0.0, str(tr3))
+    check("default --budget steps writes no token-gate keys and inherits the spike ratio",
+          not any(k in tr_steps for k in ("max_target_tokens", "eval_every_tokens", "max_micro_steps_backstop"))
+          and "loss_spike_ratio" not in tr_steps, str(tr_steps))
+    rc, _ = run([ROOT / "phase0/e03_run_matrix.py", "--base-config", d / "base.yaml", "--data-dir", ctl,
+                 "--out-dir", d / "matrix4", "--keep-last", "0"], env=env)
+    check("--keep-last 0 is refused (the trainer would keep every step checkpoint)", rc != 0)
     cfgs = sorted(out_dir.glob("ft_*.yaml"))
     check("12 configs generated", len(cfgs) == 12, str(len(cfgs)))
     tr = json.load(open(out_dir / "ft_topk_lr0.15.yaml"))["training"]
@@ -669,7 +718,12 @@ def suite_rental_provenance(d: Path):
     with open(mt / "data_enfr_v2/train.clean.en", "w") as fa, open(mt / "data_enfr_v2/train.clean.fr", "w") as fb:
         for a_, b_ in sub:
             fa.write(a_ + "\n"); fb.write(b_ + "\n")
+    import hashlib
+    v2 = mt / "data_enfr_v2"
+    sha_en = hashlib.sha256((v2 / "train.clean.en").read_bytes()).hexdigest()
+    sha_fr = hashlib.sha256((v2 / "train.clean.fr").read_bytes()).hexdigest()
     env = {**os.environ, "WORK": str(work), "STATMT_OFFLINE": "1",
+           "EXPECTED_V2_FIXED_SHA_EN": sha_en, "EXPECTED_V2_FIXED_SHA_FR": sha_fr,
            "PATH": f"{bindir}{os.pathsep}{os.environ.get('PATH', '')}"}
 
     def prov():
@@ -677,6 +731,12 @@ def suite_rental_provenance(d: Path):
                            env=env, capture_output=True, text=True)
         return r.returncode, r.stdout + r.stderr
 
+    rc, o = prov()
+    check("provenance refuses a corpus without the .sha_verified marker that only 'data' writes",
+          rc != 0 and "not verified" in o and not (sft / "phase0/provenance_report.json").exists(), o[-200:])
+    (v2 / ".sha_verified").write_text(
+        f"sha256_src {sha_en}\nsha256_tgt {sha_fr}\nbytes_src {(v2 / 'train.clean.en').stat().st_size}\n"
+        f"bytes_tgt {(v2 / 'train.clean.fr').stat().st_size}\nrows {len(sub)}\n")
     rc, o = prov()
     rep_p = sft / "phase0/provenance_report.json"
     check("provenance stage runs offline end to end", rc == 0 and rep_p.exists(), o[-300:])
@@ -742,6 +802,9 @@ def suite_rebuild(d: Path):
     check("fixed mode keeps the CR-bearing pairs whole and has zero line offset",
           st["line_offset_src_minus_tgt"] == 0 and b"ID3" in (raw / "fixed.en").read_bytes()
           and b"\r" not in (raw / "fixed.en").read_bytes() + (raw / "fixed.fr").read_bytes(), str(st))
+    check("fixed mode records the blocked-set check for both modes (difference 0 on this corpus)",
+          st.get("blocked_check", {}).get("symmetric_difference") == 0
+          and st["blocked_check"]["legacy"] == st["blocked_check"]["fixed"] == 1, str(st.get("blocked_check")))
     check("latin_ratio equals the original per-character definition",
           all(abs(rb.latin_ratio(x) - (sum(1 for c in x if c.isascii() or 0x00C0 <= ord(c) <= 0x017F) / len(x))) < 1e-12
               for x in ("abc", "é ü ł", "ТЕКСТ abc", "日本語 x", "aĀſƀ")))

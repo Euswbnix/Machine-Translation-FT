@@ -15,6 +15,31 @@ emulation of the whole pipeline is exact, and fixed mode -- which differs only i
 handling -- can be trusted. Filters, thresholds, duplicate counting and write order are
 the original clean_data_enfr.py's, unchanged.
 
+"Differs only in CR handling" has one hidden dependency: the >dup_threshold target-line
+blocklist is counted over the lines each mode SEES, and CR fragments are extra lines in
+legacy mode. A fragment can push a line across the threshold in one mode only, which
+would change which rows are dropped EVERYWHERE in the corpus, not just near the CRs.
+Pass 1 therefore computes the blocked set for BOTH modes and exits 3 if they differ
+(override with --allow-blocked-diff; both counts and the difference go into
+rebuild_stats.json either way). Measured on the real corpora: 4,661 / 4,661 for fr-en and
+126 / 126 for de-en, difference 0.
+
+Output safety: the corpus is written to train.clean.<lang>.tmp, then hashed again FROM
+THE BYTES ON DISK. Only if the on-disk sha256 equals the in-memory one and, when
+--expect-sha-* is given, equals the expected value, are the files moved to
+train.clean.<lang>. Otherwise both sides are kept as train.clean.<lang>.rejected and the
+exit code is 1. An existing train.clean.<lang> from an earlier run is never overwritten
+by a rejected run.
+
+Only "\\n" ends a line. U+2028, U+2029, NEL (U+0085), VT, FF and FS/GS/RS occur inside
+~870k fixed-v2 lines and must stay there: never read these corpora with str.splitlines()
+or universal newlines (tests/suites/data.py enforces this for phase0/, phase1/, scripts/).
+
+EXIT CODES
+    0  outputs verified and moved into place
+    1  on-disk hash != in-memory hash, or != --expect-sha-*; outputs kept as *.rejected
+    3  legacy and fixed blocked-duplicate sets differ (no outputs written)
+
 USAGE
     python phase0/rebuild_corpus.py --parquet-dir ~/mt_local/hf_wmt14/fr-en --src en --tgt fr \\
         --mode fixed --out-dir ~/mt_local/rebuild/v2_fixed
@@ -26,6 +51,7 @@ from __future__ import annotations
 import argparse
 import glob
 import hashlib
+import json
 import os
 import re
 import sys
@@ -34,6 +60,7 @@ from collections import Counter, deque
 
 _UNIVERSAL_NL = re.compile(r"\r\n|\r|\n")
 _NON_LATIN = re.compile(r"[^\x00-\x7FÀ-ſ]")
+MODES = ("legacy", "fixed")
 
 
 def latin_ratio(s: str) -> float:
@@ -83,23 +110,87 @@ def _digest(line: str) -> bytes:
     return hashlib.blake2b(line.encode("utf-8"), digest_size=16).digest()
 
 
+def sha256_file(path: str) -> str:
+    """sha256 of the bytes on disk (not of anything held in memory)."""
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for block in iter(lambda: f.read(16 << 20), b""):
+            h.update(block)
+    return h.hexdigest()
+
+
+class BlockedSetMismatch(RuntimeError):
+    def __init__(self, check: dict):
+        super().__init__(
+            f"legacy and fixed modes block DIFFERENT duplicate target lines "
+            f"(legacy {check['legacy']:,}, fixed {check['fixed']:,}, symmetric difference "
+            f"{check['symmetric_difference']:,}). CR fragments pushed a line across the "
+            f"duplicate threshold in one mode only, so 'fixed differs from legacy only in CR "
+            f"handling' does NOT hold for this corpus. Re-run with --allow-blocked-diff only "
+            f"if you accept that.")
+        self.check = check
+
+
+def blocked_sets(rows_factory, dup_threshold: int):
+    """Pass 1 for BOTH modes in one scan. A written target field without a CR is the same
+    single line in both modes, so it goes into one shared counter; only CR-bearing fields
+    (a few hundred) get per-mode counters. Returns ({mode: blocked digest set},
+    {mode: target lines seen}, check dict)."""
+    common: Counter = Counter()
+    extra = {m: Counter() for m in MODES}
+    lines = {m: 0 for m in MODES}
+    text_of: dict = {}
+    for _, g in written_pairs(rows_factory()):
+        if "\r" in g:
+            for m in MODES:
+                ls = as_lines(g, m)
+                lines[m] += len(ls)
+                for line in ls:
+                    k = _digest(line)
+                    extra[m][k] += 1
+                    text_of.setdefault(k, line)
+        else:
+            common[_digest(g + "\n")] += 1       # == as_lines(g, mode) for both modes
+            for m in MODES:
+                lines[m] += 1
+    touched = set(extra["legacy"]) | set(extra["fixed"])
+    base = {k for k, c in common.items() if c > dup_threshold and k not in touched}
+    bad = {m: base | {k for k in touched if common.get(k, 0) + extra[m].get(k, 0) > dup_threshold}
+           for m in MODES}
+    only_l, only_f = bad["legacy"] - bad["fixed"], bad["fixed"] - bad["legacy"]
+    check = {
+        "legacy": len(bad["legacy"]), "fixed": len(bad["fixed"]),
+        "only_legacy": len(only_l), "only_fixed": len(only_f),
+        "symmetric_difference": len(only_l) + len(only_f),
+        "tgt_lines_legacy": lines["legacy"], "tgt_lines_fixed": lines["fixed"],
+        "dup_threshold": dup_threshold,
+        "examples": [{"only_in": "legacy" if k in only_l else "fixed",
+                      "line": text_of.get(k, "").rstrip("\n")[:120],
+                      "count": common.get(k, 0) + extra["legacy" if k in only_l else "fixed"].get(k, 0)}
+                     for k in sorted(only_l | only_f)[:20]],
+    }
+    return bad, lines, check
+
+
 def rebuild(rows_factory, mode: str, out_src: str, out_tgt: str, dup_threshold=50,
             min_tokens=3, max_tokens=200, min_ratio=0.5, max_ratio=2.0, min_latin_ratio=0.9,
-            log=print) -> dict:
+            log=print, allow_blocked_diff=False) -> dict:
     """rows_factory() must return a FRESH iterator of raw (src, tgt) strings; it is
-    consumed twice, like the original's two passes over the files."""
-    assert mode in ("legacy", "fixed")
+    consumed twice, like the original's two passes over the files.
+    Raises BlockedSetMismatch (before writing anything) if the legacy and fixed
+    blocked-duplicate sets differ and allow_blocked_diff is False."""
+    assert mode in MODES
     t0 = time.time()
-    cnt: Counter = Counter()
-    tgt_lines_total = 0
-    for _, g in written_pairs(rows_factory()):
-        for line in as_lines(g, mode):
-            cnt[_digest(line)] += 1
-            tgt_lines_total += 1
-    bad = {k for k, c in cnt.items() if c > dup_threshold}
-    del cnt
+    bad_by_mode, lines, check = blocked_sets(rows_factory, dup_threshold)
+    bad = bad_by_mode[mode]
+    tgt_lines_total = lines[mode]
+    del bad_by_mode
     log(f"  pass 1 ({mode}): {tgt_lines_total:,} target lines, blocking {len(bad):,} "
         f"duplicate lines ({time.time()-t0:.0f}s)")
+    log(f"  blocked sets: legacy {check['legacy']:,}, fixed {check['fixed']:,}, "
+        f"symmetric difference {check['symmetric_difference']:,}")
+    if check["symmetric_difference"] and not allow_blocked_diff:
+        raise BlockedSetMismatch(check)
 
     kept = dropped = 0
     reasons: Counter = Counter()
@@ -134,12 +225,16 @@ def rebuild(rows_factory, mode: str, out_src: str, out_tgt: str, dup_threshold=5
                 os_.write(s); ot.write(t)
                 hs.update(s.encode("utf-8")); ht.update(t.encode("utf-8"))
                 kept += 1
+        for f in (os_, ot):
+            f.flush()
+            os.fsync(f.fileno())
     stats = {
         "mode": mode, "kept": kept, "dropped": dropped, "reasons": dict(reasons),
         "src_lines_seen": src_lines, "tgt_lines_seen": tgt_lines_total,
         "line_offset_src_minus_tgt": src_lines - tgt_lines_total,
         "unpaired_tail_lines": len(qs) + len(qt),
         "sha256_src": hs.hexdigest(), "sha256_tgt": ht.hexdigest(),
+        "blocked_check": check,
         "seconds": round(time.time() - t0, 1),
     }
     log(f"  pass 2 ({mode}): kept {kept:,}, dropped {dropped:,}, line offset "
@@ -147,30 +242,88 @@ def rebuild(rows_factory, mode: str, out_src: str, out_tgt: str, dup_threshold=5
     return stats
 
 
-def main() -> int:
+def _write_json(path: str, obj) -> None:
+    tmp = path + ".tmp"
+    with open(tmp, "w", encoding="utf-8", newline="\n") as f:
+        json.dump(obj, f, indent=1)
+    os.replace(tmp, path)
+
+
+def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--parquet-dir", required=True)
     ap.add_argument("--src", default="en")
     ap.add_argument("--tgt", required=True, help="fr or de")
-    ap.add_argument("--mode", choices=("legacy", "fixed"), required=True)
+    ap.add_argument("--mode", choices=MODES, required=True)
     ap.add_argument("--max-rows", type=int, default=0)
     ap.add_argument("--out-dir", required=True)
     ap.add_argument("--expect-sha-src", default="")
     ap.add_argument("--expect-sha-tgt", default="")
-    a = ap.parse_args()
+    ap.add_argument("--allow-blocked-diff", action="store_true",
+                    help="proceed even if legacy and fixed modes block different duplicate lines")
+    a = ap.parse_args(argv)
     os.makedirs(a.out_dir, exist_ok=True)
-    out_src = os.path.join(a.out_dir, f"train.clean.{a.src}")
-    out_tgt = os.path.join(a.out_dir, f"train.clean.{a.tgt}")
-    st = rebuild(lambda: hf_rows(a.parquet_dir, a.src, a.tgt, a.max_rows), a.mode, out_src, out_tgt)
-    import json
-    json.dump(st, open(os.path.join(a.out_dir, "rebuild_stats.json"), "w"), indent=1)
-    print(json.dumps(st, indent=1))
+    final = {"src": os.path.join(a.out_dir, f"train.clean.{a.src}"),
+             "tgt": os.path.join(a.out_dir, f"train.clean.{a.tgt}")}
+    tmp = {k: v + ".tmp" for k, v in final.items()}
+    rej = {k: v + ".rejected" for k, v in final.items()}
+    stats_path = os.path.join(a.out_dir, "rebuild_stats.json")
+    for p in tmp.values():
+        if os.path.exists(p):
+            os.remove(p)                                   # stale partial output of a crashed run
+
+    try:
+        st = rebuild(lambda: hf_rows(a.parquet_dir, a.src, a.tgt, a.max_rows), a.mode,
+                     tmp["src"], tmp["tgt"], allow_blocked_diff=a.allow_blocked_diff)
+    except BlockedSetMismatch as e:
+        _write_json(stats_path, {"mode": a.mode, "outcome": "aborted_blocked_set_mismatch",
+                                 "blocked_check": e.check})
+        print(f"ERROR: {e}", file=sys.stderr)
+        for ex in e.check["examples"]:
+            print(f"  only blocked in {ex['only_in']}: count {ex['count']}: {ex['line']!r}", file=sys.stderr)
+        print(f"no corpus written; details in {stats_path}", file=sys.stderr)
+        return 3
+
     rc = 0
-    for side, want, got in (("src", a.expect_sha_src, st["sha256_src"]), ("tgt", a.expect_sha_tgt, st["sha256_tgt"])):
+    problems = []
+    for side in ("src", "tgt"):
+        disk = sha256_file(tmp[side])
+        mem = st[f"sha256_{side}"]
+        want = getattr(a, f"expect_sha_{side}")
+        st[f"sha256_{side}_disk"] = disk
+        st[f"expect_sha256_{side}"] = want or None
+        print(f"{side}: sha256 in-memory {mem}")
+        print(f"{side}: sha256 on-disk   {disk}  ({tmp[side]})")
+        if disk != mem:
+            problems.append(f"{side}: on-disk sha256 differs from the in-memory sha256")
         if want:
-            same = want == got
-            print(f"{side}: {'IDENTICAL to expected' if same else 'DIFFERS from expected'} ({got[:16]} vs {want[:16]})")
-            rc |= 0 if same else 1
+            same = want == disk
+            print(f"{side}: on-disk {'IDENTICAL to expected' if same else 'DIFFERS from expected'} "
+                  f"({disk[:16]} vs {want[:16]})")
+            if not same:
+                problems.append(f"{side}: on-disk sha256 differs from --expect-sha-{side}")
+
+    if problems:
+        rc = 1
+        for side in ("src", "tgt"):
+            os.replace(tmp[side], rej[side])
+        st["outcome"] = "rejected"
+        st["problems"] = problems
+        for p in problems:
+            print(f"REJECTED: {p}", file=sys.stderr)
+        print(f"outputs kept as {rej['src']} and {rej['tgt']}", file=sys.stderr)
+        for side in ("src", "tgt"):
+            if os.path.exists(final[side]):
+                print(f"NOTE: {final[side]} exists from an EARLIER run and was left untouched; "
+                      f"it is not this run's output", file=sys.stderr)
+    else:
+        for side in ("src", "tgt"):
+            if os.path.exists(rej[side]):
+                os.remove(rej[side])                       # stale rejection from an earlier run
+            os.replace(tmp[side], final[side])
+        st["outcome"] = "accepted"
+    _write_json(stats_path, st)
+    print(json.dumps(st, indent=1))
     return rc
 
 

@@ -6,7 +6,11 @@
 # peak 7e-4). max_steps = 105K + 10K = 115K → 10K SFT steps.
 #
 # Data: ../Machine-Translation-SFT/data/sft_train.{en,fr} (top-1M by
-# CometKiwi-22 score from v2's 30M corpus).
+# CometKiwi-22 score from v2's 30M corpus -- the paper run. That 30,129,500-row
+# corpus was ~45% misaligned by a CR bug; see phase0/README.md "CRITICAL".
+# E0.3 configs come from phase0/e03_run_matrix.py, which overrides data paths.)
+# The scheduler figure below is also wrong (forgot // accumulate_steps):
+# the true resume LR is 2.73e-4; see phase0/README.md "CORRECTED".
 # Eval: same valid/test as v1.1 (newstest2013/2014).
 
 model:

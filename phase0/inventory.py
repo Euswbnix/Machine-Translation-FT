@@ -3,7 +3,7 @@
 
 Answers three questions in one pass, so nothing is fetched on a guessed path:
   1. Where are the irreplaceable artifacts (training logs, checkpoints)?
-  2. Where are the expensive-to-rebuild ones (QE scores = ~12 GPU-hours,
+  2. Where are the expensive-to-rebuild ones (QE scores = ~14 GPU-hours,
      tokenizer caches, the 30M cleaned corpus)?
   3. Is the code that ACTUALLY ran here the same as what is on GitHub?
 
@@ -35,7 +35,7 @@ CLASSES = [
                                                 "interrupted_step_*.pt"]),
     ("P0", "dev/eval trace", ["dev_ce_trace.tsv", "*bleu*.tsv", "*bleu*.json",
                               "*comet*.json", "*results*.json"]),
-    ("P1", "QE scores (≈12 GPU-h to rebuild)", ["*scored*.tsv", "*scores*.tsv", "*kiwi*.tsv"]),
+    ("P1", "QE scores (≈14 GPU-h to rebuild)", ["*scored*.tsv", "*scores*.tsv", "*kiwi*.tsv"]),
     ("P1", "tokenizer cache", ["*.cached_*.npz"]),
     ("P1", "SentencePiece model", ["spm*.model", "*.spm.model", "sentencepiece.model"]),
     ("P1", "FT / cleaned corpus", ["sft_train.*", "train.en", "train.fr", "train.de",

@@ -8,8 +8,10 @@ sweep exists only to LOCATE a rate at which fine-tuning is stable, and the
 condition comparison only has to happen at that rate.
 
   Stage 1 (4 runs, 1 seed) : LR sweep on ft_topk alone, spanning > 1 decade.
-                             Pick the largest lr_scale whose newstest BLEU is
-                             flat (no monotone decline from the FIRST eval).
+                             The lr_scale is selected MECHANICALLY by
+                             phase0/e03_select_lr.py under the rule frozen in
+                             phase0/e03_decisions.json "lr_selection_rule"
+                             (newstest2013 valid BLEU; the gate uses newstest2014).
   Stage 2 (9 runs, 3 seeds): all three conditions at that LR.
 
 THE LR BUG THIS IS BUILT AROUND
@@ -61,7 +63,7 @@ USAGE
     python e03_run_matrix.py --base-config configs/sft_base_enfr.yaml \
         --data-dir data/phase0 --out-dir configs/phase0
     bash configs/phase0/run_stage1.sh       # ~2 GPU-hours
-    # inspect newstest BLEU curves, choose an lr_scale, then:
+    python phase0/e03_select_lr.py --logdir logs/phase0/stage1 --rule <frozen rule>   # then:
     bash configs/phase0/run_stage2.sh 0.15  # ~5 GPU-hours
 """
 from __future__ import annotations
@@ -71,6 +73,9 @@ import copy
 import json
 import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from controls_fingerprint import fingerprint  # noqa: E402
 
 try:
     import yaml
@@ -83,7 +88,8 @@ PRETRAIN_PEAK = 6.99e-4   # lr_scale=1 at warmup_steps=4000
 CONDITIONS = ["ft_topk", "ft_random", "ft_bottom"]
 SEEDS = [42, 1, 2]
 D_MODEL = 512
-RESUME_OPT_STEP = 105_000 // 4          # trainer.py:577 divides by accumulate_steps
+RESUME_GLOBAL_STEP = 105_000
+RESUME_OPT_STEP = RESUME_GLOBAL_STEP // 4   # trainer.py:577 divides by accumulate_steps
 
 
 def effective_peak(lr_scale: float) -> float:
@@ -103,7 +109,39 @@ def main() -> int:
                     help="keep SwanLab cloud logging. OFF by default: the base SFT configs "
                          "set enabled: true / mode: cloud, which on a freshly rented GPU box "
                          "with no SwanLab login blocks every run at startup")
+    ap.add_argument("--no-controls-fingerprint", action="store_true",
+                    help="do not hash --data-dir/manifest.json (offline tests only). By default the "
+                         "controls content sha goes into matrix.json and every checkpoint dir name, "
+                         "so a rebuilt control set can never reuse runs trained on the old one")
+    ap.add_argument("--keep-last", type=int, default=None,
+                    help="checkpoint.keep_last (trainer prunes step_*.pt only; final.pt is kept). "
+                         "e03_collect --ft-ckpt final reads only final.pt -> 1 suffices; "
+                         "avg-last5 needs the last 4 step_*.pt -> >= 4. Default: inherit")
+    ap.add_argument("--budget", choices=("steps", "tokens"), default="steps",
+                    help="steps (pre-registered): every arm stops at max_steps micro-batches. "
+                         "tokens: every arm stops at --target-tokens applied target tokens "
+                         "(trainer patch token gate), evals every target/10 tokens")
+    ap.add_argument("--target-tokens", type=int, default=0)
+    ap.add_argument("--spike-ratio", default="inherit",
+                    help="training.loss_spike_ratio: 'inherit' (1.3 from the base config) or a number; "
+                         "0 disables the spike guard (PROTOCOL.md 1.3)")
     args = ap.parse_args()
+    if args.keep_last is not None and args.keep_last < 1:
+        sys.exit("--keep-last must be >= 1 (the trainer treats 0 as 'keep every step checkpoint')")
+    if args.budget == "tokens" and args.target_tokens <= 0:
+        sys.exit("--budget tokens needs --target-tokens > 0")
+    if args.budget == "steps" and args.target_tokens:
+        sys.exit("--target-tokens is only meaningful with --budget tokens")
+    spike = None
+    if args.spike_ratio != "inherit":
+        try:
+            spike = float(args.spike_ratio)
+        except ValueError:
+            sys.exit(f"--spike-ratio {args.spike_ratio!r} is neither 'inherit' nor a number")
+        if spike < 0:
+            sys.exit("--spike-ratio must be >= 0")
+    fp = None if args.no_controls_fingerprint else fingerprint(args.data_dir)
+    ck_root = "checkpoints/phase0" + (f"/{fp['controls_sha'][:12]}" if fp else "")
 
     out = Path(args.out_dir)
     out.mkdir(parents=True, exist_ok=True)
@@ -122,6 +160,12 @@ def main() -> int:
 
     manifest = {"lr_scales": LR_SCALES, "conditions": CONDITIONS, "seeds": SEEDS,
                 "effective_peak": {str(s): effective_peak(s) for s in LR_SCALES},
+                "controls_sha": fp["controls_sha"] if fp else None,
+                "controls_files": fp["files"] if fp else None,
+                "data_dir": str(args.data_dir),
+                "checkpoint_root": ck_root, "keep_last": args.keep_last,
+                "budget": args.budget, "target_tokens": args.target_tokens or None,
+                "loss_spike_ratio": "inherit" if spike is None else spike,
                 "configs": []}
 
     for cond in CONDITIONS:
@@ -151,7 +195,18 @@ def main() -> int:
             cfg["training"]["eval_interval_min"] = grid
             cfg["data"]["train_src"] = f"{args.data_dir}/{cond}.{args.src_ext}"
             cfg["data"]["train_tgt"] = f"{args.data_dir}/{cond}.{args.tgt_ext}"
-            cfg["checkpoint"]["dir"] = f"checkpoints/phase0/{tag}"
+            cfg["checkpoint"]["dir"] = f"{ck_root}/{tag}"
+            if args.keep_last is not None:
+                cfg["checkpoint"]["keep_last"] = args.keep_last
+            if args.budget == "tokens":
+                # patch semantics: max_steps is NOT consulted; the backstop compares the
+                # absolute global_step, which starts at the resumed 105,000.
+                span = int(cfg["training"]["max_steps"]) - RESUME_GLOBAL_STEP
+                cfg["training"]["max_target_tokens"] = int(args.target_tokens)
+                cfg["training"]["eval_every_tokens"] = int(args.target_tokens) // 10
+                cfg["training"]["max_micro_steps_backstop"] = RESUME_GLOBAL_STEP + 2 * span
+            if spike is not None:
+                cfg["training"]["loss_spike_ratio"] = spike
             sw = cfg.setdefault("logging", {}).setdefault("swanlab", {})
             sw["experiment"] = f"phase0_{tag}"
             # Inherited from sft_base_enfr.yaml as enabled: true, mode: cloud. On a
@@ -169,8 +224,8 @@ def main() -> int:
 
     stage1 = ["#!/usr/bin/env bash",
               "# E0.3 Stage 1 — LR sweep on ft_topk only, seed 42. ~2 GPU-hours.",
-              "# Goal: find the largest lr_scale whose newstest BLEU does NOT decline",
-              "# monotonically from the first eval.",
+              "# The lr_scale for stage 2 is selected by phase0/e03_select_lr.py under the",
+              "# rule frozen in phase0/e03_decisions.json (lr_selection_rule), not by eye.",
               "# --suffix carries a stage tag: train.py appends it to BOTH",
               "# checkpoint.dir and swanlab.experiment (train.py:41,43), and the",
               "# tensorboard dir is ckpt_dir/logs (trainer.py:133), so without the",
@@ -180,8 +235,8 @@ def main() -> int:
         stage1.append(
             f"python train.py --config {args.out_dir}/ft_topk_lr{s:g}.yaml "
             f"--resume {args.ckpt} --reset-optimizer --seed 42 --suffix _s42_st1")
-    stage1 += ["", 'echo "Stage 1 done. Inspect newstest BLEU curves, choose an'
-                   ' lr_scale, then: bash run_stage2.sh <lr_scale>"']
+    stage1 += ["", 'echo "Stage 1 done. Select the lr_scale with phase0/e03_select_lr.py'
+                   ' (frozen rule), then: bash run_stage2.sh <lr_scale>"']
 
     stage2 = ["#!/usr/bin/env bash",
               "# E0.3 Stage 2 — all three conditions at the chosen LR, 3 seeds. ~5 GPU-hours.",
@@ -212,7 +267,9 @@ def main() -> int:
     print(f"\nwrote {n_cfg} configs + run_stage1.sh + run_stage2.sh to {out}/")
     print(f"  stage 1: {len(LR_SCALES)} runs   stage 2: "
           f"{len(CONDITIONS)*len(SEEDS)} runs   total {len(LR_SCALES)+len(CONDITIONS)*len(SEEDS)}")
-    print("\n⚠️  Evaluate EVERY run on newstest2014 AND heldout_un AND heldout_europarl.")
+    if fp:
+        print(f"  controls_sha {fp['controls_sha']} -> checkpoints under {ck_root}/")
+    print("\n⚠️  Evaluate EVERY run on newstest2014 AND every held-out set in manifest.json.")
     print("    The domain claim predicts the in-domain sets IMPROVE while newstest degrades;")
     print("    without them a decline is indistinguishable from plain forgetting.")
     return 0

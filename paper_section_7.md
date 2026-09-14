@@ -10,7 +10,7 @@ The result is a clean **negative finding**, and the negative finding is itself t
 
 ## 7.2 Method
 
-**Scoring.** We use CometKiwi-22 (`Unbabel/wmt22-cometkiwi-da`), the WMT22+ standard reference-free QE model based on XLM-RoBERTa-XL. Each `(src, mt)` pair receives a scalar quality score in roughly [0, 1]. Scoring v2's 30,129,500 pairs took 13.8 hours on a single RTX 5090 (≈ 750 pairs/sec at batch size 64), with the score range concentrated in [0.5, 0.92].
+**Scoring.** We use CometKiwi-22 (`Unbabel/wmt22-cometkiwi-da`), the WMT22+ standard reference-free QE model with an InfoXLM-large backbone (HF base_model microsoft/infoxlm-large). Each `(src, mt)` pair receives a scalar quality score in roughly [0, 1]. Scoring v2's 30,129,500 pairs took 13.8 hours on a single RTX 5090 (≈ 606 pairs/sec at batch size 64, derived from 30,129,500 pairs / 13.8 h), with the score range concentrated in [0.5, 0.92].
 
 **Filtering.** We retain the top 1M pairs by score (top 3.3% of v2). Score range of the retained set: 0.8959–0.9145 — a tight 0.02 band, indicating a dense plateau of near-equivalent high-quality pairs above this cutoff.
 

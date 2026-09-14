@@ -265,6 +265,171 @@ any reviewer can re-derive the result **under their own preferred stopping rule*
 
 ---
 
+## E0.3 decisions required before controls
+
+**Status: OPEN. Nothing below is chosen.** These choices are frozen in
+`phase0/e03_decisions.json` (template: `phase0/e03_decisions.example.json`, every value
+`"CHOOSE"`), committed and git-tagged **before** `rental_setup.sh score`. `score`,
+`controls`, `stage1`, `stage2` and `gate` refuse to run without a complete, valid file
+(`python phase0/e03_decisions.py check phase0/e03_decisions.json` lists every missing or
+invalid entry), and `stage1`/`stage2`/`gate` refuse a file whose sha256 differs from the
+one `controls` recorded. Each choice changes the reserved held-out pool, the rng stream or
+the evaluated checkpoint, so none can be changed after `controls` without rebuilding
+everything downstream.
+
+Enforcement (2026-09-13 fix round): the file must be tracked, identical to HEAD, contained
+in a tag and on a remote branch of the box's clone (`DECISIONS_UNTAGGED=1` proceeds and writes
+a deviation). The `score` done marker is keyed on `score_mode` + `calibration` only
+(`D_SCORE_SHA`), so other keys can still be edited between `score` and `controls` without
+rescoring; a scoring-key change after `score` stops unless `SCORE_REDO=1`. After E0.3 results
+exist, any change stops `score`/`controls` unless `DECISIONS_AMEND=1`, which records the
+old/new sha and changed keys in `results/phase0/deviations.txt`; `controls` appends every
+frozen version to `results/phase0/decisions_history.tsv`.
+
+Numbers are measured unless marked *derived* or *not measured*; sources are the
+2026-09-13 audit (`wf_result.json` findings F2, F8-F11, F17 and the verified training-path
+findings) and the implementation lanes. "Inside v1" percentages use the first 9,312,233
+rows of the fixed v2 corpus as a proxy for the v1.1 pretraining corpus and are
+**approximate**: v1 is not a byte prefix of v2_fixed (first difference at line 13,903).
+Verbatim pair checks against the published v1.1 corpus are exact.
+
+### D1. `pool` — which rows ft_topk / ft_random / ft_bottom and the held-out sets are drawn from
+
+| option | what it is | measured consequence |
+|---|---|---|
+| `"reused"` | the 16,646,992 rows whose old CometKiwi score is reused (`pool_mask_reused.npy` in bundle v2) | top-1M score band 0.895937-0.914479, identical to the paper's 0.8959-0.9145; top-1M is UN 78.3%, Europarl 15.6%, commoncrawl 5.7%, news-commentary 0.2%, giga-fren 0.0%. Random 1M: UN 69.6%, commoncrawl 18.4%, Europarl 11.6%, giga-fren 0%. Bottom 1M: commoncrawl 69.0%. Inside v1 (approx.): top 49.8%, random 56.0%, bottom 81.9%. ft_random is a within-mix control, not a novel-domain arm. Needs no new scoring for E0.3 |
+| `"full"` | all 38,275,284 rows of the corrected corpus | random 1M: giga-fren 55.5%, UN 30.4%; 24.3% inside v1 (approx.). The 21,628,292 unscored rows are 98.12% giga-fren and 0.96% news-commentary, so ft_topk's composition is unknown until they are scored. ft_random becomes majority data the baseline never saw (a domain AND novelty contrast). Requires `score_mode` reuse or full |
+
+No pre-registered default exists: the builder used the whole scored file only because no
+other file existed. Mechanism: `e03_build_controls.py --pool-mask`.
+
+### D2. `n_ft` — FT set size before dedup
+
+Builder default 1,000,000. The paper's set was top-1M then exact-pair dedup = 931,366 unique
+pairs on the old corpus. top-1M is 2.61% of the full pool, 6.0% of the reused pool, and
+3.3% in the paper. Unique size on the rebuilt corpus: **not measured** (recorded in
+`manifest.json` when controls run). Options: 1,000,000 (the rule as written), or a fraction.
+
+### D3. `heldout_domains` — which held-out sets are reserved (in draw order)
+
+Pre-registered default `["un", "europarl"]`. Options: that, or add reported-only sets,
+e.g. `"giga-fren"` (21,226,420 rows, 0 inside v1) or `"commoncrawl"` (only ~46,274-46,328
+rows outside v1, approx.). Adding a set changes the reserved pool and the rng stream, so
+every FT set changes. Names must match the e01 report exactly.
+
+### D4. `exclude_pretrain_from_heldout` — draw held-out pools only from pairs/sources/targets absent from v1.1
+
+Measured on the default picks (RandomState(42)): **heldout_europarl 2000/2000 pairs occur
+verbatim in the baseline's pretraining corpus (2000/2000 source strings); heldout_un
+793/2000 pairs (826/2000 sources).** Europarl: 1,930,016 of 1,930,749 rows inside v1
+(approx.), leaving ~733, so with `true` heldout_europarl will most likely fail the
+builder's pool-size exit (2,000 needed); UN has ~7.26M rows outside v1 (approx.).
+Options: `false` (pre-registered behaviour; criterion 2 then partly measures re-exposure),
+or `true` (needs `data` to have rebuilt v1.1, and an external Europarl-domain set or
+dropping Europarl from D5). Mechanism: `--pretrain-src/--pretrain-tgt`.
+
+### D5. `indomain` — criterion 2 wording
+
+The documents disagree: `phase0/README.md` item 2 and WMT2027_PLAN.md say "improves the
+UN/legislative eval" (UN only); `e03_decide.py`'s default `--indomain
+heldout_un,heldout_europarl` requires a gain on **every** listed set. Options:
+`["heldout_un"]` (Europarl printed as `[aux]`, not gating) or
+`["heldout_un","heldout_europarl"]`. Each listed set must be in D3. Criterion 2 is `gain > 0`
+with no noise floor in either option; adding one would be a change to `e03_decide.py`,
+not a value in this file.
+
+### D6. `lr_selection_rule` and `lr_tolerance_bleu` — stage-1 LR selection
+
+The rule was worded two ways and no code applied it: "largest lr_scale whose newstest
+BLEU is flat" (README, e03_decide, plan) vs "largest value whose BLEU does not decline
+monotonically from the first eval" (RUNBOOK, rental_setup.sh, run_stage1.sh). Stage 1 logs
+10 validation evals (newstest2013) at 106K..115K (*derived* from trainer.py and the
+matrix config; not run). A strictly monotone fall across 10 noisy beam-BLEU points is rare,
+so the literal "no monotone decline" rule tends to accept lr_scale 1.0 even on a clear
+downward trend. `phase0/e03_select_lr.py` applies exactly one of:
+
+| rule | passes when | tolerance |
+|---|---|---|
+| `no-strict-monotone-decline-from-first-eval` | not every consecutive eval is lower (the wording the runner printed; script default) | `null` |
+| `flat-endpoints` | \|last - first\| <= T | T BLEU |
+| `flat-slope` | \|OLS slope\| x (step span) <= T | T BLEU |
+| `flat-vs-baseline` | \|last - B\| <= T, B = pre-FT newstest2013 BLEU written by `accept` | T BLEU |
+
+Selected = largest passing lr_scale; no rung passing stops the run. The regression
+fixture 29.9, 29.6, 29.7, 29.4, 29.5, 29.3, 29.2, 29.25, 29.1, 29.0 selects 1.0 under the
+first rule and a smaller rung under `flat-endpoints`, T = 0.3.
+
+### D7. `score_mode` and `calibration`
+
+| option | GPU | measured / derived consequence |
+|---|---|---|
+| `"none"` | none | v2_scored.tsv holds reused scores and the literal `nan` for 21,628,292 rows. Valid only with `pool` = `"reused"` |
+| `"reuse"` | 21,628,292 pairs; ~10 GPU-h on one 5090 (*derived*: 9.9 h at the paper's 13.8 h / 30.1M, 10.4 h adjusting for 4.8% longer pairs) | reused vs new split almost exactly by source: europarl 1,930,749 / 0 new, commoncrawl 3,055,442 / 0, un 11,598,490 / 0, news-commentary 26,268 / 208,139, giga-fren 4,351 / 21,222,069. Any old-run vs new-run offset becomes a per-source shift in top-k selection; nothing can measure it in this mode |
+| `"full"` | 38,275,284 pairs; ~17.5 GPU-h on one 5090 (*derived*, same rate) | uniform scores; `rescore_plan.py calibrate` compares new vs the 16,646,992 reused scores per source and **stops `score` unless it passes** |
+
+`calibration` (object iff `"full"`; `null` otherwise) holds `max_mean_diff`,
+`max_p99_diff`, `min_spearman`, `min_jaccard`, `min_rows`. The audit's proposals are
+2e-4 / 2e-3 / 0.999 / 0.99 / 1000; they are not pre-registered. Density near cut-offs on
+the reused scores (non-NaN `reuse_scores.npy`, 16,646,992 rows; threshold = value at descending
+rank round(frac × 16,646,992); count of |score − threshold| <= 0.001): top-30% threshold
+0.884624 with 812,089 rows within +/-0.001; top-5% threshold 0.896701 with 414,972 rows within
++/-0.001 (41,429 within +/-1e-4, audit measurement). With only 4,351 reused giga-fren rows
+the top-5% set is ~218 rows, so two swaps already fail Jaccard 0.99. Multi-GPU throughput:
+**not measured**. The paper's scoring stack is recorded only as "PyTorch 2.8 nightly (CUDA
+12.8)"; the rental pins unbabel-comet 2.2.7, pytorch-lightning 2.5.5, transformers 4.57.1,
+numpy 1.26.4 and writes per-shard metadata. The scorer downloads Unbabel/wmt22-cometkiwi-da at
+the pinned commit 1ad785194e391eebc6c53e2d0776cada8f83179a and refuses unless
+microsoft/infoxlm-large main (tokenizer/config) resolves to d616d637f0720deda963cebbfc630657d2b7d3ae
+(both HF API, read 2026-09-13); both revisions are identity fields in the per-shard meta.
+A stack change inside a shard (on resume) refuses unless `SCORE_ALLOW_STACK_CHANGE=1`
+(deviation); a stack difference between shards (`stack_mixed`) stops `full` before
+calibration (no override) and is a warning in `reuse`.
+
+**Which threshold binds (audit F3; nothing chosen here).** At the proposed values the top-k
+Jaccard is the binding check and p99 |diff| is roughly an order of magnitude looser: adding
+Gaussian noise σ = 1e-4 to the reused scores gave top-5% Jaccard 0.980 (fails 0.99) but p99
+|diff| 2.6e-4 (passes 2e-3) (audit measurement on `reuse_scores.npy`). Roughly,
+Jaccard ≈ 1 − c·density·σ/k, with density = rows per unit score at the cut-off. In `full`
+mode the selection uses only new scores, so a calibration failure says the new stack differs
+from the paper's run, not that the new scores are internally non-uniform. The same-stack noise
+floor is not measured yet: `SCORE_SMOKE=1` now writes its max and p99 |sharded − single| into
+`v2_scored.meta.json` (`smoke`), so it can be known before thresholds are frozen. Options for
+the user: loosen `min_jaccard`; gate Jaccard only where the top-k set has at least K rows
+(optional `calibration.jaccard_min_k`, absent = 0 = every k gated, today's behaviour); or
+report calibration without gating.
+
+**If calibration fails after the full run (user decision, not pre-registered).** `score`
+keeps the scores (`v2_scored.calibration_failed.tsv` + sidecar). The two options are: (a)
+rescore after changing the stack (plain `score`, ~17.5 GPU-h derived); or (b) change the
+thresholds and run `RECALIBRATE=1 score`, which re-runs only `calibrate` on the kept TSV (sha
+checked against the sidecar; unchanged thresholds refused) and records "thresholds changed
+after the first calibration" with old/new values in `results/phase0/deviations.txt`. Nothing
+in the pipeline picks between them; the default path is (a). A calibrate exit 3 (invalid or
+unreadable input) never discards scores or shards.
+
+### D8. `ft_checkpoint` — which fine-tuned checkpoint the gate evaluates
+
+`"final"` (the behaviour the gate was written with; keep_last 1) or `"avg-last5"`
+(step_108000..114000 + final.pt averaged; keep_last 4). The baseline is the averaged HF
+release in both. The paper itself puts averaging at +0.2-0.4 BLEU (05_sft.tex:15); the
+seed sd is estimated at ~0.1-0.2 BLEU (not measured for E0.3). With `"final"`, criterion
+1's baseline check leans toward "degrades" and criterion 2 against "improves";
+`e03_decide.py` prints a warning. PROTOCOL 6.5 already requires reporting both for Phase 1.
+
+### D9. `budget` / `target_tokens` and `loss_spike_ratio`
+
+`budget`: `"steps"` (pre-registered "matched size and identical schedule": every arm stops at
+115,000 micro-steps) or `"tokens"` (trainer-patch token gate at `target_tokens` applied
+target tokens, evals every target/10, backstop 125,000 micro-steps). The sentence cap
+(192) binds whenever a batch's longest sentence is under 128 tokens, so per-step target
+tokens follow each condition's mean length; the size of the imbalance is **not measured**.
+`e03_collect.py` records applied/dropped tokens per run and warns above a 2% max/min
+applied-token ratio or 1% dropped. `loss_spike_ratio`: `"inherit"` (1.3 from the base
+config; dropped batches still count as steps) or `0` (guard off, PROTOCOL 1.3's Phase 1
+setting).
+
+---
+
 ## Surviving attacks, to be conceded in the paper rather than left for a reviewer
 
 1. **Regularization is confounded with capacity, and no protocol here fixes it.**

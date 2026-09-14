@@ -22,50 +22,150 @@ and the paper's exact scored file.
 Everything is driven by one staged script, cloned with the rest of this branch:
 
 ```bash
-git clone -b wmt2027-phase0 https://github.com/Euswbnix/Machine-Translation-FT.git ~/mt/Machine-Translation-SFT
+git clone -b wmt2027-phase0 https://github.com/Euswbnix/Machine-Translation-SFT.git ~/mt/Machine-Translation-SFT
 ```
 
 Keep the directory name `Machine-Translation-SFT`: the SFT configs hard-code
 `../Machine-Translation-SFT/...` paths even though the GitHub repo was renamed.
 
-| stage | what | needs |
+| stage | what | needs / stops when |
 |---|---|---|
-| `env` | clone training repo, install deps, apply trainer patch, run `tests/regress.py` | refuses to continue if pip replaced the image's CUDA torch |
-| `accept` | rebuild Base v1.1 from HF, reproduce test BLEU 35.31 ± 0.15 | **stops** if it does not reproduce — do not run E0.3 |
-| `data` | WMT14 fr-en parquet pinned at `wmt/wmt14@b199e406` → CR-safe v2 corpus (`rebuild_corpus.py --mode fixed`) | **stops** unless both files' sha256 equal the Mac rebuild's (38,275,284 rows). The paper's 30,129,500-row corpus is ~45% misaligned: `README.md`, "CRITICAL" |
-| `score` | with the bundle in `$WORK/rescore/`: CometKiwi-22 over only the 21,628,292 pairs the old scored file lacks, merged with 16,646,992 reused scores (~10 GPU-h on one 5090, ~2.5 h on four); without it, all 38.3M | your HF login (below) |
-| `provenance` | with the bundle: the Mac's e01 labels (exact match 99.40%). Without it: statmt constituents → `e01` hash-join | row count checked against the corpus |
-| `controls` | E0.3 sets (dedup-matched, 931K-scale) + run matrix | |
-| `stage1` | 4-run LR sweep, one GPU per run, resumable | |
-| `stage2 <lr>` | 3 conditions × 3 seeds at the chosen `lr_scale` | |
-| `gate <lr>` | `e03_collect` evaluates all 30 cells, then `e03_decide` | refuses to judge a partial collection |
+| `env` | clone training repo; install deps with **pinned** scoring stack (unbabel-comet 2.2.7, pytorch-lightning 2.5.5, transformers 4.57.1, numpy 1.26.4, plus pyarrow); apply trainer patch; run `tests/regress.py` | Python must be 3.10-3.12 (numpy 1.26.4 wheels); stops if a pin did not take or pip replaced the image's CUDA torch |
+| `accept` | newstest2013/2014 from the dev/test parquet pinned at `wmt/wmt14@b199e406` (no train dump); Base v1.1 from HF pinned at `8a58dcc4` with weights/spm sha256 checked; reproduce test BLEU 35.31 ± 0.15; record pre-FT newstest2013 BLEU | **stops** unless valid/test sha256 equal the paper's files and BLEU reproduces — do not run E0.3 |
+| `data` | pinned train parquet → CR-safe v2 corpus AND the v1.1 pretraining corpus (first 10M HF rows), both via `rebuild_corpus.py --mode fixed` | writes `.sha_verified` only after both sides' on-disk sha256 equal the Mac rebuild (v2 38,275,284 rows `c8cc665c…`/`e4f5301a…`; v1.1 `7230adc6…`/`b0a6ba91…`); needs 30 GB free |
+| `score` | by `score_mode` in `phase0/e03_decisions.json`: **none** = reused scores + literal `nan` (no GPU); **reuse** = score the 21,628,292 new pairs with `score_sharded.py` (one process per GPU), merge; **full** = score all 38,275,284 pairs, then `rescore_plan.py calibrate` against the reused scores | decisions file; bundle v2 `SHA256SUMS`; `.sha_verified`; HF login for reuse/full; 20 GB (none) / 50 GB (reuse, full) free; **full stops if calibration fails** |
+| `provenance` | bundle labels (exact match 99.40%, SHA256SUMS-verified), else statmt constituents → `e01` | `.sha_verified`; label rows = corpus rows |
+| `controls` | E0.3 sets from the frozen decisions (`--pool-mask`, `--heldout-domains`, `--n-ft`, `--pretrain-*`), then the run matrix (`keep_last` from `ft_checkpoint`, `--budget`, `--spike-ratio`); log tee'd to `logs/phase0/`; manifest, matrix and decisions sha copied to `results/phase0/` | scored rows = corpus rows = label rows (= pool-mask rows); ≥ 16 GiB MemAvailable; every held-out set the decisions name must exist and be non-empty |
+| `stage1` | serial tokenisation-cache warm-up, 4-run LR sweep (one GPU per run, resumable), then `e03_select_lr.py` applies the frozen `lr_selection_rule` → `results/phase0/lr_selection.json` | decisions unchanged since `controls`; stops if no rung passes |
+| `stage2 <lr>` | cache warm-up, 3 conditions × 3 seeds | refuses an `lr` other than the selected one (`LR_OVERRIDE=1` records a deviation); refuses runs trained on other control sets |
+| `gate <lr>` | `e03_collect --ft-ckpt <decision>` evaluates every cell, then `e03_decide --indomain <decision>` | refuses a partial or stale collection |
 
 ```bash
-bash ~/mt/Machine-Translation-SFT/phase0/rental_setup.sh env
+PIN_SFT_REV=<pushed sha> bash ~/mt/Machine-Translation-SFT/phase0/rental_setup.sh env
 ```
 
 **Things only you can do** (they involve your accounts; the scripts never touch
 credentials):
 
-1. Rent the box and give access. Suggested: **4× RTX 5090, ≥ 150 GB disk**. Scoring
-   parallelises across GPUs, and `run_parallel.py` runs one fine-tuning run per GPU.
-   The 82 MB bundle from the Mac (`~/mt_local/rebuild/rental_bundle.tar.gz`, sha256
-   `e9e096c0…`: `plan.json`, `missing_rows.npy`, `reuse_scores.npy`,
-   `provenance_{labels.npy,report.json}`) is copied to `$WORK/rescore/` and unpacked
-   there before `score`. Claude can do the copy once it has ssh access.
-2. Before `score`: accept the terms of the gated
+0. **Make the E0.3 decisions before renting (first).** Copy `phase0/e03_decisions.example.json`
+   to `phase0/e03_decisions.json`, replace every `"CHOOSE"` (13 entries; options and
+   measured consequences in `PROTOCOL.md`, "E0.3 decisions required before controls";
+   a recommendation for each is in the decisions brief), check it with
+   `python phase0/e03_decisions.py check phase0/e03_decisions.json`, then **commit, tag and
+   push both** (`git push origin wmt2027-phase0 <tag>`). Do this BEFORE step 1: the pin taken
+   there must contain this commit. `score`, `controls`, `stage1`,
+   `stage2` and `gate` refuse a decisions file that is untracked, differs from HEAD, has no
+   tag containing its commit, or whose commit is on no remote branch
+   (`DECISIONS_UNTAGGED=1` proceeds and writes a deviation). Which edits invalidate what:
+   - `score_mode` or `calibration` changed after `score` completed: `score` stops and deletes
+     nothing; `SCORE_REDO=1` rescores (a deviation). Any other key (n_ft, held-out domains,
+     LR rule, ft_checkpoint, a `_comment`) does **not** invalidate the scores; it only needs
+     freezing before `controls`.
+   - any key changed after E0.3 results exist (`lr_selection.json`, stage logs, a
+     `final.pt`, a BLEU TSV or cache): `score` and `controls` stop; `DECISIONS_AMEND=1`
+     proceeds and records the old/new sha and changed keys in `results/phase0/deviations.txt`.
+     Every `controls` appends to the append-only `results/phase0/decisions_history.tsv` and
+     keeps `decisions.<sha12>.json`; `gate` prints both files before the verdict.
+1. **Push the reviewed code, then take the pin (after step 0).** The box gets code only through `git clone`
+   + checkout in `rental_setup.sh repos`/`env`. Run `python3 tests/regress.py` (must end
+   `FAIL=0`), commit everything under `phase0/`, `scripts/`, `tests/` and `configs/` on
+   `wmt2027-phase0`, then `git push origin wmt2027-phase0` and write down `git rev-parse HEAD`. That sha must be the decisions commit from step 0 or a
+   later one: `git ls-tree --name-only <sha> phase0/e03_decisions.json` must print the path.
+   `repos`/`env` warn when the pinned commit lacks the decisions file that origin has ("PIN_SFT_REV
+   predates the decisions commit"): re-pin and rerun `repos` before `score`.
+   Check `git fetch && git status -sb` shows no ahead/behind and
+   `git ls-remote origin refs/heads/wmt2027-phase0` prints that sha. On the box, run
+   `PIN_SFT_REV=<that sha> bash rental_setup.sh env`: it checks out exactly that commit and
+   checks out Machine_translation at the pinned `MT_REV` (200f6c06…, the commit the trainer
+   patch was checked against; changing `MT_REV` is a deliberate, logged change). If a
+   checkout moves the running script, `env` stops and asks you to rerun it.
+2. Rent the box and give access. Hardware:
+   - **GPUs:** 4× RTX 5090 is fine for fine-tuning (one run per GPU). Scoring now shards one
+     process per GPU; multi-GPU scoring throughput is **not measured**. Single-card
+     estimates (derived from the paper's 13.8 h / 30.1M pairs, not measured on the pinned
+     stack): `reuse` ~10 GPU-h, `full` ~17.5 GPU-h. `SCORE_SMOKE=1 bash rental_setup.sh
+     score` first scores 3,000 rows on GPUs 0 and 1 and checks row order against a
+     single-GPU run before the long job.
+   - **RAM:** ≥ 32 GB of the offer's own allocation (vast.ai `cpu_ram`): inside the container
+     `/proc/meminfo` shows the host. `controls` refuses below 16 GiB of headroom, taking the
+     smaller of MemAvailable and the container cgroup limit minus usage (inactive file cache
+     excluded; cgroup v2 `memory.max`/`memory.high` or v1 `memory.limit_in_bytes`). The only measurement is
+     613,883,904 B peak RSS on a 2,014,489-row sample; ~11.7 GB at 38.3M rows is a linear
+     extrapolation, not measured.
+   - **Disk: ≥ 200 GB.** Measured: train parquet 7.8 GB, v2 corpus 13.8 GB, v1.1 corpus
+     3.1 GB, to_score.* 7.9 GB. Derived: scoring peak ~46 GB (`reuse`, before its cleanup) or
+     ~42 GB (`full`); merged scored TSV ~14.2 GB; checkpoints ~0.7 GB each (not measured) ×
+     ~4 kept per run (final.pt, best.pt, emergency.pt, keep_last step files) × 13 runs ≈ 36 GB
+     (`avg-last5`: 7 per stage-1 run, 8 per stage-2 run because `gate` writes avg_last5.pt,
+     which keeps the optimizer state; ≈ 100 × 0.7 ≈ 70 GB, derived). Each stage checks `df`
+     against its share (`stage2` under `avg-last5`: 55 GB; `gate` under `avg-last5`: 8 GB).
+   - **Sessions:** run `score`, `stage1`, `stage2` and `gate` inside `tmux`. Do not kill only a
+     parent process: `score_sharded.py` forwards SIGTERM/SIGINT/SIGHUP to its scorers, and a
+     second `score` while one is running refuses on the work-dir lock instead of appending
+     duplicate rows.
+3. Copy the bundle from the Mac to `$WORK/rental_bundle_v2.tar.gz`:
+   `~/mt_local/rebuild/rental_bundle_v2.tar.gz`, 86,607,565 B, sha256 `49cd6222…df6bdf6`, 7
+   members at the archive root: `plan.json`, `missing_rows.npy`, `reuse_scores.npy`,
+   `provenance_labels.npy`, `provenance_report.json`, `pool_mask_reused.npy` and `SHA256SUMS`.
+   The script unpacks it into `$WORK/rescore/` and verifies every member against `SHA256SUMS`.
+   Claude can do the copy once it has ssh access. (The older 5-member
+   `rental_bundle.tar.gz` has no `SHA256SUMS` or pool mask and is refused.)
+   `rental_setup.sh` also pins the sha256 of that `SHA256SUMS`
+   (`6bbd4724…8ba501d4`) and unpacks again whenever the tarball's sha256 changes, so a stale
+   unpack or a self-consistent but different bundle is refused. A future bundle must update
+   `EXPECTED_BUNDLE_SUMS_SHA`. Every train/dev/test parquet is checked by size **and** LFS
+   sha256 (`phase0/hf_wmt14_filelist.tsv`, third column); a wrong file is downloaded again
+   once, fresh, then `data` stops naming it.
+4. Only for `score_mode` `reuse` or `full`: accept the terms of the gated
    [Unbabel/wmt22-cometkiwi-da](https://huggingface.co/Unbabel/wmt22-cometkiwi-da)
    (auto-approved, CC-BY-NC-SA-4.0), then on the box run `hf auth login` yourself.
-3. After `stage1`: the script prints every per-eval validation BLEU. The lr_scale
-   is chosen by the pre-registered rule — the largest value whose BLEU does not
-   decline monotonically from the first eval — not by preference.
+   The login check reads `whoami`'s output as well as its exit code (huggingface_hub < 1.0
+   prints "Not logged in" and exits 0).
+4b. Only for `score_mode` `full`, if calibration does not pass: `score` keeps the scores as
+   `data_enfr_v2/v2_scored.calibration_failed.tsv` with a sidecar `.json` (TSV sha256,
+   corpus sha, decisions sha, thresholds, scorer meta, report). **Whether thresholds may be
+   changed after seeing that result is your decision** (PROTOCOL.md D7): either rescore after
+   fixing the stack (plain `score`; ~17.5 GPU-h derived), or change the thresholds in the
+   decisions (commit/tag/push) and run `RECALIBRATE=1 bash rental_setup.sh score`, which
+   re-runs only `calibrate` on the kept TSV after checking its sha256 against the sidecar,
+   refuses unchanged thresholds, and records the change in `results/phase0/deviations.txt`.
+   A calibrate exit 3 (unreadable input) never discards anything: fix the input and rerun
+   `score`; the verified shards are reused.
+4c. **Scoring-stack changes and failed GPUs during `score`.** Each shard's meta records the
+   stack (package versions, CUDA, GPU names, checkpoint path, and the pinned hub revisions of
+   Unbabel/wmt22-cometkiwi-da `1ad78519…` and microsoft/infoxlm-large `d616d637…`). If a resumed
+   or restarted shard finds a different stack, its scorer refuses (exit 3) and `score` stops
+   with "refused to continue under a changed scoring stack"; a plain rerun fails the same way.
+   Your options: (1) restore the stack the meta records; (2) delete that shard's
+   `shard.NNN.tsv` and `shard.NNN.meta.json` under `…/new_scores.tsv.shards` (reuse) or
+   `data_enfr_v2/v2_scored.partial.tsv.shards` (full) to rescore it under the new stack;
+   (3) `SCORE_ALLOW_STACK_CHANGE=1 bash rental_setup.sh score` (writes a deviation; default is to
+   refuse). After scoring, if shards differ from EACH OTHER (`stack_mixed` in the merged meta),
+   `reuse` warns and `full` stops before calibration, keeping scores and shards (full has no
+   override: delete the shards of the unwanted stack and rerun). A scorer that crashes for another
+   reason is reported as soon as it exits ("shard k FAILED"), its GPU leaves the pool for that run,
+   and the other shards continue; rerunning `score` resumes the unfinished shards on the GPUs now
+   visible (a smaller GPU count is accepted; output is byte-identical).
+5. After `stage1`: the script selects the lr_scale itself, by the rule frozen in the
+   decisions file, and prints every per-eval validation BLEU with the verdict per rung.
+   If no rung passes it stops; that is a result to report, not a prompt to pick one.
+6. After `gate`: read the verdict, and the decisions history and deviations it prints
+   first. `gate <lr>` refuses an lr other than the stage-1 selection unless `stage2` recorded
+   an `LR_OVERRIDE` deviation for it. `results/phase0/phase0_bleu.tsv` and its `.meta.json`
+   always belong to the most recent **complete** collection (both are deleted when a
+   collection starts); the meta names `lr_scale`, `selected_lr` and `decisions_sha`.
+   `e03_decide.py` exit codes are listed in section 5 below.
 
-Honest status: the offline parts of this path (`provenance`, run parallelism,
-collection, the gate, the patch-state logic, `rescore_plan.py`, `rebuild_corpus.py`) are
-exercised by `tests/regress.py` against fixtures. On a rented RTX 5090 (2026-09-13),
-`env` and `accept` ran (test BLEU 35.31, exact) and the patched trainer passed a smoke
-run. The corpus rebuild, the rescore plan and e01 ran on the Mac. The rental `data`
-stage and `score`, `controls` and real training have **not yet run on a GPU box**.
+Honest status: `repos`, `accept` and every stage from `data` onward are exercised offline
+by `tests/suites/rental.py`, which drives the real `rental_setup.sh` with fake GPUs,
+downloads, scorer, builder, trainer and evaluator (plus `tests/regress.py` for the
+individual scripts); `env`'s Python-version, pin and CUDA guards are exercised offline with a
+fake python, while its real install steps are checked only by its own on-box self-test. On a
+rented RTX 5090 (2026-09-13), the **previous** `env` and `accept` ran (test BLEU 35.31,
+exact) and the patched trainer passed a smoke run; the pinned `env` and the pinned dev/test
+download in `accept` have **not** run on a box. The corpus rebuild, the rescore plan and
+e01 ran on the Mac. `data`, `score`, `controls` and real training have **not yet run on a
+GPU box**.
 
 ## 0. (Optional) Inventory the training machine, then pull what is irreplaceable (no GPU)
 
@@ -84,11 +184,16 @@ stage and `score`, `controls` and real training have **not yet run on a GPU box*
 directories, no checkpoints, no tokenizer caches, no QE scores, no training logs.
 They live on the Linux side of the training machine.
 
-The public HuggingFace releases (`euswbnix/transformer-wmt14-{enfr,ende}-{base,big}`)
+> **Superseded (2026-09-12/13):** the HF releases are tensor-identical to `averaged.pt`
+> (README "Findings from the original training machine" → Settled 1 and 4), and
+> `phase0/hf_to_ckpt.py` restores `model` and `global_step`. E0.3 runs from HF weights
+> through `rental_setup.sh`. The paragraph below is kept for history only.
+
+(Historical.) The public HuggingFace releases (`euswbnix/transformer-wmt14-{enfr,ende}-{base,big}`)
 are **not a substitute** for E0.3. `scripts/prepare_hf_release.py:256-265` saves
 only the bare `state_dict`, while `trainer.load_checkpoint` reads `ckpt["model"]`
 and `ckpt["global_step"]` — and `global_step` is what places the scheduler on its
-decay curve at resume. Use the original `averaged.pt`.
+decay curve at resume. (Historical: use the original `averaged.pt`.)
 
 Authentication is key-only; `fetch.py` runs every ssh/rsync with `BatchMode=yes`
 and will fail rather than prompt for a password.
@@ -117,7 +222,7 @@ Then add `--go`.
 | priority | what | pull to the Mac? |
 |---|---|---|
 | P0 | training logs/reports, averaged/best checkpoints, eval traces | **yes** — irreplaceable |
-| P1 | `*scored*.tsv` (≈12 GPU-hours to rebuild, per `score_with_comet.py:6`) | **confirm it exists**; pull if space allows |
+| P1 | `*scored*.tsv` (≈14 GPU-hours for 30.1M pairs, derived; see `PROTOCOL.md` D7) | **confirm it exists**; pull if space allows |
 | P1 | `.cached_*.npz`, SPM models, `sft_train.*`, the 30M cleaned corpus | leave on the box; run e01/e02 **there** |
 | P2 | rotating `step_*.pt`, dev/test sets, other logs | no |
 
@@ -226,9 +331,16 @@ rather than a single point estimate. Repeat for en-de.
 
 ## 4. Provenance hash-join (~1 hour, mostly download, no GPU)
 
+> **Superseded (2026-09-13): use `bash rental_setup.sh provenance`.** The paths below
+> (`data/v2_clean.*`, `data/v2_scored.tsv`) are the paper's 30,129,500-row corpus, which is
+> ~45% misaligned. The corrected corpus is `data_enfr_v2/train.clean.*`, and bundle v2
+> already carries its labels. The report's `sources` order is authoritative; do not retype
+> it as `--sources`. Kept for reference only.
+
 **This gates E0.3 criterion 2.** Without provenance labels there are no in-domain
-held-out sets, so the domain claim is untestable and `e03_decide.py` CANNOT return
-GO — it will exit 2. Do this before spending any GPU time on E0.3.
+held-out sets: `e03_build_controls.py` now exits 1 instead of building FT sets without
+them, and `e03_decide.py` exits 2 (cannot decide) when an `--indomain` set has no rows.
+Do this before spending any GPU time on E0.3.
 
 Download the constituent corpora separately (Europarl v7, Common Crawl, UN, News
 Commentary, Giga-FrEn for en-fr), then:
@@ -267,6 +379,13 @@ what we think it is, which is paper-relevant on its own.
 
 ## 5. E0.3 controls and the gate (~7 GPU-hours)
 
+> **Superseded (2026-09-13): use `bash rental_setup.sh controls`, `stage1`, `stage2 <lr>`,
+> `gate <lr>`.** The commands below use the misaligned 30.1M corpus paths, a hand-typed
+> `--sources`, selection of the lr_scale by eye and a hand-assembled TSV. All of that is
+> now replaced: the frozen decisions file drives the builder and matrix,
+> `e03_select_lr.py` selects the rate, and `e03_collect.py` assembles the TSV.
+> Kept for reference only; the exit codes at the end are current.
+
 Only after 4 succeeds.
 
 ```bash
@@ -283,21 +402,38 @@ python ~/Machine-Translation-SFT/phase0/e03_run_matrix.py \
 bash configs/phase0/run_stage1.sh            # 4 runs, LR sweep on ft_topk
 ```
 
-Pick the largest `lr_scale` whose newstest BLEU does NOT fall monotonically from
-the first eval, then:
+(Superseded: the lr_scale is selected by `phase0/e03_select_lr.py` under the rule
+frozen in `phase0/e03_decisions.json`, see `PROTOCOL.md` D6.) Then:
 
 ```bash
 bash configs/phase0/run_stage2.sh 0.15       # 9 runs, 3 conditions x 3 seeds
 ```
 
-Evaluate **every** run on `newstest2014` AND `heldout_un` AND `heldout_europarl`,
-collect into a TSV (`condition seed testset bleu`, plus `baseline - <testset> <bleu>`
-rows for the pre-FT checkpoint), then:
+Evaluate every run on `newstest2014` and every held-out set in `manifest.json` with
+`phase0/e03_collect.py` (do not assemble the TSV by hand), then:
 
 ```bash
-python ~/Machine-Translation-SFT/phase0/e03_decide.py --results results/phase0_bleu.tsv
-echo "exit=$?"      # 0 = GO, 1 = NO-GO, 2 = cannot decide (missing inputs)
+python ~/Machine-Translation-SFT/phase0/e03_decide.py --results results/phase0/phase0_bleu.tsv --indomain <decision>
+echo "exit=$?"
 ```
+
+`e03_decide.py` exit codes, as the code behaves:
+
+- **0 = GO:** both pre-registered criteria pass.
+- **1 = NO-GO:** the rule was applied to complete data and at least one criterion
+  failed. Nothing else exits 1.
+- **2 = cannot decide:** any of
+  - `baseline`, `ft_topk` or `ft_random` rows are absent, or there is no baseline row
+    on newstest2014;
+  - `--indomain` is empty, or a set it names has no baseline or no ft_topk rows;
+  - an ft_topk cell (newstest2014 or an `--indomain` set) or the ft_random newstest2014
+    cell does not have exactly `--expect-seeds` values (default 3);
+  - an unexpected error.
+
+It also prints a warning when the fine-tuned and baseline checkpoints are of different
+kinds (`<results>.meta.json` from `e03_collect.py`), and repeats the collector's budget
+warnings. `e03_collect.py` itself exits 1 on an incomplete collection (only
+`.partial.tsv` is written) and 2 when the runs or control sets are stale.
 
 ---
 

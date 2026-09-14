@@ -8,7 +8,9 @@ WMT 2027 program must rest on something else.
 
 THE RULE (from phase0/README.md, fixed in advance)
 --------------------------------------------------
-Proceed to the full program only if, at the chosen flat-LR setting, BOTH hold:
+Proceed to the full program only if, at the lr_scale selected from stage 1 by
+phase0/e03_select_lr.py under the rule frozen in phase0/e03_decisions.json
+("lr_selection_rule"), BOTH hold:
 
   (1) ft_topk degrades the news-domain eval MORE than the matched ft_random
       control, by more than the seed-noise floor; and
@@ -18,6 +20,33 @@ Proceed to the full program only if, at the chosen flat-LR setting, BOTH hold:
 makes it a DOMAIN story rather than a damage story -- the paper asserted a
 domain shift but only ever showed a training-loss curve, which cannot tell
 "learned the fine-tuning distribution" apart from "broke".
+
+FAIL-CLOSED: every set named in --indomain must have a baseline row AND ft_topk
+rows, the news set must have baseline, ft_topk and ft_random rows, and every
+ft_topk/ft_random cell used by the rule must have exactly --expect-seeds values;
+otherwise the script exits 2 (cannot decide). If ft_topk AND ft_random both have zero
+seed variance on the news set, the noise floor and Welch test are undefined, which also
+exits 2 (audit F8; before, this printed "too few seeds" and exited 1 = NO-GO). Exit 1 only ever means the rule was
+applied to complete data and said no. It used to judge criterion 2
+on whichever sets happened to be present, so what the gate tested depended on
+which rows made it into the TSV.
+
+PENDING USER DECISION (audit F11, not resolved here): phase0/README.md item 2
+and WMT2027_PLAN.md say criterion 2 is "improves the UN/legislative eval"
+(UN only), while this code, with the default --indomain
+heldout_un,heldout_europarl, requires a gain on EVERY listed set. Options:
+(a) UN-only gate: pass/default --indomain heldout_un, Europarl reported only;
+(b) both sets: amend the README and plan to say "improves heldout_un AND
+heldout_europarl". The default here is left unchanged until the user freezes
+one wording (before any stage-2 result exists). Test sets present in the TSV
+but not in --indomain are printed as [aux] rows and never affect the verdict.
+
+CHECKPOINT TYPES: e03_collect.py writes <results stem>.meta.json with ft_ckpt and
+baseline_kind (a hand-built TSV may instead carry a '# ft_ckpt=... baseline_kind=...' line).
+When the FT rows are single final checkpoints and the baseline is the averaged release
+(the default, and what a header-less TSV is assumed to be), a WARNING is printed: the
+paper puts averaging at +0.2-0.4 BLEU, which biases criterion 1's baseline check toward
+'degrades' and criterion 2 against 'improves'. The pass/fail logic is unchanged.
 
 A useful auxiliary, not part of the gate: if ft_bottom degrades LESS than
 ft_topk, QE score is not monotonically driving the effect, and the "quality
@@ -42,20 +71,28 @@ USAGE
 from __future__ import annotations
 
 import argparse
+import json
 import math
 import sys
 from collections import defaultdict
+from pathlib import Path
 
-# two-sided t critical values at alpha=.05, by rounded Welch df
+# two-sided t critical values at alpha=.05, by FLOORED Welch df. t_.975 decreases in df,
+# so t(floor(df)) >= t(df): conservative. Rounding (the old code) was anti-conservative
+# for fractional df just below the next integer (df 2.6 used t(3)=3.182; exact ~3.48).
 _T05 = {1: 12.71, 2: 4.303, 3: 3.182, 4: 2.776, 5: 2.571, 6: 2.447,
-        7: 2.365, 8: 2.306, 9: 2.262, 10: 2.228}
+        7: 2.365, 8: 2.306, 9: 2.262, 10: 2.228, 11: 2.201, 12: 2.179, 13: 2.160,
+        14: 2.145, 15: 2.131, 16: 2.120, 17: 2.110, 18: 2.101, 19: 2.093, 20: 2.086,
+        21: 2.080, 22: 2.074, 23: 2.069, 24: 2.064, 25: 2.060, 26: 2.056, 27: 2.052,
+        28: 2.048, 29: 2.045, 30: 2.042}
 
 
 def tcrit(df: float) -> float:
-    if math.isnan(df):
+    if math.isnan(df) or df < 1:
         return float("inf")          # unusable df -> nothing can reach significance
-    d = max(1, min(10, int(round(df))))
-    return _T05[d] if df <= 10 else 1.96
+    if df <= 30:
+        return _T05[int(math.floor(df))]
+    return 2.042 if df <= 120 else 1.96     # t(30) is conservative up to df 120
 
 
 def welch(a: list[float], b: list[float]):
@@ -86,12 +123,23 @@ def main() -> int:
     ap.add_argument("--results", required=True)
     ap.add_argument("--news", default="newstest2014")
     ap.add_argument("--indomain", default="heldout_un,heldout_europarl")
+    ap.add_argument("--expect-seeds", type=int, default=3,
+                    help="seeds per ft_topk/ft_random cell the rule uses; any other count -> exit 2")
     args = ap.parse_args()
 
     # condition -> testset -> [bleu per seed]
     r: dict = defaultdict(lambda: defaultdict(list))
+    header: dict = {}
+    budget_warnings: list = []
     with open(args.results, encoding="utf-8") as f:
         for line in f:
+            if line.startswith("#"):
+                toks = line[1:].split()
+                if toks and toks[0] == "budget_warning":
+                    budget_warnings.append(" ".join(toks[1:]))
+                elif toks and "=" in toks[0]:
+                    header.update(dict(x.split("=", 1) for x in toks if "=" in x))
+                continue
             p = line.split()
             if len(p) < 4 or p[0] in ("condition", "#"):
                 continue
@@ -115,6 +163,54 @@ def main() -> int:
 
     base_news = r["baseline"][args.news][0]
     indomain = [t.strip() for t in args.indomain.split(",") if t.strip()]
+    if not indomain:
+        print("NO DECISION — --indomain is empty; criterion 2 has nothing to test")
+        return 2
+    lacking = [f"{ts} (no {' or '.join(c for c in ('baseline', 'ft_topk') if ts not in r[c])} rows)"
+               for ts in indomain if ts not in r["baseline"] or ts not in r["ft_topk"]]
+    if lacking:
+        print("NO DECISION — in-domain gate set(s) missing from the results: " + "; ".join(lacking))
+        print("  Every set named in --indomain must be evaluated for the baseline and ft_topk.")
+        print("  Heldout sets never built or never evaluated: run e01_provenance.py and")
+        print("  e03_build_controls.py, then e03_collect.py. The gate CANNOT return GO without them.")
+        return 2
+    short = []
+    for cond, sets in (("ft_topk", [args.news] + indomain), ("ft_random", [args.news])):
+        for ts in sets:
+            n = len(r[cond].get(ts, []))
+            if n != args.expect_seeds:
+                short.append(f"{cond}/{ts}: {n} seed value(s), expected {args.expect_seeds}")
+    if short:
+        print("NO DECISION — incomplete cells: " + "; ".join(short))
+        return 2
+    zero = [f"{c}/{args.news}" for c in ("ft_topk", "ft_random") if len(set(r[c][args.news])) == 1]
+    if len(zero) == 2:
+        print(f"NO DECISION — zero seed variance in {' and '.join(zero)}: the seed-noise floor and the Welch")
+        print("  test are undefined; the seeds did not vary the outcome. Check training determinism")
+        print("  (train.py set_seed / --seed) and that e03_collect scored distinct checkpoints.")
+        return 2
+    aux = sorted({ts for c in r for ts in r[c]} - set([args.news] + indomain))
+
+    mp = Path(args.results).with_suffix(".meta.json")
+    if mp.is_file():
+        meta = json.load(open(mp, encoding="utf-8"))
+        header.update({k: str(meta[k]) for k in ("ft_ckpt", "baseline_kind") if k in meta})
+        budget_warnings.extend(meta.get("budget_warnings") or [])
+        print(f"collection: lr_scale {meta.get('lr_scale')}, stage-1 selected {meta.get('selected_lr')}, "
+              f"decisions sha256 {meta.get('decisions_sha')}")
+        if meta.get("lr_deviation"):
+            print("  WARNING: this lr_scale is NOT the one stage 1 selected (a recorded deviation, "
+                  "results/phase0/deviations.txt)")
+    ft_kind = header.get("ft_ckpt", "final")
+    base_kind = header.get("baseline_kind", "averaged")
+    print(f"checkpoint types: fine-tuned = {ft_kind}, baseline = {base_kind}"
+          + ("" if header else f"  (no {mp.name} and no header: legacy TSV assumed final vs averaged)"))
+    if not (ft_kind == "avg-last5" and base_kind == "averaged") and ft_kind != base_kind:
+        print("  WARNING: fine-tuned and baseline checkpoints are of different kinds. Averaging is")
+        print("  worth ~+0.2-0.4 BLEU (paper 05_sft.tex), so criterion 1's baseline check is biased")
+        print("  toward 'degrades' and criterion 2 against 'improves'. The rule itself is unchanged.")
+    for w in budget_warnings:
+        print(f"  WARNING (budget): {w}")
 
     print(f"baseline {args.news} BLEU = {base_news:.2f}\n")
     print(f"{'condition':<11} {'testset':<20} {'n':>2} {'mean':>7} {'sd':>6} {'Δ vs base':>10}")
@@ -122,12 +218,13 @@ def main() -> int:
     for cond in ("ft_topk", "ft_random", "ft_bottom"):
         if cond not in r:
             continue
-        for ts in [args.news] + indomain:
+        for ts in [args.news] + indomain + aux:
             if ts not in r[cond]:
                 continue
             m, sd = mean_sd(r[cond][ts])
             b = r["baseline"].get(ts, [float("nan")])[0]
-            print(f"{cond:<11} {ts:<20} {len(r[cond][ts]):>2} {m:>7.2f} "
+            label = f"[aux] {ts}" if ts in aux else ts
+            print(f"{cond:<11} {label:<20} {len(r[cond][ts]):>2} {m:>7.2f} "
                   f"{sd:>6.2f} {m - b:>+10.2f}")
 
     # ---- criterion 1 --------------------------------------------------
@@ -158,29 +255,24 @@ def main() -> int:
               f"{'degrades beyond the noise floor' if degraded else 'does NOT degrade'}")
         c1 = degraded and gap > noise and abs(t) > crit and t > 0
     else:
-        print("    too few seeds for a test")
-        c1 = False
+        # unreachable after the completeness and zero-variance checks; never let an undefined
+        # test turn into exit 1 (NO-GO)
+        print("NO DECISION — Welch test undefined for the news-domain cells")
+        return 2
     print(f"    criterion 1: {'PASS' if c1 else 'FAIL'}")
 
     # ---- criterion 2 --------------------------------------------------
     print()
-    have = [ts for ts in indomain if ts in r["ft_topk"] and ts in r["baseline"]]
-    if not have:
-        print("(2) in-domain: NO DATA — heldout sets were never built or never "
-              "evaluated.\n    Run e01_provenance.py, then e03_build_controls.py. "
-              "Without these the domain\n    claim is untestable and the gate CANNOT return GO.")
-        c2 = False
-    else:
-        gains = []
-        for ts in have:
-            m, _ = mean_sd(r["ft_topk"][ts])
-            d = m - r["baseline"][ts][0]
-            gains.append(d)
-            print(f"(2) in-domain {ts}: ft_topk Δ = {d:+.2f} BLEU")
-        c2 = all(g > 0 for g in gains)
-        if not c2:
-            print("    ft_topk does NOT improve every in-domain set. The fine-tuning")
-            print("    did not buy in-domain competence; it only cost news competence.")
+    gains = []
+    for ts in indomain:                      # completeness was checked above (exit 2)
+        m, _ = mean_sd(r["ft_topk"][ts])
+        d = m - r["baseline"][ts][0]
+        gains.append(d)
+        print(f"(2) in-domain {ts}: ft_topk Δ = {d:+.2f} BLEU")
+    c2 = all(g > 0 for g in gains)
+    if not c2:
+        print("    ft_topk does NOT improve every in-domain set. The fine-tuning")
+        print("    did not buy in-domain competence; it only cost news competence.")
     print(f"    criterion 2: {'PASS' if c2 else 'FAIL'}")
 
     # ---- auxiliary ----------------------------------------------------

@@ -15,6 +15,18 @@
 >    two-stage design (4 LR-sweep runs + 3 conditions × 3 seeds = 13 runs), and
 >    "train until LR fully decayed / validation stops improving" was rejected in
 >    favour of run-to-overshoot with a post-hoc argmin. See `PROTOCOL.md`.
+> 4. **"The existing 30M-pair CometKiwi-scored corpus" (E0.1, E1.2 and everything built on
+>    it) — the corpus was ~45% misaligned (found 2026-09-13).** The downloader kept
+>    carriage returns inside lines and the cleaner read in universal-newline mode, so from
+>    1-based line 16,575,777 of the 30,129,500-row v2 corpus English and French lines are
+>    paired with the wrong partner (en-de: 113,149 rows from line 4,060,956). The CR-safe
+>    rebuild has **38,275,284** rows and is sha-pinned; its exact-match provenance
+>    (99.40%, a lower bound) is giga-fren 55.46%, UN 30.30%, commoncrawl 7.98%, Europarl
+>    5.04%, news-commentary 0.61%, unmatched 0.60%. "30M pool" below now means that
+>    38,275,284-row pool, which is majority giga-fren the baseline never saw; the old
+>    scored file covers only 16,646,992 of its rows. The E0.3 pool, held-out sets, LR rule
+>    and scoring mode are open decisions: `PROTOCOL.md`, "E0.3 decisions required before
+>    controls". Details: `phase0/README.md`, "CRITICAL (2026-09-13)".
 >
 > The token-budget numbers in `phase0/README.md` were also corrected twice after
 > this plan was written (step semantics, then `max_sentences` binding, then shifted
@@ -92,7 +104,7 @@ PHASE 2 / E2.3 - CONVERGENCE EVIDENCE (~40 H200-h). Four artefacts, because a st
 PHASE 2 / E2.4 - THE DOMAIN-SHIFT STATISTIC AND DOSE-RESPONSE FIT (CPU + ~20h scoring). Primary estimator, label-free and cheap: S = the mean Moore-Lewis cross-entropy difference of the filtered set (in-domain LM on eval-domain monolingual text minus general LM on the pool), i.e. the classical selection score used here as a MEASURING INSTRUMENT rather than as a competing method - which turns Moore & Lewis 2010 from prior art into supporting citation. Report two secondary estimators: a fastText domain-classifier posterior mass, and total-variation distance over the exact provenance histogram (oracle). Also promote the existing ad-hoc 75.1% newstest type-coverage number into a proper statistic with CIs. Fit delta-metric ~ f(S, mean QE, size) as a mixed-effects model with seed as a random effect; the pre-registered primary test is whether S carries a significant coefficient AFTER controlling for mean QE (i.e. domain shift, not quality, drives the effect), and whether the model predicts HELD-OUT conditions with calibrated 80% prediction intervals and positive out-of-sample R^2.
 
 ### E11
-PHASE 2 / E2.5 - ANTI-CIRCULARITY AND FILTER-SWAP (~35 H200-h). The obvious reviewer question is whether a QE-derived finding evaluated with neural metrics is circular. Answer structurally: FILTER with CometKiwi-22 (reference-free, XLM-R-XL); EVALUATE primarily with a different family and reference-based - MetricX-24 and COMET-22, with chrF and BLEU secondary, sacreCOMET signatures reported per Zouhar et al. 2024. Then repeat 6 conditions x 3 seeds with a DIFFERENT filter score (CometKiwi-XL or Bicleaner-AI or LaBSE) and show the dose-response coefficient on S is stable across filter models - which proves the mechanism is domain selection, not a CometKiwi idiosyncrasy.
+PHASE 2 / E2.5 - ANTI-CIRCULARITY AND FILTER-SWAP (~35 H200-h). The obvious reviewer question is whether a QE-derived finding evaluated with neural metrics is circular. Answer structurally: FILTER with CometKiwi-22 (reference-free, InfoXLM-large backbone); EVALUATE primarily with a different family and reference-based - MetricX-24 and COMET-22, with chrF and BLEU secondary, sacreCOMET signatures reported per Zouhar et al. 2024. Then repeat 6 conditions x 3 seeds with a DIFFERENT filter score (CometKiwi-XL = wmt23-cometkiwi-da-xl, XLM-R-XL backbone, or Bicleaner-AI or LaBSE) and show the dose-response coefficient on S is stable across filter models - which proves the mechanism is domain selection, not a CometKiwi idiosyncrasy.
 
 ### E12
 PHASE 2 / E2.6 - GENERALIZATION ACROSS LANGUAGE PAIRS (~45 H200-h). The existing en-fr and en-de results already DISAGREE IN SIGN (Big-Base is -0.06/+0.12 on en-fr but -0.99 with p=0.007 on en-de; the std ratio collapses from 3.1-4.0x to 1.5x, F(3,3)=2.20, p=0.267) - the generalization failure in miniature. Run 8 conditions x n=3 seeds on a second pair, chosen to break the Latin-script high-resource pattern (en-zh or en-ru preferred over en-de; if en-de is used, note its 4.17M pairs cannot support a converged 209M model without 60+ epochs and treat the divergence as a data-scale effect, which is itself testable).

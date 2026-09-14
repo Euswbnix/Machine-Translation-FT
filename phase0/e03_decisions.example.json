@@ -1,0 +1,16 @@
+{
+  "_doc": "Template only. Copy to phase0/e03_decisions.json, replace every CHOOSE, commit and git-tag BEFORE 'rental_setup.sh score'. Options and measured consequences: PROTOCOL.md, section 'E0.3 decisions required before controls'. Validate: python phase0/e03_decisions.py check phase0/e03_decisions.json",
+  "pool": "CHOOSE",
+  "n_ft": "CHOOSE",
+  "heldout_domains": "CHOOSE",
+  "indomain": "CHOOSE",
+  "exclude_pretrain_from_heldout": "CHOOSE",
+  "lr_selection_rule": "CHOOSE",
+  "lr_tolerance_bleu": "CHOOSE",
+  "score_mode": "CHOOSE",
+  "calibration": "CHOOSE",
+  "ft_checkpoint": "CHOOSE",
+  "budget": "CHOOSE",
+  "target_tokens": "CHOOSE",
+  "loss_spike_ratio": "CHOOSE"
+}

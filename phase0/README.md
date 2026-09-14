@@ -1,7 +1,8 @@
 # Phase 0 — Kill Gate (Month 1)
 
 Decides whether the WMT 2027 program is worth 11 more months. Costs ~1 GPU-day
-plus CPU. **Nothing here requires renting a machine.**
+plus CPU. CPU steps run on the Mac; QE scoring and E0.3 need a rented GPU box (RUNBOOK
+primary path, `rental_setup.sh`).
 
 Plan: `../WMT2027_PLAN.md`
 
@@ -92,7 +93,7 @@ uses `newline="\n"`; a regression test builds a CR-bearing reference corpus and 
 | full-stream Base/Big en-fr cells (tab:two_by_two, seed tables, seed_variability figure) | **trained on a ~45% misaligned corpus**: all 8 runs, confirmed from configs, file mtimes and decoded cache pairs |
 | "corpus expansion hurts" (−1.5 BLEU regime drop, ANOVA, Welch tests) | the regime axis is really *clean* vs *55% clean + 45% random pairs* |
 | full-stream Big/Base variance 4.0× (F(3,3)=15.77, p=0.049) | rests on the corrupted runs |
-| QE source composition (UN ~1.7×, Giga-fren eliminated) | largely QE rejecting misaligned rows; over the aligned prefix UN enrichment is ~1.13× |
+| QE source composition (UN ~1.7×, Giga-fren eliminated) | largely QE rejecting misaligned rows. **Superseded (2026-09-13):** the "~1.13× UN enrichment over the aligned prefix" figure is not re-derived and may rest on the stale old-reader labels (`~/mt_local/Machine-Translation-SFT/phase0/provenance_exact_{labels.npy,report.json}`, news-commentary inflated to 85,173 by shifted pairs). Do not cite it; do not use those files |
 | keep-rate 93% vs 74% as evidence of source noise | inflated: the length filters rejected shifted pairs |
 | en-de Big < Base (p=0.007) | confounded by a 2.7% misaligned news-commentary tail |
 | capped cells, v1.1 Base-vs-Big comparison | **unaffected** |
@@ -128,11 +129,15 @@ Separately surfaced: the two regimes also use **different SentencePiece models**
    (`hf_wmt14_filelist.tsv`). `--mode legacy` must reproduce the published corpora's
    sha256 exactly, which proves the rebuild starts from the same rows the paper used.
    `--mode fixed` is then the corrected corpus.
-2. Re-score only the changed v2 rows with CometKiwi-22.
-   Tool: `rescore_plan.py plan` (Mac, against the old `v2_scored.tsv`) → copy
-   `missing_rows.npy` + `plan.json` to the rental's `$WORK/rescore/` →
-   `rental_setup.sh data` then `score` (extract, score, merge; each refuses a corpus whose
-   sha256 differs from the plan's).
+2. Score the corrected v2 corpus as the frozen `score_mode` says (`none` / `reuse` /
+   `full`; `PROTOCOL.md` D7). Tool: `rescore_plan.py plan` (done on the Mac, against the old
+   `v2_scored.tsv`) → **bundle v2** `~/mt_local/rebuild/rental_bundle_v2.tar.gz`
+   (86,607,565 B, sha256 `49cd62221730cb33ee9e6ddad99a8fa43f38f9cbcde72044317a11f71ab6bdf6`;
+   members at the archive root: `plan.json`, `missing_rows.npy`, `reuse_scores.npy`,
+   `provenance_labels.npy`, `provenance_report.json`, `pool_mask_reused.npy`, `SHA256SUMS`)
+   copied to the rental's `$WORK/` → `rental_setup.sh data` then `score`. The script verifies
+   `SHA256SUMS`, and extract/merge/calibrate refuse a corpus whose sha256 differs from the
+   plan's. `merge` needs `reuse_scores.npy`; the old 5-file `rental_bundle.tar.gz` is refused.
 3. Re-run `e01_provenance.py` (fixed) and require an exact match rate ≥ 95%.
 4. Rebuild the E0.3 controls from the corrected corpus.
 
@@ -155,8 +160,42 @@ the paper used, and fixed mode differs from them only through CR handling.
   as too short and kept the rest aligned. Differences can therefore start a few thousand
   lines before the misalignment onset measured by e01 (16,575,777 / 4,060,956).
 - Keep rate for v2 goes from 73.8% to **93.7%** of 40,836,715 raw pairs.
+- **The fixed v2 corpus is pipeline-aligned throughout** (38,275,284 rows, 0 line offset,
+  0 unpaired tail lines). In 1,069 giga-fren samples found from row 16.6M on, 1,061 match
+  giga-fren's French on the same line and 0 match a neighbour; per-window digit agreement
+  and length correlation never approach the published tail's (~1-2% digit agreement,
+  corr ~0.65). It inherits upstream noise: giga-fren lines 6,258,774-6,258,776 are
+  themselves shifted by one (fixed rows 22,745,675-22,745,677), which e01 labels as matched.
+- The differences begin 2,565 (v2) and 2,737 (en-de) lines before the misalignment onset.
+  The first CR pairs are split one CR per side, so fragments stay aligned; the first uneven
+  split is raw row 18,152,848 (en 2 CRs, fr 0) for v2 and raw row 4,329,492 (en 2, de 1) for
+  en-de. The duplicate-blocking sets are identical in both modes (4,661 fr-en, 126 de-en;
+  symmetric difference 0; `rebuild_corpus.py` now checks this itself). "Rows before the
+  first differing line are identical" does not mean every later row differs.
+- **en-de alignment rests on statistics only.** The fixed en-de corpus (4,238,227 rows; the
+  published one has 4,174,104) is byte-identical to the published one through line
+  4,058,218. Digit agreement and length correlation in 20k windows stay at aligned levels
+  to the end (≥ 88.8% / ≥ 0.970 from 4.04M on) while the published corpus drops to ~1% /
+  ~0.56 after 4.06M. There is no statmt en-de copy here, so no exact provenance or
+  adjacency check.
 - **e01 on the fixed v2: exact match rate 99.40%** (38,045,508 / 38,275,284; was 55%).
-  Cross-source duplicate keys: 119,858 (label arbitrary). Source composition:
+  **99.40% is a lower bound on source-verified pairs, not a misalignment rate:** the 229,776
+  unmatched rows are clustered (30,909 in Europarl rows 447k-801k; ~8-15k per 1M after row
+  16M; longest run 356 rows at 0-based 22,745,320), and every run inspected is aligned rows
+  that fail exact matching on normalisation (trailing U+2028 removed by the cleaner, leading
+  "- " on Europarl FR). Measured with the data lane's e01 on the same corpus: `--norm strip`
+  99.999255% (285 unmatched), `--norm collapse_ws` 100% (0 unmatched); labels under the
+  looser normalisers were not compared row by row with exact.
+- **Cross-source duplicate keys: 119,858, carried by 243,550 corpus rows (0.64%).** e01
+  assigns such rows deterministically to the first-listed source (europarl < commoncrawl
+  < un < news-commentary < giga-fren), so giga-fren never receives them. 240,457 of those
+  rows also occur in giga-fren, so giga-fren's true share is 55.46-56.09%; news-commentary is
+  the least robust figure (116,278 of its 234,407 rows are also giga-fren pairs): 0.31-0.61%.
+  Rows by source pair: news-commentary+giga-fren 116,373; commoncrawl+giga-fren 90,443;
+  un+giga-fren 33,815; europarl+un 1,934; commoncrawl+un 1,809; europarl+giga-fren 708;
+  europarl+news-commentary 291; un+news-commentary 220; europarl+commoncrawl 39 (a row whose
+  key is in k sources counts in each of its pairs). Source composition (exact, first-listed
+  assignment):
 
   | source | rows | share |
   |---|---|---|
@@ -167,18 +206,36 @@ the paper used, and fixed mode differs from them only through CR handling.
   | news-commentary | 234,407 | 0.61% |
   | unmatched | 229,776 | 0.60% |
 
-  giga-fren comes last in the HF stream, entirely after the onset, so the paper's
-  full-stream corpus contained almost no correctly paired giga-fren (old run: 4,355
-  exact matches). **The corrected full-stream corpus is majority giga-fren.** Any
-  regime or QE-composition claim has to be re-derived on it, not patched.
-- Re-score plan: 16,646,992 rows keep their old CometKiwi score (every row before
-  16,573,212, plus ~74k identical pairs after it); 21,628,292 need scoring. A new
-  top-1M QE set may differ from the paper's, because the recovered giga-fren pairs were
-  never scored.
+  giga-fren is the last constituent in the HF fr-en stream. Its bulk starts about 160k rows
+  after the misalignment onset (first 10k window with > 50% giga-fren at fixed row
+  16,732,820), after a news-commentary block in which the onset falls. Re-running the
+  current CR-safe e01 on the **published** v2 corpus gives 4,380 exact giga-fren matches out
+  of 30,129,500 rows (43 before line 16,573,212, 4,337 after); after line 16,573,212 only
+  8,462 of 13.56M rows match any constituent exactly (0.06%). Published-corpus table:
+  europarl 1,930,472; commoncrawl 3,010,114; un 11,584,891; news-commentary 20,212;
+  giga-fren 4,380; unmatched 13,579,431; match rate 54.93%. The earlier figures of 4,355
+  giga-fren and 85,173 news-commentary came from the old universal-newline reader
+  (`~/mt_local/Machine-Translation-SFT/phase0/provenance_exact_*`: **stale, do not use**).
+  Label arrays of the published and fixed corpora share row indices only up to 16,573,211.
+  **The corrected full-stream corpus is majority giga-fren.** Any regime or QE-composition
+  claim has to be re-derived on it, not patched.
+- Re-score plan: 16,646,992 rows keep their old CometKiwi score: every row before 1-based
+  line 16,573,212 (0-based row 16,573,211), plus 73,781 rows after it: 71,051 exact
+  duplicates of pairs that occur earlier in the corpus (the cleaner keeps duplicate pairs),
+  2,551 rows in the still-aligned stretch 16,573,218-16,575,775 (0-based) before the
+  misalignment onset, and 179 short or boilerplate pairs that also occur later in the old
+  file. Identical pairs scored twice in the old file differ by at most about 1e-6, and the
+  plan takes the earliest occurrence. 21,628,292 rows need scoring (98.12% giga-fren), ~10
+  GPU-h on one RTX 5090 at the paper's rate (derived; multi-GPU throughput not measured).
+  The reused/new split is almost exactly by source, so mixing the two runs' scores is an
+  open decision (`PROTOCOL.md` D7).
 
 Artifacts (Mac, not committed): `~/mt_local/rebuild/{v2,v1,ende}_{legacy,fixed}/`,
 `~/mt_local/rebuild/v2_rescore/` (`plan.json`, `missing_rows.npy`, `reuse_scores.npy`),
-`~/mt_local/rebuild/prov_v2_fixed/provenance_{labels.npy,report.json}`.
+`~/mt_local/rebuild/prov_v2_fixed/provenance_{labels.npy,report.json}`,
+`~/mt_local/rebuild/rental_bundle_v2{/,.tar.gz}` (bundle v2, above). **Do not use**
+`~/mt_local/Machine-Translation-SFT/phase0/provenance_exact_*` (old reader) or the 5-file
+`rental_bundle.tar.gz`.
 
 ## Findings from the original training machine (2026-09-12)
 
@@ -517,6 +574,13 @@ to the same value, so each rung is flat.
 
 ### How to run E0.3
 
+> **Superseded (2026-09-13): run `bash phase0/rental_setup.sh controls`, `stage1`,
+> `stage2 <lr>`, `gate <lr>` (see `RUNBOOK.md`).** The block below points at the misaligned
+> 30.1M-row `data/v2_scored.tsv`, passes a hand-typed `--sources`, and picks the lr_scale
+> by eye. The builder now exits on that row-count mismatch. The design choices are frozen
+> in `phase0/e03_decisions.json` (`PROTOCOL.md`, "E0.3 decisions required before
+> controls"); the lr_scale is selected by `phase0/e03_select_lr.py`. Kept for reference.
+
 Two stages, 13 runs (~7 GPU-hours), not the naive 3x4x3 = 36:
 
 ```bash
@@ -532,22 +596,29 @@ python phase0/e03_run_matrix.py --base-config configs/sft_base_enfr.yaml \
     --data-dir data/phase0 --out-dir configs/phase0
 
 bash configs/phase0/run_stage1.sh          # 4 runs: LR sweep on ft_topk
-# choose the largest lr_scale whose newstest BLEU is flat, then:
+# (superseded) the lr_scale comes from phase0/e03_select_lr.py under the frozen rule, then:
 bash configs/phase0/run_stage2.sh 0.15     # 9 runs: 3 conditions x 3 seeds
 
 # evaluate EVERY run on newstest2014 + heldout_un + heldout_europarl, then:
 python phase0/e03_decide.py --results results/phase0_bleu.tsv
 ```
 
-`e03_decide.py` exits 0 = GO, 1 = NO-GO, 2 = cannot decide (missing inputs).
+`e03_decide.py` exits 0 = GO, 1 = NO-GO (rule applied to complete data), 2 = cannot
+decide (missing conditions or gate sets, or a cell without exactly 3 seeds; full list in
+`RUNBOOK.md` section 5).
 
 ### Pre-registered decision rule
 
-Proceed to the full program **only if**, at the flat-LR setting:
+Proceed to the full program **only if**, at the lr_scale selected from stage 1 by
+phase0/e03_select_lr.py under the rule frozen in phase0/e03_decisions.json
+("lr_selection_rule"), BOTH hold (the stage-1 rule itself is an open decision,
+`PROTOCOL.md` D6):
 
 1. top-k-QE FT degrades news-domain eval **more than** the matched random
    control, by **more than** the seed-noise floor, **and**
-2. top-k-QE FT **improves** the UN/legislative eval.
+2. top-k-QE FT **improves** the UN/legislative eval. (`e03_decide.py`'s default
+   `--indomain heldout_un,heldout_europarl` requires a gain on both sets; which wording is
+   pre-registered is open decision D5 in `PROTOCOL.md`.)
 
 Otherwise the motivating observation is an optimization artifact — most likely
 the discarded Adam moments (see the corrected LR section above), which raise the
