@@ -458,7 +458,7 @@ def suite_collect_manifest(ctx):
     for x in ("test.en", "test.fr"):
         (mt / "data_enfr_v1" / x).write_text("line\n")
     (mt / "src/__init__.py").write_text("")
-    (mt / "ckpt_hf/base.pt").write_text("w")
+    ctx.write_ckpt(mt / "ckpt_hf/base.pt")
     (sf / "configs/base.yaml").write_text('{"model": {}}')
     (mt / "scripts/fake_eval.py").write_text(
         "import src  # noqa: F401\nimport argparse\nap = argparse.ArgumentParser()\n"
@@ -469,7 +469,7 @@ def suite_collect_manifest(ctx):
     (sf / "configs/phase0/run_stage2.sh").write_text(
         f"python train.py --config {sf}/configs/phase0/ft_topk_lr${{LR}}.yaml --seed 42 --suffix _s42\n")
     (mt / "checkpoints/ft_topk_lr0.15_s42").mkdir(parents=True)
-    (mt / "checkpoints/ft_topk_lr0.15_s42/final.pt").write_text("w")
+    ctx.write_ckpt(mt / "checkpoints/ft_topk_lr0.15_s42/final.pt", global_step=10)
     for x in ("heldout_un", "heldout_giga-fren"):
         for e in ("en", "fr"):
             (sf / "ctrl" / f"{x}.{e}").write_text("line\n")
@@ -477,29 +477,32 @@ def suite_collect_manifest(ctx):
     args = [ROOT / "phase0/e03_collect.py", "--mt-root", mt, "--runner", sf / "configs/phase0/run_stage2.sh",
             "--lr-scale", "0.15", "--baseline-ckpt", "ckpt_hf/base.pt", "--baseline-config", sf / "configs/base.yaml",
             "--controls-dir", sf / "ctrl", "--out", out, "--eval-script", "scripts/fake_eval.py"]
+    # checkpoints are JSON fixtures: e03_collect must read them through the shared stub,
+    # or real torch (present on any training box) tries to unpickle text
+    cenv = {"PYTHONPATH": str(ctx.make_faketorch(ctx.d))}
 
     def manifest(sets):
         json.dump({"heldout_sets": {s: {"n": 1} for s in sets}}, open(sf / "ctrl/manifest.json", "w"))
 
     manifest(["heldout_un", "heldout_giga-fren"])
-    rc, o = run(args)
+    rc, o = run(args, env=cenv)
     got = sorted({l.split("\t")[2] for l in out.read_text().splitlines()[1:]}) if out.exists() else []
     check("collect: test sets come from manifest.json heldout_sets (heldout_europarl not required when unlisted)",
           rc == 0 and got == ["heldout_giga-fren", "heldout_un", "newstest2014"], f"rc={rc} {got} {o[-200:]}")
     out.unlink(missing_ok=True)
     manifest(["heldout_un", "heldout_europarl"])
-    rc, o = run(args)
+    rc, o = run(args, env=cenv)
     check("collect: a manifest-listed held-out set with missing files is a hard failure",
           rc == 1 and "heldout_europarl" in o and "missing" in o and not out.exists(), f"rc={rc}")
     # from here the default sets' files all exist, so only the explicit guard can fail
     for e in ("en", "fr"):
         (sf / "ctrl" / f"heldout_europarl.{e}").write_text("line\n")
     manifest([])
-    rc, o = run(args)
+    rc, o = run(args, env=cenv)
     check("collect: a manifest listing no held-out sets is a hard failure (no silent fallback)",
           rc == 1 and "NO held-out sets" in o and not out.exists(), f"rc={rc} {o[-150:]}")
     json.dump({"n_ft": 1}, open(sf / "ctrl/manifest.json", "w"))
-    rc, o = run(args)
+    rc, o = run(args, env=cenv)
     got = sorted({l.split("\t")[2] for l in out.read_text().splitlines()[1:]}) if out.exists() else []
     check("collect: a manifest without heldout_sets falls back to heldout_un + heldout_europarl",
           rc == 0 and got == ["heldout_europarl", "heldout_un", "newstest2014"], f"rc={rc} {got}")
