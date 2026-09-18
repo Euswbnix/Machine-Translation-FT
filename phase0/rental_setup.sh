@@ -62,7 +62,11 @@ BUNDLE="$WORK/rescore"
 DECISIONS_REL=phase0/e03_decisions.json
 DECISIONS="$SFT/$DECISIONS_REL"
 RESULTS="$SFT/results/phase0"
-PY=python
+# PY: the interpreter every stage runs. Override it to point at a venv or conda env
+# (e.g. PY=$HOME/mt/venv/bin/python) so a box's own environment is left alone.
+# Ubuntu images often ship python3 only, so fall back to it rather than dying at
+# the first stage.
+PY="${PY:-$(command -v python 2>/dev/null || command -v python3 2>/dev/null || echo python)}"
 
 # ---- pinned inputs. `pin VAR value` keeps an environment value (tests/suites/rental.py
 # ---- substitutes toy data that way) and warns at every stage when one differs from the pin.
