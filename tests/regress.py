@@ -69,6 +69,33 @@ def run(args, env=None):
 
 
 # ---------------------------------------------------------------- fixtures
+# Generated fake trainers write their checkpoints with this, for the same reason as write_ckpt.
+FAKE_SAVE = ("def _save(p):\n"
+             "    try:\n"
+             "        import torch\n"
+             "    except ImportError:\n"
+             "        open(p, 'w').write('w'); return\n"
+             "    torch.save({'model': {}, 'global_step': 111000, 'applied_target_tokens': 1234567,\n"
+             "                'optimizer_steps': 3000, 'dropped_tokens': 0, 'total_train_tokens': 2345678}, p)\n")
+
+CKPT_FIELDS = {"global_step": 111_000, "applied_target_tokens": 1_234_567, "optimizer_steps": 3_000,
+               "dropped_tokens": 0, "total_train_tokens": 2_345_678}
+
+
+def write_ckpt(path: Path, **fields):
+    """Checkpoint fixture. e03_collect reads these with torch.load when torch is importable,
+    so on a box that has torch (any real training box) a placeholder file is not a fixture,
+    it is a crash. Without torch the tools never open it and the placeholder is enough."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        import torch
+    except ImportError:
+        path.write_text("w")
+        return path
+    torch.save({"model": {}, **CKPT_FIELDS, **fields}, path)
+    return path
+
+
 def make_cache(d: Path, n=200_000):
     rng = np.random.RandomState(0)
     src = np.clip(rng.lognormal(3.25, 0.62, n).astype(np.int64), 2, 256)
@@ -530,6 +557,23 @@ def suite_inventory_fetch(d: Path):
         repos = json.load(open(js))["repos"]
         lying = [p for p, s in repos.items() if s.get("errors") and s.get("dirty_files") == 0]
         check("a repo git cannot read is never reported as clean (dirty_files 0)", not lying, str(lying))
+    # A clone checked out by sha (what rental_setup.sh pins) has no upstream. That is a state,
+    # not a read failure: recording it as an error made every pinned clone look unreadable.
+    rr = d / "detached_repo"
+    rr.mkdir()
+    gi = subprocess.run(["git", "init", "-q", str(rr)], capture_output=True, text=True)
+    if gi.returncode != 0:
+        skip("detached HEAD reports no upstream, not an error", f"git unusable here: {gi.stderr.strip()[:60]}")
+    else:
+        genv = {**os.environ, "GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@example.invalid",
+                "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@example.invalid"}
+        subprocess.run(["git", "-C", str(rr), "commit", "-q", "--allow-empty", "-m", "x"],
+                       capture_output=True, env=genv)
+        subprocess.run(["git", "-C", str(rr), "checkout", "-q", "--detach", "HEAD"], capture_output=True)
+        st = inv.git_state(str(rr))
+        check("detached HEAD reports no upstream, not an error (a pinned clone is not unreadable)",
+              st.get("upstream") is None and st.get("unpushed_commits") is None
+              and not st.get("errors") and st.get("dirty_files") == 0, str(st)[:250])
 
     if shutil.which("rsync") is None:
         skip("fetch pull (local)", "rsync not installed on this machine")
@@ -567,7 +611,7 @@ def suite_collect(d: Path):
         (mt / "data_enfr_v1" / x).write_text("line\n")
     for x in ("heldout_un.en", "heldout_un.fr", "heldout_europarl.en", "heldout_europarl.fr"):
         (sf / "data/phase0" / x).write_text("line\n")
-    (mt / "ckpt_hf/base.pt").write_text("w")
+    write_ckpt(mt / "ckpt_hf/base.pt")
     (sf / "configs/sft_base_enfr.yaml").write_text('{"model": {}}')
     counter = d / "col_count"; counter.write_text("")
     # a real `src` package, imported by the fake evaluator exactly as eval_bleu.py does,
@@ -595,7 +639,7 @@ def suite_collect(d: Path):
             ck = mt / f"checkpoints/phase0/{c}_lr0.15_s{sd}_st2"
             ck.mkdir(parents=True, exist_ok=True)
             if (c, sd) != ("ft_bottom", 2):
-                (ck / "final.pt").write_text("w")
+                write_ckpt(ck / "final.pt")
     (sf / "configs/phase0/run_stage2.sh").write_text("\n".join(lines) + "\n")
     out = sf / "results/phase0_bleu.tsv"
     args = [ROOT / "phase0/e03_collect.py", "--mt-root", mt, "--runner", sf / "configs/phase0/run_stage2.sh",
@@ -608,7 +652,7 @@ def suite_collect(d: Path):
     check("a missing final.pt -> exit 1 and ONLY a .partial.tsv",
           rc == 1 and not out.exists() and out.with_suffix(".partial.tsv").exists(), f"rc={rc}")
     check("still evaluates everything present (8 runs x 3 + 3 baseline = 27)", n1 == 27, str(n1))
-    (mt / "checkpoints/phase0/ft_bottom_lr0.15_s2_st2/final.pt").write_text("w")
+    write_ckpt(mt / "checkpoints/phase0/ft_bottom_lr0.15_s2_st2/final.pt")
     rc, _ = run([*args, "--eval-script", "scripts/fake_eval.py"], env=env)
     n2 = len(counter.read_text().splitlines())
     check("complete -> exit 0 and canonical TSV", rc == 0 and out.exists(), f"rc={rc}")
@@ -650,7 +694,7 @@ def suite_run_parallel(d: Path):
         "if 'ft_bottom' in a.config and a.suffix == '_s2_st2' and not os.path.exists('fixed'):\n"
         "    sys.exit(3)\n"
         "dd = cfg['checkpoint']['dir'] + a.suffix\n"
-        "os.makedirs(dd, exist_ok=True); open(dd + '/final.pt', 'w').write('w')\n")
+        "os.makedirs(dd, exist_ok=True)\n" + FAKE_SAVE + "_save(dd + '/final.pt')\n")
     lines = ["#!/usr/bin/env bash", 'LR="${1:?}"', 'VALID="1 0.5 0.15 0.05"']
     for c in ("ft_topk", "ft_random", "ft_bottom"):
         (cwd / f"cfg/{c}_lr0.15.yaml").write_text(json.dumps({"checkpoint": {"dir": f"ck/{c}_lr0.15"}}))
@@ -942,7 +986,7 @@ def run_external_suites(d: Path):
             mod = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(mod)
             mod.suite(types.SimpleNamespace(d=sd, check=check, skip=skip, run=run, ROOT=ROOT,
-                                            PY=PY, MT_REPO=MT_REPO, np=np))
+                                            PY=PY, MT_REPO=MT_REPO, np=np, write_ckpt=write_ckpt))
         except Exception:
             check(f"tests/suites/{sp.name} ran without crashing", False, traceback.format_exc()[-600:])
 

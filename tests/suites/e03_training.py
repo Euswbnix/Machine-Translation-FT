@@ -151,7 +151,10 @@ def parallel_stale(ctx):
        "ap.add_argument('--reset-optimizer', action='store_true')\na = ap.parse_args()\n"
        "open(os.environ['RP_LOG'], 'a').write(a.suffix + '\\n')\n"
        "dd = json.load(open(a.config))['checkpoint']['dir'] + a.suffix\nos.makedirs(dd, exist_ok=True)\n"
-       "open(dd + '/final.pt', 'w').write('w')\n")
+       "try:\n    import torch; torch.save({'model': {}, 'global_step': 111000,\n"
+       "        'applied_target_tokens': 1234567, 'optimizer_steps': 3000, 'dropped_tokens': 0,\n"
+       "        'total_train_tokens': 2345678}, dd + '/final.pt')\n"
+       "except ImportError:\n    open(dd + '/final.pt', 'w').write('w')\n")
     _w(cwd / "cfg/ft_topk_lr1.yaml", json.dumps({"checkpoint": {"dir": "ck/ft_topk_lr1"}}))
     runner = cwd / "configs/run_stage1.sh"
     _w(runner, "#!/usr/bin/env bash\n" + "".join(

@@ -114,27 +114,34 @@ def git_state(path: str):
     """
     errors = []
 
-    def g(*a):
+    def g(*a, soft=False):
+        """soft: a non-zero exit is an expected state, not a read failure."""
         try:
             r = subprocess.run(["git", "-C", path, *a], capture_output=True, text=True, timeout=20)
         except (OSError, subprocess.TimeoutExpired) as e:
             errors.append(f"git {a[0]}: {type(e).__name__}")
             return None
         if r.returncode != 0:
-            errors.append(f"git {a[0]}: {(r.stderr.strip().splitlines() or ['rc=%d' % r.returncode])[0][:120]}")
+            if not soft:
+                errors.append(f"git {a[0]}: {(r.stderr.strip().splitlines() or ['rc=%d' % r.returncode])[0][:120]}")
             return None
         return r.stdout.strip()
 
     head = g("log", "--oneline", "-1")
     remote_raw = g("remote", "get-url", "origin")
     status = g("status", "--porcelain")
-    unpushed = g("rev-list", "--count", "@{u}..HEAD")   # fails legitimately with no upstream
+    # No upstream (a detached HEAD, or a branch that was never pushed) is a state, not a
+    # read failure: recording it as an error made every checked-out-by-sha clone look like
+    # a repo git could not read.
+    unpushed = g("rev-list", "--count", "@{u}..HEAD", soft=True)
+    upstream = g("rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}", soft=True)
     return {
         "head": redact(head),
         "remote": redact(remote_raw),
         "remote_embeds_credential": has_credential(remote_raw),
         "dirty_files": None if status is None else len(status.splitlines()),
         "unpushed_commits": unpushed,
+        "upstream": upstream,                              # None = detached HEAD or no upstream
         "errors": [redact(e) for e in errors] or None,
     }
 

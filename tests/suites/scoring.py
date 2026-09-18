@@ -68,6 +68,18 @@ def _load(args):
         "model_revision": os.environ.get("FAKE_MODEL_REV", args.model_revision),
         "encoder_revision": os.environ.get("FAKE_ENC_REV", args.encoder_revision)}
 m.load_model = _load
+
+# The fake devices (0,1,2) are not real GPUs. On a box that HAS torch, collect_meta would
+# read gpu_names per device -- ["RTX 5090"] for 0 and [] for a device that does not exist --
+# and a shard moving between them would be refused as a stack change. Pin the machine-
+# dependent fields so these fixtures mean the same thing on a laptop and on a GPU box.
+_real_meta = m.collect_meta
+def _meta(args, ckpt_path, extra=None):
+    d = _real_meta(args, ckpt_path, extra)
+    d["gpu_names"] = ["fake-gpu"]
+    d["torch_cuda"] = "fake-cuda"
+    return d
+m.collect_meta = _meta
 sys.exit(m.main())
 '''
 
@@ -123,8 +135,16 @@ def suite(ctx):
     # ---- score_with_comet.py without comet -----------------------------------
     rc_c, _ = run(["-c", "import comet"])
     rc, o = run([swc, "--src", d / "nope.en", "--tgt", d / "nope.fr", "--out", d / "x.tsv", "--gpus", "2"])
-    check("score_with_comet --gpus 2 is refused (pointing to score_sharded.py) without comet installed",
-          rc == 2 and "score_sharded.py" in o and "Traceback" not in o and rc_c != 0, f"rc={rc} comet_rc={rc_c} {o[-300:]}")
+    check("score_with_comet --gpus 2 is refused, pointing to score_sharded.py",
+          rc == 2 and "score_sharded.py" in o and "Traceback" not in o,
+          f"rc={rc} comet_importable={rc_c == 0} {o[-300:]}")
+    # The refusal must not need comet. Where comet IS installed (a real scoring box) that
+    # cannot be shown this way, so say so instead of asserting something weaker.
+    if rc_c != 0:
+        check("the refusal happens without importing comet (it is not installed here)",
+              "No module named" not in o and "ImportError" not in o and "ModuleNotFound" not in o, o[-200:])
+    else:
+        ctx.skip("refusal happens before importing comet", "comet is importable in this environment")
     rc, o = run([swc, "--help"])
     check("score_with_comet --help works without comet", rc == 0 and "--meta-out" in o, o[-200:])
 
