@@ -243,7 +243,7 @@ def main() -> int:
         print("  (runner has no matrix.json controls_sha: stale-run guard NOT active)")
 
     runs = parse_runner(runner, a.lr_scale)
-    jobs, incomplete, stale, budget = [], [], [], {}
+    jobs, incomplete, stale, budget, unverifiable = [], [], [], {}, []
     base_ckpt = (mt / a.baseline_ckpt) if not Path(a.baseline_ckpt).is_absolute() else Path(a.baseline_ckpt)
     if not base_ckpt.exists():
         sys.exit(f"baseline checkpoint {base_ckpt} does not exist — run rental_setup.sh accept first")
@@ -265,7 +265,9 @@ def main() -> int:
             incomplete.append(f"{label}: no {final}")
             continue
         info = ckpt_info(final)
-        tr = cfg["training"]
+        # A config without a training block cannot say what "finished" means: verify what
+        # is there and say so, rather than raising KeyError halfway through a collection.
+        tr = cfg.get("training") or {}
         if info is not None:
             budget[(r["condition"], r["seed"])] = info
             if tr.get("max_target_tokens"):
@@ -273,6 +275,8 @@ def main() -> int:
                     incomplete.append(f"{label}: applied {info.get('applied_target_tokens')} "
                                       f"< max_target_tokens {tr['max_target_tokens']}")
                     continue
+            elif tr.get("max_steps") is None:
+                unverifiable.append(f"{label}: config has no training.max_steps; step count not verified")
             elif info.get("global_step") is not None and info["global_step"] < tr["max_steps"]:
                 incomplete.append(f"{label}: stopped at step {info['global_step']} < {tr['max_steps']}")
                 continue
@@ -284,6 +288,8 @@ def main() -> int:
                 continue
         for ts in tests:
             jobs.append((r["condition"], str(r["seed"]), ts, ckpt, cfg_path))
+    if unverifiable:
+        print("NOT VERIFIED (budget):\n  " + "\n  ".join(unverifiable))
     if stale:
         print("STALE RUNS — trained on different control sets:\n  " + "\n  ".join(stale))
         return 2

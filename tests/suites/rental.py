@@ -395,7 +395,9 @@ def suite(ctx):
     for n_ in ("valid.en", "valid.fr", "test.en", "test.fr"):
         (devtest_dir / n_).write_text("x\n")
     env = {**os.environ, "WORK": str(work), "PATH": f"{bindir}{os.pathsep}{os.environ.get('PATH', '')}",
-           "PYTHONPATH": str(shim), "TOY_V2": str(toy2), "TOY_V1": str(toy1), "MEMINFO": str(meminfo),
+           # the gate stage runs e03_collect, which reads checkpoints with torch: the fake
+           # trainer writes JSON, so the stub must win over any real torch on the box
+           "PYTHONPATH": f"{ctx.make_faketorch(d)}{os.pathsep}{shim}", "TOY_V2": str(toy2), "TOY_V1": str(toy1), "MEMINFO": str(meminfo),
            "DF_KB_OVERRIDE": str(10 ** 9), "FAKE_SCORER_LOG": str(logs["scorer"]),
            "FAKE_CTRL_ARGS": str(logs["ctrl_args"]), "FAKE_BUILD_LOG": str(logs["build"]),
            "FAKE_CURL_LOG": str(logs["curl"]), "FAKE_CURL_DIR": str(curl_dir),

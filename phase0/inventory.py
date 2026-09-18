@@ -128,7 +128,8 @@ def git_state(path: str):
         return r.stdout.strip()
 
     head = g("log", "--oneline", "-1")
-    remote_raw = g("remote", "get-url", "origin")
+    # A repo with no origin (a fixture, or a clone someone made by copy) is a state too.
+    remote_raw = g("remote", "get-url", "origin", soft=True)
     status = g("status", "--porcelain")
     # No upstream (a detached HEAD, or a branch that was never pushed) is a state, not a
     # read failure: recording it as an error made every checked-out-by-sha clone look like

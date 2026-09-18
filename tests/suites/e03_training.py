@@ -151,10 +151,9 @@ def parallel_stale(ctx):
        "ap.add_argument('--reset-optimizer', action='store_true')\na = ap.parse_args()\n"
        "open(os.environ['RP_LOG'], 'a').write(a.suffix + '\\n')\n"
        "dd = json.load(open(a.config))['checkpoint']['dir'] + a.suffix\nos.makedirs(dd, exist_ok=True)\n"
-       "try:\n    import torch; torch.save({'model': {}, 'global_step': 111000,\n"
-       "        'applied_target_tokens': 1234567, 'optimizer_steps': 3000, 'dropped_tokens': 0,\n"
-       "        'total_train_tokens': 2345678}, dd + '/final.pt')\n"
-       "except ImportError:\n    open(dd + '/final.pt', 'w').write('w')\n")
+       "import json as _j; _j.dump({'global_step': 115000, 'applied_target_tokens': 1234567,\n"
+       "    'optimizer_steps': 3000, 'dropped_tokens': 0, 'total_train_tokens': 2345678},\n"
+       "    open(dd + '/final.pt', 'w'))\n")
     _w(cwd / "cfg/ft_topk_lr1.yaml", json.dumps({"checkpoint": {"dir": "ck/ft_topk_lr1"}}))
     runner = cwd / "configs/run_stage1.sh"
     _w(runner, "#!/usr/bin/env bash\n" + "".join(
@@ -263,11 +262,11 @@ def collect(ctx):
                          f"--resume ckpt_hf/base.pt --reset-optimizer --seed {sd} --suffix _s{sd}_st2")
             ck = mt / f"checkpoints/phase0/{sha[:12]}/{c}_lr0.15_s{sd}_st2"
             ck.mkdir(parents=True, exist_ok=True)
-            (ck / "final.pt").write_text(json.dumps({"global_step": 115000, "applied_target_tokens": 1_000_000,
-                                                     "optimizer_steps": 2500, "dropped_tokens": 0, "total_train_tokens": 1_000_000}))
+            ctx.write_ckpt(ck / "final.pt", global_step=115000, applied_target_tokens=1_000_000,
+                           optimizer_steps=2500, dropped_tokens=0, total_train_tokens=1_000_000)
             (ck / "controls_sha").write_text(sha + "\n")
             for st in range(106000, 116000, 2000):
-                (ck / f"step_{st}.pt").write_text("s")
+                ctx.write_ckpt(ck / f"step_{st}.pt", global_step=st)
     runner = sf / "configs/phase0/run_stage2.sh"; _w(runner, "\n".join(lines) + "\n")
     (sf / "configs/phase0/matrix.json").write_text(json.dumps({"controls_sha": sha}))
     counter = base / "count"
@@ -275,7 +274,9 @@ def collect(ctx):
     args = [ctx.ROOT / "phase0/e03_collect.py", "--mt-root", mt, "--runner", runner, "--lr-scale", "0.15",
             "--baseline-ckpt", "ckpt_hf/base.pt", "--baseline-config", sf / "configs/sft_base_enfr.yaml",
             "--controls-dir", ctrl, "--out", out, "--eval-script", "scripts/fake_eval.py", "--jobs", "2"]
-    env = {"EVAL_COUNTER": str(counter)}
+    # Every collect run reads its checkpoints through the shared torch stub, so the JSON
+    # fixtures mean the same thing with or without real torch installed (tests/regress.py).
+    env = {"EVAL_COUNTER": str(counter), "PYTHONPATH": str(ctx.make_faketorch(ctx.d))}
 
     def n_evals():
         return len(counter.read_text().splitlines()) if counter.exists() else 0
@@ -345,9 +346,9 @@ def collect(ctx):
     rc, o = ctx.run([x if x != out3 else out4 for x in a3], env=env)
     ctx.check("collect avg-last5: a missing step checkpoint makes that run incomplete (exit 1)",
               rc == 1 and "not contiguous" in o and not out4.exists(), o[-300:])
-    (mt / f"checkpoints/phase0/{sha[:12]}/ft_bottom_lr0.15_s2_st2/step_110000.pt").write_text("s")
+    ctx.write_ckpt(mt / f"checkpoints/phase0/{sha[:12]}/ft_bottom_lr0.15_s2_st2/step_110000.pt", global_step=110000)
     ckm = mt / f"checkpoints/phase0/{sha[:12]}/ft_topk_lr0.15_s1_st2"
-    (ckm / "step_116000.pt").write_text("s")
+    ctx.write_ckpt(ckm / "step_116000.pt", global_step=116000)
     for x in ("avg_last5.pt", "avg_last5.inputs.json"):
         (ckm / x).unlink(missing_ok=True)
     out4b = sf / "results4b/phase0_bleu.tsv"
@@ -372,8 +373,7 @@ def collect(ctx):
     fin.with_name("final.off").rename(fin)
 
     # budget accounting with a fake torch
-    ft = base / "faketorch"
-    _w(ft / "torch.py", "import json\ndef load(p, map_location=None, weights_only=None):\n    return json.load(open(p))\n")
+    ft = ctx.make_faketorch(ctx.d)
     ckr = mt / f"checkpoints/phase0/{sha[:12]}/ft_random_lr0.15_s2_st2/final.pt"
     ckr.write_text(json.dumps({"global_step": 115000, "applied_target_tokens": 950_000, "optimizer_steps": 2500,
                                "dropped_tokens": 20_000, "total_train_tokens": 970_000}))

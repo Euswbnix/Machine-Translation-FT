@@ -69,30 +69,38 @@ def run(args, env=None):
 
 
 # ---------------------------------------------------------------- fixtures
-# Generated fake trainers write their checkpoints with this, for the same reason as write_ckpt.
-FAKE_SAVE = ("def _save(p):\n"
-             "    try:\n"
-             "        import torch\n"
-             "    except ImportError:\n"
-             "        open(p, 'w').write('w'); return\n"
-             "    torch.save({'model': {}, 'global_step': 111000, 'applied_target_tokens': 1234567,\n"
-             "                'optimizer_steps': 3000, 'dropped_tokens': 0, 'total_train_tokens': 2345678}, p)\n")
-
-CKPT_FIELDS = {"global_step": 111_000, "applied_target_tokens": 1_234_567, "optimizer_steps": 3_000,
+CKPT_FIELDS = {"global_step": 115_000,   # == the fixtures' training.max_steps: a finished run "applied_target_tokens": 1_234_567, "optimizer_steps": 3_000,
                "dropped_tokens": 0, "total_train_tokens": 2_345_678}
+
+# Checkpoint fixtures are JSON and every run of e03_collect gets this stub first on
+# PYTHONPATH. Real torch would be a worse fixture, not a better one: the collector only
+# reads BUDGET_KEYS out of the checkpoint, real .pt files are megabytes, and the values
+# the tests assert on have to be written by hand anyway. Without the stub the fixtures
+# mean different things on a laptop (no torch -> never opened) and on a training box
+# (real torch -> unpickling a text file), which is what turned 18 checks red on the
+# author's Linux box.
+FAKE_TORCH = ("import json\n"
+              "def load(p, map_location=None, weights_only=None):\n"
+              "    return json.load(open(p))\n")
+# Fake trainers generated inside test scripts write their checkpoints with this.
+FAKE_SAVE = ("import json as _json\n"
+             "def _save(p, **kw):\n"
+             "    _json.dump({%s, **kw}, open(p, 'w'))\n"
+             % ", ".join(f"{k!r}: {v}" for k, v in CKPT_FIELDS.items()))
+
+
+def make_faketorch(d: Path) -> Path:
+    """Directory to put first on PYTHONPATH so `import torch` yields the stub above."""
+    ft = d / "faketorch"
+    ft.mkdir(exist_ok=True)
+    (ft / "torch.py").write_text(FAKE_TORCH, encoding="utf-8")
+    return ft
 
 
 def write_ckpt(path: Path, **fields):
-    """Checkpoint fixture. e03_collect reads these with torch.load when torch is importable,
-    so on a box that has torch (any real training box) a placeholder file is not a fixture,
-    it is a crash. Without torch the tools never open it and the placeholder is enough."""
+    """A checkpoint fixture: the BUDGET_KEYS e03_collect reads, as JSON (see FAKE_TORCH)."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        import torch
-    except ImportError:
-        path.write_text("w")
-        return path
-    torch.save({"model": {}, **CKPT_FIELDS, **fields}, path)
+    path.write_text(json.dumps({**CKPT_FIELDS, **fields}), encoding="utf-8")
     return path
 
 
@@ -646,7 +654,7 @@ def suite_collect(d: Path):
             "--lr-scale", "0.15", "--baseline-ckpt", "ckpt_hf/base.pt",
             "--baseline-config", sf / "configs/sft_base_enfr.yaml", "--controls-dir", sf / "data/phase0",
             "--out", out, "--jobs", "3"]
-    env = {"EVAL_COUNTER": str(counter)}
+    env = {"EVAL_COUNTER": str(counter), "PYTHONPATH": str(make_faketorch(d))}
     rc, _ = run([*args, "--eval-script", "scripts/fake_eval.py"], env=env)
     n1 = len(counter.read_text().splitlines())
     check("a missing final.pt -> exit 1 and ONLY a .partial.tsv",
@@ -986,7 +994,8 @@ def run_external_suites(d: Path):
             mod = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(mod)
             mod.suite(types.SimpleNamespace(d=sd, check=check, skip=skip, run=run, ROOT=ROOT,
-                                            PY=PY, MT_REPO=MT_REPO, np=np, write_ckpt=write_ckpt))
+                                            PY=PY, MT_REPO=MT_REPO, np=np, write_ckpt=write_ckpt,
+                                            make_faketorch=make_faketorch))
         except Exception:
             check(f"tests/suites/{sp.name} ran without crashing", False, traceback.format_exc()[-600:])
 
