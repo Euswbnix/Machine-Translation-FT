@@ -198,6 +198,20 @@ def suite(ctx):
     check("re-run skips complete verified shards", rc == 0 and o.count("complete, skipping") == 3
           and rb(d / "sh1.tsv") == ref, o[-300:])
 
+    # --shards decouples shard count from device count: more shards than devices queue,
+    # each verified as it completes (a long run then reports progress and resumes cheaply).
+    rc, o = shard_run(d / "w1s", d / "sh1s.tsv", devices="0,1", extra=("--shards", "4"))
+    man4 = json.load(open(d / "w1s/manifest.json")) if (d / "w1s/manifest.json").exists() else {"shards": []}
+    check("4 shards over 2 devices reproduce the single-process output byte for byte",
+          rc == 0 and rb(d / "sh1s.tsv") == ref and len(man4["shards"]) == 4
+          and [(x["start"], x["count"]) for x in man4["shards"]] == [(0, 251), (251, 251), (502, 251), (753, 248)],
+          f"rc={rc} {str(man4.get('shards'))[:200]} {o[-200:]}")
+    rc, o = shard_run(d / "w1s", d / "sh1s.tsv", devices="0,1", extra=("--shards", "3"))
+    check("changing --shards on an existing work dir is refused (boundaries are fixed once scoring starts)",
+          rc == 2 and "already holds 4 shards" in o, f"rc={rc} {o[-200:]}")
+    rc, o = shard_run(d / "w1s", d / "sh1s.tsv", devices="0", extra=("--shards", "4"))
+    check("the same shards may be re-run on fewer devices", rc == 0 and rb(d / "sh1s.tsv") == ref, o[-200:])
+
     marker = d / "died.marker"
     rc1, o1 = shard_run(d / "w2", d / "sh2.tsv",
                         extra_env={"FAKE_DIE_AFTER": "77", "FAKE_DIE_DEVICE": "1", "FAKE_DIE_MARKER": str(marker)})

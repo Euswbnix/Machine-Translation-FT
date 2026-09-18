@@ -10,7 +10,8 @@
 #                                       none  - reused scores only, nan elsewhere (no GPU, no HF login)
 #                                       reuse - score the 21,628,292 new pairs on all GPUs, merge
 #                                       full  - score all 38,275,284 pairs, calibrate vs reused scores
-#                                     SCORE_SMOKE=1: 3,000-row 2-GPU order/consistency check first
+#                                     SCORE_SMOKE=1: 3,000-row 2-shard order/consistency check first
+#                                     (two GPUs when the box has them, else two shards on one GPU)
 #   bash rental_setup.sh provenance   bundle labels (SHA256SUMS-verified) or statmt + e01   (CPU)
 #   bash rental_setup.sh controls     E0.3 control sets + run matrix, from the frozen decisions (CPU)
 #   bash rental_setup.sh stage1       cache warm-up, 4-run LR sweep, mechanical LR selection  (GPUs)
@@ -564,14 +565,19 @@ require_hf_login() {
 This script never handles your token."
 }
 
-score_smoke() {   # score_smoke <src> <tgt>: 3,000 rows, 2 GPUs sharded vs 1 GPU, same text order
-  local S="$WORK/score_smoke"
-  [ "$(ngpus)" -ge 2 ] || die "SCORE_SMOKE=1 needs >= 2 GPUs"
+score_smoke() {   # score_smoke <src> <tgt>: 3,000 rows, 2 shards vs one process, same text order
+  local S="$WORK/score_smoke" ng devs
+  ng=$(ngpus)
+  [ "$ng" -ge 1 ] || die "SCORE_SMOKE=1 needs a GPU"
+  # Two shards either way: on one GPU they run one after the other, which still checks the
+  # split, the per-shard verification and the merge order -- the parts that can silently
+  # attach a score to the wrong row. Cross-device determinism is only checked with 2+ GPUs.
+  [ "$ng" -ge 2 ] && devs=0,1 || devs=0
   rm -rf "$S"; mkdir -p "$S"
   head -n 3000 "$1" > "$S/in.en"; head -n 3000 "$2" > "$S/in.fr"
-  log "SCORE_SMOKE: 3,000 rows sharded over GPUs 0,1 (chunk 1000) and single-process on GPU 0"
+  log "SCORE_SMOKE: 3,000 rows in 2 shards on device(s) $devs (chunk 1000) vs single-process on GPU 0"
   "$PY" "$SFT/phase0/score_sharded.py" --src "$S/in.en" --tgt "$S/in.fr" --out "$S/sharded.tsv" \
-      --devices 0,1 --chunk-size 1000 --meta-out "$S/sharded.meta.json" || die "smoke: sharded scoring failed"
+      --devices "$devs" --shards 2 --chunk-size 1000 --meta-out "$S/sharded.meta.json" || die "smoke: sharded scoring failed"
   CUDA_VISIBLE_DEVICES=0 "$PY" "$SFT/scripts/score_with_comet.py" --src "$S/in.en" --tgt "$S/in.fr" \
       --out "$S/single.tsv" --gpus 1 --chunk-size 1000 --meta-out "$S/single.meta.json" || die "smoke: single-GPU scoring failed"
   "$PY" - "$S" "${SCORE_SMOKE_TOL:-1e-3}" <<'PY' || die "smoke: sharded and single-GPU outputs disagree (see above)"

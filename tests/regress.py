@@ -34,6 +34,22 @@ PY = sys.executable
 MT_REPO = Path(os.environ.get("MT_REPO", "/Users/euswbnic/Machine_translation")).expanduser()
 RESULTS: list[tuple[str, str, str]] = []
 
+# Variables an operator exports to drive phase0/rental_setup.sh on a real box. Every fixture
+# builds its own environment from os.environ, so an inherited PY would replace the fake
+# python (and with it fake torch/comet), WORK would point at the real work dir, and the
+# switches would bend the very behaviour under test. Scrubbed once, for this process and
+# every child: on the author's Linux box an exported PY=~/mt/venv/bin/python turned 24
+# checks red without touching any code.
+LEAKY_ENV = ("PY", "WORK", "SFT", "MT", "BRANCH", "PIN_SFT_REV", "MT_REV", "DECISIONS_REL",
+             "SCORE_SMOKE", "SCORE_SMOKE_TOL", "SCORE_REDO", "SCORE_SHARDS", "RECALIBRATE",
+             "DECISIONS_AMEND", "DECISIONS_UNTAGGED", "LR_OVERRIDE", "SCORE_ALLOW_STACK_CHANGE",
+             "STATMT_OFFLINE", "CUDA_VISIBLE_DEVICES", "FAKE_NGPU")
+
+
+def scrub_env(environ) -> list[str]:
+    """Remove LEAKY_ENV from a mapping in place; return what was removed."""
+    return [k for k in LEAKY_ENV if environ.pop(k, None) is not None]
+
 
 def check(name, cond, detail=""):
     status = "PASS" if cond else "FAIL"
@@ -935,6 +951,9 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--keep", action="store_true")
     a = ap.parse_args()
+    dropped = scrub_env(os.environ)
+    if dropped:
+        print(f"scrubbed inherited env: {', '.join(dropped)}")
     d = Path(tempfile.mkdtemp(prefix="mt_regress_"))
     print(f"fixtures: {d}")
     try:

@@ -5,7 +5,8 @@ COMET's own multi-GPU predict() hangs when called once per chunk (see
 scripts/score_with_comet.py), so this script shards instead:
 
   1. split --src/--tgt (LF is the only line break, strict UTF-8) into contiguous shards
-     of ceil(rows / n_devices) lines each (the last one shorter); unequal side line
+     of ceil(rows / n_shards) lines each (the last one shorter; --shards defaults to the
+     number of devices, and more shards than devices simply queue); unequal side line
      counts are refused;
   2. write <work-dir>/manifest.json: input sha256 + rows, per shard its start row,
      line count and the sha256 of both shard files;
@@ -113,7 +114,7 @@ def shard_paths(work: Path, k: int, src_ext: str, tgt_ext: str) -> dict:
             "log": work / f"score.{k:03d}.log"}
 
 
-def split_shards(src, tgt, work: Path, n_dev: int, src_ext: str, tgt_ext: str) -> dict:
+def split_shards(src, tgt, work: Path, n_shards: int, src_ext: str, tgt_ext: str) -> dict:
     try:
         n = count_lines(src)
         n_t = count_lines(tgt)
@@ -123,7 +124,7 @@ def split_shards(src, tgt, work: Path, n_dev: int, src_ext: str, tgt_ext: str) -
         raise Refuse(f"--src has {n:,} lines but --tgt has {n_t:,}; refusing")
     if n == 0:
         raise Refuse("inputs are empty")
-    per = math.ceil(n / n_dev)
+    per = math.ceil(n / n_shards)
     n_shards = math.ceil(n / per)
     shards = []
     with open_text(src) as fs, open_text(tgt) as ft:
@@ -144,7 +145,7 @@ def split_shards(src, tgt, work: Path, n_dev: int, src_ext: str, tgt_ext: str) -
                            "src_file": p["src"].name, "tgt_file": p["tgt"].name,
                            "src_sha256": sha256(p["src"]), "tgt_sha256": sha256(p["tgt"]),
                            "out_file": p["out"].name})
-    return {"n_rows": n, "per_shard": per, "n_devices": n_dev, "shards": shards}
+    return {"n_rows": n, "per_shard": per, "n_shards": n_shards, "n_devices": n_shards, "shards": shards}
 
 
 def verify_shard_output(p: dict, count: int) -> tuple[str, str]:
@@ -299,9 +300,13 @@ def _run_locked(a, devs, src, tgt, out, scorer, work) -> int:
         manifest = json.load(open(mpath, encoding="utf-8"))
         if (manifest.get("src_sha256"), manifest.get("tgt_sha256")) != (src_sha, tgt_sha):
             raise Refuse(f"{mpath} was made for different inputs; use a fresh --work-dir")
-        if manifest.get("n_devices") != len(devs):
-            print(f"note: manifest has {len(manifest['shards'])} shards (made for {manifest.get('n_devices')} devices); "
-                  f"running the incomplete ones on {len(devs)} device(s) {','.join(devs)}", file=sys.stderr)
+        have = manifest.get("n_shards", manifest.get("n_devices"))
+        if a.shards and a.shards != have:
+            raise Refuse(f"--shards {a.shards} but this work dir already holds {have} shards; shard boundaries "
+                         f"are fixed once scoring starts. Pass --shards {have}, or use a new --work-dir.")
+        if have != len(devs):
+            print(f"note: manifest has {len(manifest['shards'])} shards; running the incomplete ones on "
+                  f"{len(devs)} device(s) {','.join(devs)}", file=sys.stderr)
         for sh in manifest["shards"]:
             p = shard_paths(work, sh["index"], src_ext, tgt_ext)
             for side in ("src", "tgt"):
@@ -311,7 +316,7 @@ def _run_locked(a, devs, src, tgt, out, scorer, work) -> int:
         print(f"manifest ok: {len(manifest['shards'])} shards of {manifest['per_shard']:,} rows "
               f"({manifest['n_rows']:,} rows)", file=sys.stderr)
     else:
-        manifest = split_shards(src, tgt, work, len(devs), src_ext, tgt_ext)
+        manifest = split_shards(src, tgt, work, a.shards or len(devs), src_ext, tgt_ext)
         manifest.update({"src": str(src), "tgt": str(tgt), "src_sha256": src_sha, "tgt_sha256": tgt_sha})
         write_json_atomic(mpath, manifest)
         print(f"split {manifest['n_rows']:,} rows into {len(manifest['shards'])} shards of "
@@ -469,6 +474,10 @@ def main(argv=None) -> int:
     ap.add_argument("--tgt", required=True)
     ap.add_argument("--out", required=True, help="final scored TSV (written via <out>.tmp + os.replace)")
     ap.add_argument("--devices", default="", help="comma list of CUDA device ids, e.g. 0,1,2,3")
+    ap.add_argument("--shards", type=int, default=0,
+                    help="number of shards (default: one per device). More shards than devices queue; "
+                         "each is verified as it completes, so a long run reports progress and a resume "
+                         "re-checks less. Fixed for a work dir once scoring starts.")
     ap.add_argument("--gpus", type=int, default=0, help="use devices 0..N-1")
     ap.add_argument("--work-dir", default="", help="shards, logs, manifest (default <out>.shards)")
     ap.add_argument("--meta-out", default="", help="merged scoring-stack metadata JSON")
