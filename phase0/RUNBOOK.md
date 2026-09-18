@@ -222,6 +222,26 @@ cannot reach a fixture.
   `score_mode: full` (PROTOCOL D7) is, on this evidence, far below the
   pre-registered calibration thresholds.
 
+**`controls` rehearsed at scale (2026-09-18).** While scoring ran, the builder was
+driven with the frozen decisions' flags on an 8,000,000-row slice starting at row
+9,000,000 — past the v1.1 prefix, so the UN rows there are ones the baseline never
+saw. Measured, not extrapolated:
+
+- eligible UN pool after the pretraining exclusion: **6,760,458**; 2,000 reserved.
+  (798,436 of the 8M rows share a pair, source or target with the pretraining
+  corpus; the leakage reservation also pulled in 1,429 duplicate rows, 870 rows
+  sharing a held-out source and 212 sharing a held-out target.)
+- both assertions hold: no FT set shares a pair, normalised source or normalised
+  target with a held-out row, and no held-out row occurs in the pretraining corpus.
+- **peak RSS 1.6 GB, 2 min 05 s for 8M rows** → about 5-6 GB and ~10 min for the
+  full 38.3M pool. The audit's 20-25 GB figure described the earlier one-pass
+  builder; the two-pass version is far lighter, so a 45 GB box is comfortable.
+
+A slice that lies *inside* the v1.1 prefix (the first ~9.3M rows) legitimately
+yields zero eligible UN pairs — everything there is pretraining data. That is the
+builder refusing to hand the gate a held-out set the baseline has already seen,
+not a defect.
+
 **Long runs and nightly stops.** `SCORE_SHARDS=N` splits scoring into N shards
 (12 was used here: 3,189,607 rows each, ~1.5-2 h on one 5090). Each shard is
 verified and merged as it completes, so a stop costs at most the shard in flight,
