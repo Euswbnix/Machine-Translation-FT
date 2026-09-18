@@ -706,6 +706,29 @@ os.execv(real, [real] + args)
           and done.exists() and not failed.exists(), f"rc={rc} scorer calls {n1}->{nlines(logs['scorer'])} {o[-400:]}")
     shutil.rmtree(sft / "results", ignore_errors=True)
 
+    # ---- HF login: the library is authoritative; a venv often has no hf/huggingface-cli
+    for b in ("hf", "huggingface-cli"):
+        (bindir / b).write_text("#!/bin/sh\nexit 127\n")
+        (bindir / b).chmod(0o755)
+    set_decisions(score_mode="reuse")   # the path that needs the gated model
+    hfok = d / "hfok"; (hfok / "huggingface_hub").mkdir(parents=True, exist_ok=True)
+    (hfok / "huggingface_hub/__init__.py").write_text("def whoami(*a, **k):\n    return {'name': 'someone'}\n")
+    done.unlink(missing_ok=True); out.unlink(missing_ok=True)
+    rc, o = rent("score", SCORE_REDO=1, PYTHONPATH=f"{hfok}{os.pathsep}{env['PYTHONPATH']}")
+    check("score proceeds when only huggingface_hub.whoami works (no hf CLI on PATH)",
+          rc == 0 and "not logged in" not in o, f"rc={rc} {o[-250:]}")
+    hfstub = d / "hfstub"; (hfstub / "huggingface_hub").mkdir(parents=True, exist_ok=True)
+    (hfstub / "huggingface_hub/__init__.py").write_text(
+        "def whoami(*a, **k):\n    raise RuntimeError('Not logged in')\n")
+    done.unlink(missing_ok=True); out.unlink(missing_ok=True)
+    rc, o = rent("score", SCORE_REDO=1, PYTHONPATH=f"{hfstub}{os.pathsep}{env['PYTHONPATH']}")
+    check("score stops when neither the library nor a CLI can say who is logged in",
+          rc != 0 and "not logged in to Hugging Face" in o, f"rc={rc} {o[-250:]}")
+    for b in ("hf", "huggingface-cli"):
+        (bindir / b).write_text("#!/bin/sh\nprintf '%s\\n' \"${FAKE_HF_OUT:-fake-account}\"\n")
+        (bindir / b).chmod(0o755)
+    done.unlink(missing_ok=True); out.unlink(missing_ok=True)
+
     # ---- score reuse (+ SCORE_SMOKE on 2 fake GPUs)
     set_decisions(score_mode="reuse")
     rc, o = rent("score", SCORE_SMOKE=1, SCORE_REDO=1)

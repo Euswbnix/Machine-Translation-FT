@@ -559,8 +559,12 @@ hf_logged_in() {   # hf_logged_in <whoami command...>; never prints the output (
 }
 
 require_hf_login() {
-  # huggingface_hub < 1.0 (forced by the transformers/comet pins) prints "Not logged in" and exits 0
-  hf_logged_in hf auth whoami || hf_logged_in huggingface-cli whoami || die \
+  # huggingface_hub < 1.0 (forced by the transformers/comet pins) prints "Not logged in" and exits 0.
+  # The library check is the one that matters -- the scorer authenticates through
+  # huggingface_hub, not through a CLI -- and a venv built on another environment's
+  # site-packages often has the library with no hf/huggingface-cli on PATH.
+  hf_logged_in "$PY" -c 'from huggingface_hub import whoami; whoami()' \
+    || hf_logged_in hf auth whoami || hf_logged_in huggingface-cli whoami || die \
 "not logged in to Hugging Face. Unbabel/wmt22-cometkiwi-da is gated (auto-approve, CC-BY-NC-SA-4.0):
   1. accept the terms at https://huggingface.co/Unbabel/wmt22-cometkiwi-da
   2. run 'hf auth login' YOURSELF on this box
