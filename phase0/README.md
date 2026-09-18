@@ -237,6 +237,29 @@ Artifacts (Mac, not committed): `~/mt_local/rebuild/{v2,v1,ende}_{legacy,fixed}/
 `~/mt_local/Machine-Translation-SFT/phase0/provenance_exact_*` (old reader) or the 5-file
 `rental_bundle.tar.gz`.
 
+### Reproduced on the training box (2026-09-18)
+
+Phase 0 was brought up on the author's own RTX 5090 machine (RUNBOOK, "Alternative
+path"). Three results are evidence, not logistics:
+
+- **The corrected corpus reproduces across machines.** `rebuild_corpus.py --mode
+  fixed` on that box produced train.clean.{en,fr} with the same sha256 as the Mac
+  rebuild (`c8cc665c…` / `e4f5301a…`, 38,275,284 rows), and the v1.1 rebuild equals
+  the published pretraining corpus. The rescore plan rebuilt there from the box's
+  own `v2_scored.tsv` matches the Mac's plan exactly (16,646,992 reused /
+  21,628,292 to score), and its `plan.json`, `missing_rows.npy`, `reuse_scores.npy`
+  and `pool_mask_reused.npy` are byte-identical to the bundle's.
+- **The release still reproduces.** Rebuilt from the HF Base v1.1 release, with
+  newstest2014 regenerated from the pinned parquet: test BLEU **35.31**, the
+  released figure, and newstest2013 30.52 as in the release's own training log.
+- **Today's scoring stack matches the paper's.** On 3,000 aligned rows scored with
+  the pinned CometKiwi-22/InfoXLM revisions, the new scores reproduce the paper's
+  `v2_scored.tsv` to `max |diff| = 2e-6` (mean 0.000000), and a 2-shard run equals
+  a single-process run to 1e-6 with identical row order. The old-vs-new-stack
+  confound behind decision D7 is far below the pre-registered calibration
+  thresholds (|mean| ≤ 2e-4, p99 ≤ 2e-3) on this sample; the full 16.6M-row
+  calibration runs at the end of scoring.
+
 ## Findings from the original training machine (2026-09-12)
 
 Pulled read-only from the Linux box; mirror at `~/mt_fetch/` (not committed —

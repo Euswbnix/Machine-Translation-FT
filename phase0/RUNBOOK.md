@@ -167,6 +167,75 @@ download in `accept` have **not** run on a box. The corpus rebuild, the rescore 
 e01 ran on the Mac. `data`, `score`, `controls` and real training have **not yet run on a
 GPU box**.
 
+## Alternative path: the author's own Linux box (run 2026-09-18)
+
+Phase 0 was brought up on the author's own machine (Ubuntu 24.04, one RTX 5090,
+32 cores, 45 GB RAM, 714 GB free) instead of a rental. What made that cheap is
+that the box already had, at the exact pinned revisions, everything a rental
+would have to download:
+
+| needed | on the box |
+|---|---|
+| WMT14 parquet `wmt/wmt14@b199e406` | in `~/.cache/huggingface/hub`, all 33 files sha256-identical to `hf_wmt14_filelist.tsv`; hardlinked into `$WORK/hf_wmt14` so `data` downloads nothing |
+| CometKiwi-22 + InfoXLM-large | cached at exactly the pinned revisions `1ad78519` / `d616d637`, so scoring runs offline |
+| v1.1 pretraining corpus | `data_enfr_v1/train.clean.{en,fr}` already equals the rebuild (`7230adc6…`/`b0a6ba91…`) |
+| newstest2013/2014 | `accept` regenerates them from the pinned parquet and they match the box's own copies byte for byte |
+| the paper's 30,129,500-row `v2_scored.tsv` | used to rebuild the rescore plan locally, so the bundle needed only the 38 MB e01 labels |
+
+**Environment.** Do not install the pins into the machine's own environment. A
+venv built on top of it keeps both intact:
+
+```bash
+~/miniconda/envs/DL/bin/python -m venv --system-site-packages ~/mt/venv
+~/mt/venv/bin/python -m pip install "pytorch-lightning==2.5.5" "transformers==4.57.1"
+export PY=$HOME/mt/venv/bin/python     # every stage honours PY
+```
+
+That box's conda env already had torch 2.11.0+cu128 (sm_120), numpy 1.26.4,
+unbabel-comet 2.2.7 and torchmetrics 0.10.3 — all at or inside the pins — so only
+two packages went into the venv layer and the conda env was left untouched.
+
+**Driver script.** `~/mt/run_stage.sh <stage> [arg]` exports `WORK`, `PY` and
+`PIN_SFT_REV` (from `~/mt/pin.txt`), runs the stage under `tee` into
+`~/mt/logs/<stage>_<timestamp>.log`, and is what every command below runs inside
+`tmux`. Note that `tests/regress.py` scrubs those variables, so exporting them
+cannot reach a fixture.
+
+**What the box verified, in order:**
+
+- `env`: 409-check self-test passes on Linux.
+- `accept`: dev/test regenerated from the pinned parquet match the paper's files;
+  **test BLEU 35.31** (released 35.31), newstest2013 30.52 (release: 30.52).
+- `data`: the CR-safe v2 rebuild on this box is **sha256-identical to the Mac
+  rebuild** (`c8cc665c…`/`e4f5301a…`, 38,275,284 rows) and v1.1 to the published
+  corpus — two machines, same bytes.
+- `rescore_plan plan` rebuilt from the box's own `v2_scored.tsv` reproduces the
+  Mac's plan exactly (16,646,992 reused / 21,628,292 to score / first missing row
+  16,573,211), and `plan.json`, `missing_rows.npy`, `reuse_scores.npy` and
+  `pool_mask_reused.npy` are byte-identical to the bundle's. Only
+  `provenance_labels.npy` + its report (38 MB) had to be copied.
+- Scoring smoke (3,000 real rows, real model): sharded (2 shards) vs one process
+  differ by at most 1e-6, text order identical.
+- **The scoring stack agrees with the paper's run.** On those 3,000 aligned rows
+  the new scores reproduce the paper's `v2_scored.tsv` to `max |diff| = 2e-6`,
+  mean difference 0.000000. The old/new-stack confound that motivated
+  `score_mode: full` (PROTOCOL D7) is, on this evidence, far below the
+  pre-registered calibration thresholds.
+
+**Long runs and nightly stops.** `SCORE_SHARDS=N` splits scoring into N shards
+(12 was used here: 3,189,607 rows each, ~1.5-2 h on one 5090). Each shard is
+verified and merged as it completes, so a stop costs at most the shard in flight,
+and only its output is re-counted on resume. Shut the box down at any time; the
+next day rerun the same command:
+
+```bash
+SCORE_SHARDS=12 bash ~/mt/run_stage.sh score
+```
+
+Training resumes at run granularity instead: `run_parallel.py` skips runs whose
+`final.pt` exists, but a run interrupted midway restarts from its beginning
+(~30-40 min). Prefer stopping between runs.
+
 ## 0. (Optional) Inventory the training machine, then pull what is irreplaceable (no GPU)
 
 > **Done 2026-09-12.** Everything Phase 0 needs was pulled read-only and verified
