@@ -362,7 +362,15 @@ def _launch_and_finish(a, devs, out, scorer, work, manifest, src_ext, tgt_ext, p
         if state == "bad":
             raise Refuse(f"shard {k} output {p['out']} is inconsistent with its input: {detail}. "
                          "Not touching it; inspect or delete it and re-run.", code=1)
-        queue.append((k, detail))
+        # Resume on the device this shard already ran on when it is still in the list:
+        # gpu_names is an identity field, so a shard that moves to another GPU is refused
+        # as a stack change (exit 3). Its recorded device is in its own meta.
+        prev = None
+        try:
+            prev = json.loads(p["meta"].read_text(encoding="utf-8")).get("cuda_visible_devices")
+        except (OSError, ValueError, AttributeError):
+            prev = None
+        queue.append((k, detail, prev if prev in devs else None))
 
     free = list(devs)              # devices with no scorer running
     running = {}                   # device -> (k, Popen, log)
@@ -370,8 +378,9 @@ def _launch_and_finish(a, devs, out, scorer, work, manifest, src_ext, tgt_ext, p
     stop_launching = False
     while queue or running:
         while queue and free and not stop_launching:
-            k, detail = queue.pop(0)
-            dev = free.pop(0)
+            i = next((j for j, (_, _, prev) in enumerate(queue) if prev in free), 0)
+            k, detail, prev = queue.pop(i)
+            dev = free.pop(free.index(prev)) if prev in free else free.pop(0)
             p = shard_paths(work, k, src_ext, tgt_ext)
             cmd = [a.python, str(scorer), "--src", str(p["src"]), "--tgt", str(p["tgt"]),
                    "--out", str(p["out"]), "--gpus", "1", "--resume",
@@ -408,7 +417,7 @@ def _launch_and_finish(a, devs, out, scorer, work, manifest, src_ext, tgt_ext, p
                 failed.append((k, rc))
                 print(f"shard {k} FAILED on device {dev} (exit {rc}, log {logp}); device {dev} taken out of "
                       "this run's pool", file=sys.stderr, flush=True)
-    not_run = [k for k, _ in queue]
+    not_run = [k for k, _, _ in queue]
 
     if stack_refused:
         lines = [f"  shard {k}: out {shard_paths(work, k, src_ext, tgt_ext)['out']}, meta "

@@ -212,6 +212,11 @@ def suite(ctx):
     check("sharded kill-and-resume: re-run resumes only shard 1, drops its partial line, output identical",
           rc2 == 0 and o2.count("complete, skipping") == 2 and any(x > 0 for x in dropped)
           and rb(d / "sh2.tsv") == ref, f"rc2={rc2} dropped={dropped} {o2[-300:]}")
+    # gpu_names is an identity field, so a resumed shard must go back to its own device:
+    # taking the first free one instead makes the scorer refuse the resume (exit 3). That
+    # is what a nightly stop hits on a multi-GPU box, and it made this test order-dependent.
+    check("sharded kill-and-resume: shard 1 resumes on device 1, the device it ran on",
+          "shard 1:" in o2 and "launching on device 1" in o2, o2[-300:])
 
     # corrupt a completed shard with the same line count (swap two lines)
     sp = d / "w1/shard.002.tsv"
