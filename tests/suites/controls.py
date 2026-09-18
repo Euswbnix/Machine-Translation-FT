@@ -412,18 +412,20 @@ def suite_decide_failclosed(ctx):
         p.write_text(text)
         return run([ROOT / "phase0/e03_decide.py", "--results", p, *extra])
 
-    rc, o = dec(GO_ROWS)
-    check("decide: ft_topk lacks heldout_europarl rows -> exit 2 (was judged on UN alone)",
+    # The frozen gate (2026-09-18, D5) is UN-only, so these pass the two-set list
+    # explicitly: what is under test is fail-closed behaviour for whatever is listed.
+    rc, o = dec(GO_ROWS, "--indomain", "heldout_un,heldout_europarl")
+    check("decide: a listed in-domain set with no ft_topk rows -> exit 2 (explicit two-set list)",
           rc == 2 and "NO DECISION" in o and "heldout_europarl" in o, f"rc={rc}")
     no_base = GO_ROWS.replace("baseline - heldout_europarl 33.00\n", "") + EP_UP
-    rc, o = dec(no_base)
+    rc, o = dec(no_base, "--indomain", "heldout_un,heldout_europarl")
     check("decide: baseline lacks a listed in-domain set -> exit 2", rc == 2 and "baseline" in o, f"rc={rc}")
     rc, o = dec(GO_ROWS, "--indomain", "heldout_un")
     check("decide: --indomain heldout_un on the same TSV decides (exit 0)", rc == 0 and "VERDICT: GO" in o, f"rc={rc}")
     rc, o = dec(GO_ROWS + EP_UP)
     check("decide: all listed sets present and improved -> GO", rc == 0, f"rc={rc}")
-    rc, o = dec(GO_ROWS + EP_DOWN)
-    check("decide: UN up, Europarl down -> NO-GO under the current (all listed sets) rule",
+    rc, o = dec(GO_ROWS + EP_DOWN, "--indomain", "heldout_un,heldout_europarl")
+    check("decide: UN up, Europarl down -> NO-GO when both sets are listed",
           rc == 1 and "criterion 2: FAIL" in o, f"rc={rc}")
     rc, o = dec(GO_ROWS + EP_UP, "--indomain", " , ")
     check("decide: empty --indomain -> exit 2", rc == 2, f"rc={rc}")

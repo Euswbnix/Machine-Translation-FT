@@ -441,8 +441,9 @@ def decide(ctx):
               rc == 1 and "criterion 1: FAIL" in o and "t=3.30" in o and "NOT significant" in o, o[-500:])
     partial = "".join(l + "\n" for l in GO.splitlines() if not l.startswith("ft_topk") or "heldout_europarl" not in l)
     p = d / "partial.tsv"; p.write_text(partial)
-    rc, o = ctx.run([DEC, "--results", p])
-    ctx.check("decide: ft_topk heldout_europarl rows missing -> exit 2 (was GO on heldout_un alone)", rc == 2 and "NO DECISION" in o, o[-200:])
+    rc, o = ctx.run([DEC, "--results", p, "--indomain", "heldout_un,heldout_europarl"])
+    ctx.check("decide: a listed set's ft_topk rows missing -> exit 2 (explicit two-set list; the frozen gate is UN-only)",
+              rc == 2 and "NO DECISION" in o, o[-200:])
     short = GO.replace("ft_topk 2 newstest2014 36.50\n", "")
     p = d / "short.tsv"; p.write_text(short)
     rc, o = ctx.run([DEC, "--results", p])

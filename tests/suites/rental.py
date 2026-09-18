@@ -280,7 +280,14 @@ def suite(ctx):
     for b in ("hf", "huggingface-cli"):
         (bindir / b).write_text("#!/bin/sh\nprintf '%s\\n' \"${FAKE_HF_OUT:-fake-account}\"\n")
     (bindir / "curl").write_text(f"#!{ctx.PY}\n" + FAKE_CURL)
-    (bindir / "git").write_text("#!/bin/sh\nexec " + " ".join(git_cmd) + ' "$@"\n')
+    # Resolve to an ABSOLUTE git before bindir goes on PATH. "exec git" would re-find this
+    # shim (bindir is first on PATH) and spin forever -- on Linux, where plain "git" is the
+    # chosen candidate, that hung the whole suite for as long as it was allowed to run.
+    git_abs = [shutil.which(x) or x if x == "git" else x for x in git_cmd]
+    (bindir / "git").write_text("#!/bin/sh\nexec " + " ".join(git_abs) + ' "$@"\n')
+    check("the fake git shim execs an absolute git outside the shim dir (no PATH self-recursion)",
+          all(not x.startswith(str(bindir)) for x in git_abs)
+          and any(os.path.isabs(x) for x in git_abs), str(git_abs))
     for b in ("nvidia-smi", "hf", "huggingface-cli", "curl", "git"):
         (bindir / b).chmod(0o755)
 
@@ -290,7 +297,12 @@ def suite(ctx):
             "GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_NOSYSTEM": "1"}
 
     def g(*args, cwd=sft):
-        r = subprocess.run([str(bindir / "git"), *[str(x) for x in args]], cwd=cwd, capture_output=True, text=True, env=genv)
+        # timeout: a shim that cannot run must fail a check, never hang the suite
+        try:
+            r = subprocess.run([str(bindir / "git"), *[str(x) for x in args]], cwd=cwd,
+                               capture_output=True, text=True, env=genv, timeout=120)
+        except subprocess.TimeoutExpired:
+            return 124, f"git {' '.join(str(x) for x in args)} timed out after 120 s"
         return r.returncode, (r.stdout + r.stderr).strip()
 
     remote = d / "remote.git"
@@ -401,7 +413,12 @@ def suite(ctx):
 
     def rent(*args, **extra):
         e = {**env, **{k: str(v) for k, v in extra.items()}}
-        r = subprocess.run(["bash", str(sft / "phase0/rental_setup.sh"), *args], env=e, capture_output=True, text=True)
+        try:
+            r = subprocess.run(["bash", str(sft / "phase0/rental_setup.sh"), *args], env=e,
+                               capture_output=True, text=True, timeout=300)
+        except subprocess.TimeoutExpired as t:
+            out = (t.stdout or b"").decode("utf-8", "replace") if isinstance(t.stdout, bytes) else (t.stdout or "")
+            return 124, out + f"\nSTAGE {' '.join(args)} TIMED OUT after 300 s"
         return r.returncode, r.stdout + r.stderr
 
     dec_path = sft / "phase0/e03_decisions.json"

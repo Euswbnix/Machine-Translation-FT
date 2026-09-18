@@ -489,8 +489,9 @@ at that same unique size; all three are asserted duplicate-free. The regression
 suite reconstructs the paper's rule independently and a mutation that disables
 dedup is caught.
 - (c) LR sweep spanning >= 1 decade, including a rate low enough that BLEU is flat
-- (e) held-out UN/legislative **and** Europarl test sets, to show the in-domain
-      *gain* the domain story predicts
+- (e) a held-out UN/legislative test set, to show the in-domain *gain* the domain
+      story predicts (Europarl was dropped on 2026-09-18: 2000/2000 candidate pairs
+      are in the v1.1 pretraining corpus, so it cannot be held out)
 
 ### CORRECTED: the LR framing was wrong; the real discontinuity is in Adam
 
@@ -611,14 +612,17 @@ decide (missing conditions or gate sets, or a cell without exactly 3 seeds; full
 
 Proceed to the full program **only if**, at the lr_scale selected from stage 1 by
 phase0/e03_select_lr.py under the rule frozen in phase0/e03_decisions.json
-("lr_selection_rule"), BOTH hold (the stage-1 rule itself is an open decision,
-`PROTOCOL.md` D6):
+(`flat-slope`, tolerance 0.3 BLEU; decision D6, frozen 2026-09-18), BOTH hold:
 
 1. top-k-QE FT degrades news-domain eval **more than** the matched random
    control, by **more than** the seed-noise floor, **and**
-2. top-k-QE FT **improves** the UN/legislative eval. (`e03_decide.py`'s default
-   `--indomain heldout_un,heldout_europarl` requires a gain on both sets; which wording is
-   pre-registered is open decision D5 in `PROTOCOL.md`.)
+2. top-k-QE FT **improves** the held-out UN/legislative eval by **more than that
+   set's seed-noise floor** (the ft_topk seed sd on it). Frozen 2026-09-18:
+   criterion 2 is UN-only (decision D5) and carries a noise floor (amendment X1),
+   so it is no longer weaker than criterion 1 — a +0.01 BLEU gain used to pass
+   while the seed sd is 0.05-0.2 BLEU. Europarl is not part of the gate: under
+   `exclude_pretrain_from_heldout` every candidate Europarl pair (2000/2000) is
+   already in the v1.1 pretraining corpus, so no honest Europarl set exists.
 
 Otherwise the motivating observation is an optimization artifact — most likely
 the discarded Adam moments (see the corrected LR section above), which raise the

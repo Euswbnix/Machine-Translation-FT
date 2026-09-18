@@ -14,7 +14,8 @@ phase0/e03_select_lr.py under the rule frozen in phase0/e03_decisions.json
 
   (1) ft_topk degrades the news-domain eval MORE than the matched ft_random
       control, by more than the seed-noise floor; and
-  (2) ft_topk IMPROVES the held-out in-domain (UN / Europarl) eval.
+  (2) ft_topk IMPROVES the held-out in-domain (UN) eval by MORE than that
+      set's seed-noise floor (the ft_topk seed sd on it).
 
 (1) alone is consistent with "fine-tuning on any 1M pairs hurts". (2) is what
 makes it a DOMAIN story rather than a damage story -- the paper asserted a
@@ -31,14 +32,15 @@ applied to complete data and said no. It used to judge criterion 2
 on whichever sets happened to be present, so what the gate tested depended on
 which rows made it into the TSV.
 
-PENDING USER DECISION (audit F11, not resolved here): phase0/README.md item 2
-and WMT2027_PLAN.md say criterion 2 is "improves the UN/legislative eval"
-(UN only), while this code, with the default --indomain
-heldout_un,heldout_europarl, requires a gain on EVERY listed set. Options:
-(a) UN-only gate: pass/default --indomain heldout_un, Europarl reported only;
-(b) both sets: amend the README and plan to say "improves heldout_un AND
-heldout_europarl". The default here is left unchanged until the user freezes
-one wording (before any stage-2 result exists). Test sets present in the TSV
+FROZEN 2026-09-18, before any stage-2 result existed (decisions D5 and X1,
+PROTOCOL.md "E0.3 decisions"): criterion 2 is UN-only (default --indomain
+heldout_un, matching phase0/README.md item 2 and WMT2027_PLAN.md), and a gain
+counts only if it EXCEEDS that set's seed-noise floor -- the sd of the ft_topk
+seeds on it. Before the amendment a +0.01 BLEU gain passed while the seed sd is
+0.05-0.2 BLEU, so criterion 2 was weaker than criterion 1, which has had a noise
+floor from the start. heldout_europarl is not part of the gate: under
+exclude_pretrain_from_heldout every candidate Europarl pair (2000/2000) was
+already in the v1.1 pretraining corpus, so no honest Europarl set exists. Test sets present in the TSV
 but not in --indomain are printed as [aux] rows and never affect the verdict.
 
 CHECKPOINT TYPES: e03_collect.py writes <results stem>.meta.json with ft_ckpt and
@@ -122,7 +124,9 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--results", required=True)
     ap.add_argument("--news", default="newstest2014")
-    ap.add_argument("--indomain", default="heldout_un,heldout_europarl")
+    ap.add_argument("--indomain", default="heldout_un",
+                    help="comma list; each set must gain more than its own ft_topk seed sd "
+                         "(frozen 2026-09-18, decisions D5 and X1)")
     ap.add_argument("--expect-seeds", type=int, default=3,
                     help="seeds per ft_topk/ft_random cell the rule uses; any other count -> exit 2")
     args = ap.parse_args()
@@ -265,14 +269,19 @@ def main() -> int:
     print()
     gains = []
     for ts in indomain:                      # completeness was checked above (exit 2)
-        m, _ = mean_sd(r["ft_topk"][ts])
+        m, sd_ts = mean_sd(r["ft_topk"][ts])
         d = m - r["baseline"][ts][0]
-        gains.append(d)
-        print(f"(2) in-domain {ts}: ft_topk Δ = {d:+.2f} BLEU")
-    c2 = all(g > 0 for g in gains)
+        if math.isnan(sd_ts):
+            # unreachable after --expect-seeds, but never decide without a floor
+            print(f"NO DECISION — ft_topk seed sd on {ts} is undefined; criterion 2 has no noise floor")
+            return 2
+        gains.append((ts, d, sd_ts))
+        print(f"(2) in-domain {ts}: ft_topk Δ = {d:+.2f} BLEU; seed-noise floor (sd) = {sd_ts:.2f}"
+              f" -> {'clears it' if d > sd_ts else 'within noise'}")
+    c2 = all(d > sd_ts for _, d, sd_ts in gains)
     if not c2:
-        print("    ft_topk does NOT improve every in-domain set. The fine-tuning")
-        print("    did not buy in-domain competence; it only cost news competence.")
+        print("    ft_topk does NOT improve every in-domain set beyond its seed-noise floor.")
+        print("    The fine-tuning did not buy in-domain competence; it only cost news competence.")
     print(f"    criterion 2: {'PASS' if c2 else 'FAIL'}")
 
     # ---- auxiliary ----------------------------------------------------

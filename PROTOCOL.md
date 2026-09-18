@@ -267,7 +267,19 @@ any reviewer can re-derive the result **under their own preferred stopping rule*
 
 ## E0.3 decisions required before controls
 
-**Status: OPEN. Nothing below is chosen.** These choices are frozen in
+**Status: FROZEN 2026-09-18**, before any stage-2 result existed. The chosen values are in
+`phase0/e03_decisions.json` (sha256 `e3b299b9c3f805c3749cffdb1692a64a5d88f773f00bf5044c2446ef7b9c6f93`):
+pool `reused`; n_ft 1,000,000; heldout_domains `["un"]`; indomain `["heldout_un"]`;
+exclude_pretrain_from_heldout `true`; lr_selection_rule `flat-slope` with tolerance 0.3 BLEU;
+score_mode `full` with the audit's calibration thresholds and `jaccard_min_k` 500;
+ft_checkpoint `avg-last5`; budget `steps`; target_tokens `null`; loss_spike_ratio 0.
+Amendment **X1**, made the same day and before any result: criterion 2 now requires the
+in-domain gain to exceed that set's ft_topk seed sd, mirroring criterion 1's noise floor
+(`e03_decide.py`, tests/suites/decide_noise_floor.py). Dropping Europarl from the gate is a
+recorded deviation forced by D4: every candidate pair was in the pretraining corpus.
+The sections below keep each option and its evidence as they stood when the choice was made.
+
+These choices are frozen in
 `phase0/e03_decisions.json` (template: `phase0/e03_decisions.example.json`, every value
 `"CHOOSE"`), committed and git-tagged **before** `rental_setup.sh score`. `score`,
 `controls`, `stage1`, `stage2` and `gate` refuse to run without a complete, valid file
@@ -334,9 +346,10 @@ The documents disagree: `phase0/README.md` item 2 and WMT2027_PLAN.md say "impro
 UN/legislative eval" (UN only); `e03_decide.py`'s default `--indomain
 heldout_un,heldout_europarl` requires a gain on **every** listed set. Options:
 `["heldout_un"]` (Europarl printed as `[aux]`, not gating) or
-`["heldout_un","heldout_europarl"]`. Each listed set must be in D3. Criterion 2 is `gain > 0`
-with no noise floor in either option; adding one would be a change to `e03_decide.py`,
-not a value in this file.
+`["heldout_un","heldout_europarl"]`. Each listed set must be in D3.
+**Chosen: `["heldout_un"]`.** Criterion 2 was `gain > 0` with no noise floor in either
+option; amendment X1 (2026-09-18, before any result) changed `e03_decide.py` so the gain
+must exceed that set's ft_topk seed sd. That is a code change, not a value in this file.
 
 ### D6. `lr_selection_rule` and `lr_tolerance_bleu` — stage-1 LR selection
 
