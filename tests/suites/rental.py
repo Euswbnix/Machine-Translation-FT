@@ -815,7 +815,7 @@ os.execv(real, [real] + args)
     (mt / "data_enfr_v1").mkdir(exist_ok=True)
     for n_ in ("valid.en", "valid.fr", "test.en", "test.fr", "spm.model"):
         (mt / "data_enfr_v1" / n_).write_text("x\n")
-    (mt / "ckpt_hf").mkdir(exist_ok=True); (mt / "ckpt_hf/enfr_base_v1.1_averaged.pt").write_text("w")
+    (mt / "ckpt_hf").mkdir(exist_ok=True); ctx.write_ckpt(mt / "ckpt_hf/enfr_base_v1.1_averaged.pt")
     avb = work / "accept_valid_bleu.txt"
     rc, o = rent("accept", FAKE_BLEU="35.31")
     check("accept with matching valid/test downloads nothing, reproduces BLEU and writes accept_valid_bleu.txt",
