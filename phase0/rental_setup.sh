@@ -22,6 +22,8 @@
 # results/phase0/deviations.txt):
 #   PIN_SFT_REV=<40-hex>   repos/env: check out this commit of Machine-Translation-SFT (detached)
 #   MT_REV=<40-hex>        repos/env: Machine_translation commit (default: the pinned one below)
+#   SCORE_SHARDS=N         score: split into N shards instead of one per GPU (progress and
+#                          cheap resume on a long single-GPU run; fixed by the work dir once set)
 #   SCORE_REDO=1           score: rescore although a completed v2_scored.tsv exists for other
 #                          scoring decisions (score_mode / calibration)
 #   RECALIBRATE=1          score (full): re-run only 'calibrate' on the kept
@@ -639,13 +641,17 @@ PY
 }
 
 run_score_sharded() {   # run_score_sharded <score_sharded args...>; dies with a message fitting the exit code
-  local rc=0 allow=()
+  local rc=0 allow=() shards=()
+  # More shards than GPUs: each is verified and counted as it completes, so a long run
+  # shows progress and a resume re-checks one shard instead of the whole corpus. Boundaries
+  # are fixed by the work dir's manifest, so this cannot change mid-run.
+  [ -n "${SCORE_SHARDS:-}" ] && shards=(--shards "$SCORE_SHARDS")
   if [ "${SCORE_ALLOW_STACK_CHANGE:-0}" = 1 ]; then
     allow=(--allow-stack-change)
     note_deviation "SCORE_ALLOW_STACK_CHANGE $D_SCORE_MODE $D_SCORE_SHA" \
       "$(utc) SCORE_ALLOW_STACK_CHANGE=1: score_mode $D_SCORE_MODE; resumed shards may continue under a changed scoring stack (recorded per shard in segments)"
   fi
-  "$PY" "$SFT/phase0/score_sharded.py" "$@" ${allow[@]+"${allow[@]}"} || rc=$?
+  "$PY" "$SFT/phase0/score_sharded.py" "$@" ${shards[@]+"${shards[@]}"} ${allow[@]+"${allow[@]}"} || rc=$?
   case "$rc" in
   0) ;;
   3) die "a scorer refused to continue under a changed scoring stack (shards and differing keys above); nothing was mixed, and rerunning 'score' as is fails the same way. Options: (1) restore the stack the shard meta records; (2) delete those shards' shard.NNN.tsv and shard.NNN.meta.json to rescore them under the new stack (full mode then refuses mixed shards: delete all shards to rescore everything); (3) SCORE_ALLOW_STACK_CHANGE=1 bash $0 score (records a deviation). See RUNBOOK step 4c." ;;

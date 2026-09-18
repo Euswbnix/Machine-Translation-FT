@@ -718,8 +718,28 @@ os.execv(real, [real] + args)
     devs = {ln.split()[0] for ln in logs["scorer"].read_text().splitlines()}
     check("score_mode reuse: new pairs scored sharded, merged with reused scores in corpus order",
           rc == 0 and got == "".join(exp_reuse), o[-400:])
+    shard_files = sorted((work / "rescore/new_scores.tsv.shards").glob("shard.*.tsv")) \
+        if (work / "rescore/new_scores.tsv.shards").exists() else []
     check("SCORE_SMOKE ran the 2-GPU order check before the full run", rc == 0 and "smoke OK" in o and {"0", "1"} <= devs, o[-300:])
     smeta = json.load(open(mt / "data_enfr_v2/v2_scored.meta.json")) if (mt / "data_enfr_v2/v2_scored.meta.json").exists() else {}
+    # the stage returns early when a completed scored file exists for these scoring
+    # decisions, so clear it: what is under test here is the split, not the marker
+    set_decisions(score_mode="reuse")
+    done.unlink(missing_ok=True); out.unlink(missing_ok=True)
+    shutil.rmtree(work / "rescore/new_scores.tsv.shards", ignore_errors=True)
+    (work / "rescore/new_scores.tsv").unlink(missing_ok=True)
+    rc, o = rent("score", SCORE_REDO=1, SCORE_SHARDS=3, FAKE_NGPU=1)
+    got_s = out.read_text(encoding="utf-8") if out.exists() else ""
+    check("SCORE_SHARDS=3 on one GPU splits into 3 shards and merges to the same scores",
+          rc == 0 and "into 3 shards" in o and got_s == "".join(exp_reuse), f"rc={rc} {o[-300:]}")
+    # (changing --shards on a work dir that still exists is refused by score_sharded itself;
+    # tests/suites/scoring.py covers that. Here the reuse path deletes the shards after a
+    # successful merge, so the next run legitimately starts from a fresh split.)
+    shutil.rmtree(work / "rescore/new_scores.tsv.shards", ignore_errors=True)
+    (work / "rescore/new_scores.tsv").unlink(missing_ok=True)
+    done.unlink(missing_ok=True); out.unlink(missing_ok=True)
+    set_decisions(score_mode="reuse")
+    rc, o = rent("score", SCORE_REDO=1)
     check("reuse cleans up to_score.* and shards and writes scoring metadata",
           not (work / "rescore/to_score.en").exists() and not (work / "rescore/new_scores.tsv.shards").exists()
           and smeta.get("mode") == "reuse")
