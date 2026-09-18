@@ -388,7 +388,9 @@ def suite_run_matrix(d: Path):
             "logging": {"swanlab": {"enabled": True, "mode": "cloud", "experiment": "sft"}}}
     json.dump(base, open(d / "base.yaml", "w"))
     out_dir = d / "matrix"
-    env = {"PYTHONPATH": str(shim)}
+    # yaml stub + the shared torch stub: this suite also drives e03_collect, whose
+    # checkpoint fixtures are JSON (see FAKE_TORCH)
+    env = {"PYTHONPATH": f"{make_faketorch(d)}{os.pathsep}{shim}"}
     rc, out = run([ROOT / "phase0/e03_run_matrix.py", "--base-config", d / "base.yaml",
                    "--data-dir", d / "no_controls", "--out-dir", d / "matrix_nomanifest"], env=env)
     check("e03_run_matrix refuses to fingerprint a data dir without manifest.json", rc != 0 and "manifest.json" in out,
