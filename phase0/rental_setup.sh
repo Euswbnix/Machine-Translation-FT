@@ -552,6 +552,32 @@ stage_data() {
   echo "v1.1 rows = $(awk '$1=="rows"{print $2}' data_enfr_v1_pretrain/.sha_verified)"
 }
 
+model_max_tokens() {   # the FT model's positional-encoding limit, minus BOS/EOS
+  # A test sentence longer than this makes eval_bleu raise inside the embedding and takes down
+  # every evaluation of that set, the baseline's included (2026-09-19: one 649-token UN sentence
+  # killed all ten evaluations of heldout_un). e03_collect drops such rows for every system
+  # alike and records the count, so the drop shows up in the result instead of deciding it.
+  local n
+  n=$("$PY" -c 'import json, re, sys
+raw = open(sys.argv[1], encoding="utf-8").read()
+val = None
+for load in (lambda t: __import__("yaml").safe_load(t), json.loads):   # JSON is a YAML subset
+    try:
+        val = load(raw)["model"]["max_seq_len"]
+        break
+    except Exception:
+        pass
+if val is None:                                                        # neither parser available
+    m = re.search(r"max_seq_len\"?\s*:\s*(\d+)", raw)
+    val = m.group(1) if m else ""
+print(int(val))' "$SFT/configs/sft_base_enfr.yaml" 2>/dev/null)
+  case "$n" in
+    ''|*[!0-9]*) die "cannot read model.max_seq_len from $SFT/configs/sft_base_enfr.yaml" ;;
+  esac
+  [ "$n" -ge 64 ] && [ "$n" -le 8192 ] || die "model.max_seq_len $n is out of range; check the config"
+  echo $(( n - 2 ))
+}
+
 hf_logged_in() {   # hf_logged_in <whoami command...>; never prints the output (it names the account)
   local out
   out=$("$@" 2>&1) || return 1
@@ -1060,11 +1086,15 @@ stage_gate() {
   else
     echo "deviations: none recorded"
   fi
+  local maxtok
+  maxtok=$(model_max_tokens) || die "cannot determine the model's max_seq_len; gate not run"
+  echo "test rows longer than $maxtok tokens will be dropped for every system alike"
   "$PY" "$SFT/phase0/e03_collect.py" --mt-root "$MT" \
       --runner "$SFT/configs/phase0/run_stage2.sh" --lr-scale "$lr" --selected-lr "$sel" --decisions-sha "$D_SHA256" \
       --baseline-ckpt ckpt_hf/enfr_base_v1.1_averaged.pt \
       --baseline-config "$SFT/configs/sft_base_enfr.yaml" \
       --controls-dir "$SFT/data/phase0" --out "$RESULTS/phase0_bleu.tsv" --ft-ckpt "$D_FT_CKPT" \
+      --max-src-tokens "$maxtok" \
       --jobs "$(ngpus)" || die "collection incomplete or stale — see above; do not apply the gate to partial results"
   # exit 0 = GO, 1 = NO-GO (rule applied to complete data), 2 = cannot decide. The verdict is printed either way.
   "$PY" "$SFT/phase0/e03_decide.py" --results "$RESULTS/phase0_bleu.tsv" --indomain "$D_INDOMAIN"

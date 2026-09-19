@@ -184,6 +184,71 @@ def build_avg_last5(ckdir: Path, cfg: dict, mt: Path, avg_script: str, python: s
     return out, None
 
 
+def filter_long_rows(tests: dict, limit: int, cfg: dict, mt: Path, work: Path, encode=None):
+    """Copy each test set without rows the model cannot encode; return (tests, dropped counts).
+
+    A sentence longer than the positional encoding (config max_seq_len) makes eval_bleu raise
+    inside the embedding, which takes down every evaluation of that set — the baseline's too.
+    Filtering here keeps the comparison like-for-like: every system is scored on the same rows,
+    and the counts are recorded so the drop is visible in the result rather than implicit.
+    """
+    how = "sentencepiece"
+    if encode is None:
+        encode = _spm_encoder(cfg, mt)          # injectable so the suites need no spm model
+        if encode is None:                      # no tokenizer here: fall back, and say so
+            how = "whitespace words (a lower bound on subword tokens)"
+            encode = str.split
+            print(f"  WARNING (test set): no SentencePiece tokenizer available, so rows are measured in "
+                  f"{how}. A sentence under {limit} words can still exceed {limit} tokens and crash the "
+                  f"evaluation; install sentencepiece or point the config at its spm model to be safe.")
+    work.mkdir(parents=True, exist_ok=True)
+    out_tests, dropped = {}, {}
+    for name, (src, ref) in tests.items():
+        # LF is the only line break: splitlines() would also split on U+2028/NEL/VT, which the
+        # corpora do contain, and the two sides would stop lining up (see README, "CRITICAL").
+        with open(src, encoding="utf-8", newline="\n") as f:
+            s_lines = [ln.rstrip("\n") for ln in f]
+        with open(ref, encoding="utf-8", newline="\n") as f:
+            r_lines = [ln.rstrip("\n") for ln in f]
+        if len(s_lines) != len(r_lines):
+            sys.exit(f"{name}: {len(s_lines)} source rows but {len(r_lines)} reference rows")
+        keep = [i for i, (x, y) in enumerate(zip(s_lines, r_lines))
+                if len(encode(x)) <= limit and len(encode(y)) <= limit]
+        dropped[name] = len(s_lines) - len(keep)
+        if not keep:
+            sys.exit(f"{name}: every row exceeds {limit} tokens; nothing to evaluate")
+        if dropped[name] == 0:
+            out_tests[name] = (src, ref)
+            continue
+        fs, fr = work / f"{name}.en", work / f"{name}.fr"
+        with open(fs, "w", encoding="utf-8", newline="\n") as a_, open(fr, "w", encoding="utf-8", newline="\n") as b_:
+            for i in keep:
+                a_.write(s_lines[i] + "\n")
+                b_.write(r_lines[i] + "\n")
+        out_tests[name] = (fs, fr)
+        print(f"  WARNING (test set): {name}: dropped {dropped[name]} of {len(s_lines)} rows longer than "
+              f"{limit} tokens (the model's positional encoding stops there); "
+              f"scoring {len(keep)} rows for every system")
+    return out_tests, dropped, how
+
+
+def _spm_encoder(cfg: dict, mt: Path):
+    """The evaluator's own tokenizer, or None when this box has neither it nor the model."""
+    spm_path = (cfg.get("data") or {}).get("spm_model") or (cfg.get("data") or {}).get("spm")
+    if not spm_path:
+        return None
+    sp_file = Path(spm_path)
+    if not sp_file.is_absolute():
+        sp_file = mt / sp_file
+    if not sp_file.is_file():
+        return None
+    try:
+        import sentencepiece as spm_mod
+    except ImportError:
+        return None
+    return spm_mod.SentencePieceProcessor(model_file=str(sp_file)).encode
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--mt-root", required=True)
@@ -203,6 +268,13 @@ def main() -> int:
     ap.add_argument("--ft-ckpt", choices=("final", "avg-last5"), default="final",
                     help="pre-registration decision; default final = the behaviour the gate was written with")
     ap.add_argument("--average-script", default="scripts/average_checkpoints.py", help="relative to --mt-root")
+    ap.add_argument("--max-src-tokens", type=int, default=0,
+                    help="drop test rows whose source or reference exceeds this many SentencePiece "
+                         "tokens, identically for the baseline and every condition (0 = off). The "
+                         "model cannot encode past its max_seq_len: one 649-token UN sentence in a "
+                         "2,000-row held-out set crashed all 10 evaluations of that set. Dropped rows "
+                         "are counted in the meta and printed; the filtered copies are what every "
+                         "system is scored on, so the comparison stays like-for-like.")
     ap.add_argument("--max-token-imbalance", type=float, default=0.02)
     ap.add_argument("--max-dropped-frac", type=float, default=0.01)
     ap.add_argument("--strict-budget", action="store_true",
@@ -228,6 +300,11 @@ def main() -> int:
     missing_sets = [f"{k}: {p}" for k, (s, r) in tests.items() for p in (s, r) if not p.exists()]
     if missing_sets:
         sys.exit("test sets missing — the gate cannot be evaluated:\n  " + "\n  ".join(missing_sets))
+    dropped_rows: dict = {}
+    length_measure = None
+    if a.max_src_tokens:
+        tests, dropped_rows, length_measure = filter_long_rows(
+            tests, a.max_src_tokens, load_cfg(Path(a.baseline_config)), mt, out.parent / "filtered_tests")
 
     want_sha = None
     mp = runner.parent / "matrix.json"
@@ -403,6 +480,8 @@ def main() -> int:
             "lr_scale": a.lr_scale, "selected_lr": a.selected_lr, "decisions_sha": a.decisions_sha,
             "lr_deviation": bool(a.selected_lr is not None and a.selected_lr != a.lr_scale),
             "controls_sha": want_sha, "torch_verified": HAVE_TORCH,
+            "max_src_tokens": a.max_src_tokens or None, "test_rows_dropped": dropped_rows or None,
+            "length_measured_in": length_measure,
             "budget": {f"{c} {s}": v for (c, s), v in sorted(budget.items())},
             "budget_warnings": warnings, "complete": not (incomplete or failures)}
     body = "condition\tseed\ttestset\tbleu\n" + \
