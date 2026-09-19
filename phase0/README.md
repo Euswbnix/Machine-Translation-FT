@@ -344,6 +344,35 @@ Scoring evidence collected on the way:
   `e03_collect --max-src-tokens` now drops such rows for every system alike and
   records the count; the numbers above are from the rerun.
 
+### Follow-up: was the paper's effect the learning rate? (2026-09-19 evening, in progress)
+
+E0.3 found nothing at the lr_scale its frozen rule selected (0.15). The rejected paper
+fine-tuned at lr_scale **1.0** and compared against *no fine-tuning*, never against a
+matched random set — so "top-k QE filtering degrades news BLEU" and "fine-tuning at this
+rate degrades news BLEU" were never separated. The stage-1 sweep already hints at the
+answer: ft_topk at lr 1.0 falls 29.72 → 28.70 on newstest2013 across the window, while at
+0.15 it is flat.
+
+This run puts **both** conditions at lr_scale 1.0 on the same FT sets (3 seeds each, plus
+ft_bottom), on the author's own box:
+
+- If ft_random falls with ft_topk, the paper's effect is the learning rate, not the data.
+- If only ft_topk falls, the effect is real but only appears at a rate the LR rule rejects.
+
+Not part of the pre-registered E0.3 (separate controls dir, configs dir and results file,
+`results/lr1_probe.tsv`). Setup verified before running:
+
+- The fine-tuning start is the same weights as the E0.3 runs: the box's own
+  `base_enfr_v1_redo/averaged.pt` and the HF release have the same 261-tensor digest
+  (`a96170fb55444afa`, global_step 105,000).
+- The control sets were rebuilt from the paper's own reused scores (a `merge
+  --allow-missing` TSV: real scores inside the reused pool, `nan` outside, which the
+  pool mask excludes anyway). 87 of 95 manifest fields match the E0.3 build exactly,
+  including n_unique_per_set 926,999, topk_duplicates_removed 73,001, the top-1M band
+  0.8959360–0.9144790 and every held-out number. The 8 that differ are ties broken
+  differently because E0.3 used the *rescored* values (which agree with the paper's to
+  ~1e-6): ft_bottom's source composition moves by one row, ft_random∩ft_topk by six.
+
 ## Findings from the original training machine (2026-09-12)
 
 Pulled read-only from the Linux box; mirror at `~/mt_fetch/` (not committed —
