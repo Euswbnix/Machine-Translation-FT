@@ -344,7 +344,7 @@ Scoring evidence collected on the way:
   `e03_collect --max-src-tokens` now drops such rows for every system alike and
   records the count; the numbers above are from the rerun.
 
-### Follow-up: was the paper's effect the learning rate? (2026-09-19 evening, in progress)
+### Follow-up: was the paper's effect the learning rate? (2026-09-19 evening)
 
 E0.3 found nothing at the lr_scale its frozen rule selected (0.15). The rejected paper
 fine-tuned at lr_scale **1.0** and compared against *no fine-tuning*, never against a
@@ -372,6 +372,46 @@ Not part of the pre-registered E0.3 (separate controls dir, configs dir and resu
   0.8959360–0.9144790 and every held-out number. The 8 that differ are ties broken
   differently because E0.3 used the *rescored* values (which agree with the paper's to
   ~1e-6): ft_bottom's source composition moves by one row, ft_random∩ft_topk by six.
+
+**Result at lr_scale 1.0** (3 seeds per condition, single final checkpoints,
+`results/lr1_probe.tsv`; baseline is the averaged release, so criterion 1's baseline
+comparison is biased toward "degrades" by the ~0.2-0.4 BLEU averaging is worth — the
+condition-vs-condition comparison, which is the decisive one, is between like
+checkpoints and unaffected):
+
+| condition | newstest2014 | vs baseline | heldout_un | vs baseline |
+|---|---|---|---|---|
+| baseline | 35.31 | — | 46.83 | — |
+| ft_topk | 33.62 ± 0.11 | **−1.69** | 45.27 ± 0.14 | **−1.56** |
+| ft_random | 34.41 ± 0.07 | **−0.90** | 47.35 ± 0.02 | **+0.52** |
+| ft_bottom | 29.49 ± 0.13 | −5.82 | 36.65 ± 0.53 | −10.18 |
+
+Three things hold at once, and together they replace the paper's account:
+
+1. **Half of the paper's effect is the learning rate.** At 1.0 even the matched random
+   set loses 0.90 BLEU on news. The paper compared fine-tuning against *no* fine-tuning,
+   so this part was attributed to quality filtering by construction.
+2. **The other half is real.** ft_topk is 0.79 BLEU below ft_random on news (Welch
+   t=10.62, df=3.5, crit 3.18 — significant), so top-k selection is genuinely worse than
+   a random set of the same size. At the rule-selected 0.15 this difference disappears
+   (0.26, not significant), so the effect exists only in a regime the LR rule rejects.
+3. **The domain explanation is contradicted, not merely unsupported.** The paper's story
+   was a shift toward UN/legislative text at the expense of news. Then heldout_un should
+   rise. It *falls* 1.56 for ft_topk while ft_random *gains* 0.52 — and the top-1M set is
+   78.3% UN by provenance. Training on overwhelmingly UN data makes the model worse on
+   held-out UN.
+
+What that leaves is a plausible and testable mechanism the rejected paper did not
+consider: **CometKiwi's top band selects text that is easy to translate, not text that
+teaches** — the top-1M band is 0.02 BLEU-points wide (0.8959-0.9145), deduplication
+removes 73,001 rows from it, and its content is boilerplate-heavy UN prose. Fine-tuning
+on it damages news and in-domain performance alike, and more than random data does. That
+is a data-selection finding about QE metrics, not a domain-shift finding, and it survives
+both the corpus bug and the LR confound. It is also the one thread of the rejected
+paper's story that reproduces at all.
+
+Not pre-registered, and not part of the E0.3 verdict: the gate ran at the LR its frozen
+rule selected and returned NO-GO. This run exists to explain what the paper saw.
 
 ## Findings from the original training machine (2026-09-12)
 
