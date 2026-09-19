@@ -260,6 +260,65 @@ path"). Three results are evidence, not logistics:
   thresholds (|mean| ≤ 2e-4, p99 ≤ 2e-3) on this sample; the full 16.6M-row
   calibration runs at the end of scoring.
 
+## E0.3 RESULT (2026-09-19): NO-GO
+
+Run on a rented 4x RTX 5090 from the frozen decisions (`phase0/e03_decisions.json`,
+sha256 `e3b299b9…`, tagged `e03-decisions-v1`), on the CR-safe corpus, at the
+lr_scale the frozen rule selected mechanically (0.15; rungs 0.15 and 0.05 passed,
+1 and 0.5 failed). Artifacts: `results/phase0/` (archived off the box).
+
+| condition | newstest2014 | vs baseline | heldout_un |
+|---|---|---|---|
+| baseline (Base v1.1 release) | 35.31 | — | — |
+| ft_topk (top-1M by CometKiwi) | 35.17 ± 0.16 | **−0.14** | 46.85 ± 0.04 |
+| ft_random (matched size) | 35.43 ± 0.07 | +0.12 | 47.34 ± 0.10 |
+| ft_bottom (lowest-1M) | 32.23 ± 0.13 | −3.08 | 43.12 ± 0.10 |
+
+- **Criterion 1 FAILS.** ft_topk does not degrade news beyond the seed-noise floor
+  (−0.14 against sd 0.16), and its 0.26 BLEU gap to ft_random is not significant
+  (Welch t=2.59, df=2.6, crit 4.30).
+- **Criterion 2 FAILS.** The in-domain gain is +0.02 against that set's seed sd of
+  0.04 — inside the noise (amendment X1's floor; it would have "passed" under the
+  old `gain > 0`).
+- **The paper's motivating observation does not reproduce** on the corrected corpus
+  with a control and a mechanically chosen LR. Per the pre-registration the
+  data-quality/domain angle does not carry the WMT 2027 submission, and must not be
+  rescued post hoc.
+
+Two by-products that do carry information:
+
+- **QE signal lives at the bottom, not the top.** ft_bottom loses 3.08 BLEU on news
+  and 3.71 in-domain, while top-1M is indistinguishable from random. The paper's own
+  top-1M score band (0.8959–0.9145) is a dense plateau: selecting "better" inside it
+  selects nothing.
+- **Step-matched arms are not token-matched**: applied target tokens ranged
+  61,981,430 to 74,458,476 across the nine runs (ratio 1.2013, flagged by the
+  collector against its 2% threshold). Any statement about these cells has to carry
+  that caveat — it is exactly the accounting the rejected paper lacked.
+
+**Sensitivity (secondary, not pre-registered): the other pool cannot even be run.**
+Rebuilding the controls from the full 38,275,284-row pool and repeating the stage-1
+sweep, **no lr_scale passes the frozen rule** — slope statistics 1.082 / 0.788 /
+0.483 / 0.376 at 1 / 0.5 / 0.15 / 0.05 against a 0.3 tolerance, i.e. dev BLEU
+declines monotonically at every rate tried (the reused pool passed at 0.15 and 0.05).
+`e03_select_lr` stopped rather than pick one by eye. Fine-tuning on a pool that is
+55% giga-fren — data the baseline never saw — degrades the model at every LR, so the
+pre-registered choice of the reused pool was not merely convenient. The forced-LR
+completion of that arm was not run (the box was released first).
+
+Scoring evidence collected on the way:
+
+- **The paper's CometKiwi scores reproduce.** Calibrating the new full-corpus run
+  against the paper's 16,646,992 reused scores: overall mean difference −2.7e-9, p99
+  |diff| 1.02e-06, Spearman 1.0000000, and every source passes separately (UN's
+  11.6M rows through giga-fren's 4,351).
+- **Scoring is all but deterministic.** Re-scoring 5,000,000 rows on the same stack:
+  99.10% of scores bit-identical, mean difference −1.5e-11, p99 exactly 0.
+- One 649-token UN sentence (median in that set: 31) exceeds the model's 256-position
+  encoding and took down all ten evaluations of heldout_un on the first gate attempt.
+  `e03_collect --max-src-tokens` now drops such rows for every system alike and
+  records the count; the numbers above are from the rerun.
+
 ## Findings from the original training machine (2026-09-12)
 
 Pulled read-only from the Linux box; mirror at `~/mt_fetch/` (not committed —
