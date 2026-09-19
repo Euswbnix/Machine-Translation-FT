@@ -265,7 +265,13 @@ path"). Three results are evidence, not logistics:
 Run on a rented 4x RTX 5090 from the frozen decisions (`phase0/e03_decisions.json`,
 sha256 `e3b299b9…`, tagged `e03-decisions-v1`), on the CR-safe corpus, at the
 lr_scale the frozen rule selected mechanically (0.15; rungs 0.15 and 0.05 passed,
-1 and 0.5 failed). Artifacts: `results/phase0/` (archived off the box).
+1 and 0.5 failed). Artifacts kept: `~/mt_local/phase0_results/` on the Mac — the BLEU table, its meta
+(lr_scale, decisions sha256, per-run applied tokens, dropped test rows), the decisions
+file with its git record, the deviations history, the controls manifest, matrix.json
+and lr_selection.json. NOT kept (the instance was released): `v2_scored.tsv` (38.3M
+rows, ~22 GPU-h), the v1.1 and en-de scored corpora, the 13 fine-tuned checkpoints and
+the full-pool control sets. Everything needed to state and defend the verdict survives;
+regenerating the scored corpus would cost about 22 GPU-hours.
 
 | condition | newstest2014 | vs baseline | heldout_un |
 |---|---|---|---|
@@ -305,6 +311,25 @@ declines monotonically at every rate tried (the reused pool passed at 0.15 and 0
 55% giga-fren — data the baseline never saw — degrades the model at every LR, so the
 pre-registered choice of the reused pool was not merely convenient. The forced-LR
 completion of that arm was not run (the box was released first).
+
+**The stage-1 sweeps themselves** (newstest2013 BLEU at ten evals; the pre-FT release
+scores 30.52; "stat" is the frozen flat-slope statistic against a 0.3 tolerance). The
+box was released before these logs were copied off it, so the traces are recorded here:
+
+| pool | lr_scale | stat | trace |
+|---|---|---|---|
+| reused (primary) | 1 | 0.876 FAIL | 29.72 29.56 29.07 28.88 29.18 28.93 29.24 28.48 28.88 28.70 |
+| reused | 0.5 | 0.489 FAIL | 30.02 29.96 29.62 29.46 29.75 29.51 29.81 29.41 29.64 29.30 |
+| reused | **0.15** | **0.243 PASS** | 30.31 30.24 30.06 29.89 30.11 30.07 30.24 29.99 29.92 29.99 |
+| reused | 0.05 | 0.221 PASS | 30.35 30.30 30.18 30.08 30.14 30.07 30.29 30.09 30.04 30.09 |
+| full (secondary) | 1 | 1.082 FAIL | 29.22 28.83 28.85 28.88 28.49 28.83 28.27 28.57 28.17 27.85 |
+| full | 0.5 | 0.788 FAIL | 29.53 29.25 29.60 29.44 29.27 29.28 28.81 28.83 29.06 28.71 |
+| full | 0.15 | 0.483 FAIL | 29.92 29.80 29.86 29.75 29.56 29.50 29.54 29.50 29.47 29.47 |
+| full | 0.05 | 0.376 FAIL | 30.05 29.99 29.99 29.96 29.85 29.89 29.81 29.68 29.71 29.72 |
+
+The rule picks the largest passing rung, 0.15. Note that fine-tuning never beats the
+pre-FT 30.52 on newstest2013 at any rate or either pool — it only costs less at the
+small rates.
 
 Scoring evidence collected on the way:
 
