@@ -341,6 +341,16 @@ This is E0.4: an explanatory probe, not a gate. It cannot revive E0.3's NO-GO ve
   E0.4 evaluates the *final* checkpoint with `--keep-last 1`, because it is read against
   the lr-1.0 control, which was run that way (`--ft-ckpt final`). Averaging here and not
   there would confound the comparison. D8 governs the E0.3 gate; E0.4 is not a gate.
+- **Decision D9 (`loss_spike_ratio: 0`) was violated by the first launch and the runs were
+  thrown away.** `e04_run.sh` did not pass `--spike-ratio 0`, so the generated configs
+  inherited `1.3` from the base config. With the guard on, an arm whose loss spikes more
+  often drops more effective batches — and these two halves differ in loss variance *by
+  construction*, which is the axis under test. Caught by a pre-flight audit 20 minutes into
+  the run: the chain was stopped, the one completed run (`ft_topk_div` seed 42) and the
+  partial second were deleted unused, `--spike-ratio 0` was added, and all six restarted.
+  The guard had in fact fired zero times — in that discarded run and in all nine lr-1.0
+  control runs — so nothing was measurably wrong; the runs were discarded because
+  "it happened not to matter" is not the standard this protocol is for.
 
 
 ## E0.3 decisions required before controls
