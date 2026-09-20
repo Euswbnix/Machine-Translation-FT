@@ -85,7 +85,7 @@ except ImportError:
 
 LR_SCALES = [1.0, 0.50, 0.15, 0.05]
 PRETRAIN_PEAK = 6.99e-4   # lr_scale=1 at warmup_steps=4000
-CONDITIONS = ["ft_topk", "ft_random", "ft_bottom"]
+CONDITIONS = ["ft_topk", "ft_random", "ft_bottom"]   # --conditions overrides (explanatory probes)
 SEEDS = [42, 1, 2]
 D_MODEL = 512
 RESUME_GLOBAL_STEP = 105_000
@@ -113,6 +113,12 @@ def main() -> int:
                     help="do not hash --data-dir/manifest.json (offline tests only). By default the "
                          "controls content sha goes into matrix.json and every checkpoint dir name, "
                          "so a rebuilt control set can never reuse runs trained on the old one")
+    ap.add_argument("--conditions", default=None,
+                    help="comma list of condition names instead of the E0.3 three "
+                         "(ft_topk,ft_random,ft_bottom). Each needs <name>.<src-ext> and "
+                         "<name>.<tgt-ext> in --data-dir. For explanatory probes that fine-tune other "
+                         "splits (E0.4); e03_decide still reads the gate's own condition names, so a "
+                         "probe writes its own results file and cannot be mistaken for the gate.")
     ap.add_argument("--keep-last", type=int, default=None,
                     help="checkpoint.keep_last (trainer prunes step_*.pt only; final.pt is kept). "
                          "e03_collect --ft-ckpt final reads only final.pt -> 1 suffices; "
@@ -126,6 +132,15 @@ def main() -> int:
                     help="training.loss_spike_ratio: 'inherit' (1.3 from the base config) or a number; "
                          "0 disables the spike guard (PROTOCOL.md 1.3)")
     args = ap.parse_args()
+    if args.conditions:
+        global CONDITIONS
+        CONDITIONS = [c.strip() for c in args.conditions.split(",") if c.strip()]
+        if not CONDITIONS:
+            sys.exit("--conditions is empty")
+        missing = [f"{c}.{e}" for c in CONDITIONS for e in (args.src_ext, args.tgt_ext)
+                   if not (Path(args.data_dir) / f"{c}.{e}").is_file()]
+        if missing:
+            sys.exit(f"--conditions names sets that are not in {args.data_dir}: " + ", ".join(missing))
     if args.keep_last is not None and args.keep_last < 1:
         sys.exit("--keep-last must be >= 1 (the trainer treats 0 as 'keep every step checkpoint')")
     if args.budget == "tokens" and args.target_tokens <= 0:

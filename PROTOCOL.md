@@ -289,10 +289,19 @@ and fine-tune both halves at lr_scale 1.0 (the regime where the effect exists), 
   occur in at least one other row of ft_topk. Computed over the whole set, lowercased,
   `\w+` tokens; rows shorter than 8 tokens take `rep = 0`.
 - **Split:** rows above the median `rep` form `ft_topk_rep`; rows at or below form
-  `ft_topk_div`. Each half is then **length-matched** to the other by discarding rows from
-  the longer-tailed half until mean and median source length agree within 1%; both halves
-  are then truncated to the same row count. The final size is whatever survives — reported,
-  not tuned.
+  `ft_topk_div`.
+- **Length matching, amended 2026-09-20 before any run of this probe.** The rule first
+  written here — discard from the longer-tailed half until mean and median agree within 1%
+  — does not converge, because repetitiveness and shortness are the same thing in this data
+  (median `rep` is 0.0: more than half the top band contains no repeated 8-gram at all, and
+  those rows average 28.6 tokens against 19.0 for the repetitive half). Trimming long rows
+  shrank the diverse half to 117,338 rows while the gap stayed at 34%. The amended rule is
+  **stratified matching**: bucket both halves by source token length and take
+  `min(n_div, n_rep)` rows from each bucket on both sides (random within bucket, seed 42),
+  which equalises the length histogram exactly rather than approximately. The resulting
+  size is whatever the histograms overlap allows — reported, not tuned. Recorded here
+  rather than silently applied: the change was forced by the data, not by a result, and no
+  model had been trained on either half when it was made.
 - **Runs:** `ft_topk_rep` and `ft_topk_div`, seeds 42/1/2, lr_scale 1.0, everything else as
   in E0.3 (same base checkpoint, same steps, same eval).
 

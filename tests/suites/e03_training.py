@@ -623,3 +623,38 @@ def suite(ctx):
         except Exception:                                          # noqa: BLE001
             import traceback
             ctx.check(f"e03_training.{part.__name__} ran without crashing", False, traceback.format_exc()[-600:])
+    suite_conditions_flag(ctx)
+
+
+
+def suite_conditions_flag(ctx):
+    """--conditions lets an explanatory probe (E0.4) fine-tune sets other than the gate's."""
+    d = ctx.d / "condflag"
+    (d / "data").mkdir(parents=True)
+    for n in ("ft_topk_div", "ft_topk_rep"):
+        for e in ("en", "fr"):
+            (d / "data" / f"{n}.{e}").write_text("line\n", encoding="utf-8")
+    (d / "data/manifest.json").write_text('{"written": ["ft_topk_div.en"], "heldout_sets": {}}', encoding="utf-8")
+    base = {"model": {"d_model": 512, "max_seq_len": 256},
+            "training": {"batch_size": 4096, "accumulate_steps": 1, "max_steps": 115000, "lr_scale": 1.0,
+                         "min_lr": 1e-5, "seed": 42, "eval_interval": 2000},
+            "data": {"train_src": "x.en", "train_tgt": "x.fr", "valid_src": "v.en"},
+            "checkpoint": {"dir": "ck", "keep_last": 5}, "logging": {}}
+    (d / "base.yaml").write_text(json.dumps(base), encoding="utf-8")
+    shim = d / "shim"; shim.mkdir()
+    (shim / "yaml.py").write_text("import json\ndef safe_load(f): return json.load(f)\n"
+                                  "def safe_dump(o, f, **k): json.dump(o, f, indent=1)\n", encoding="utf-8")
+    env = {"PYTHONPATH": str(shim)}
+    args = [ctx.ROOT / "phase0/e03_run_matrix.py", "--base-config", d / "base.yaml",
+            "--data-dir", d / "data", "--out-dir", d / "out", "--no-controls-fingerprint"]
+    rc, o = ctx.run(args + ["--conditions", "ft_topk_div,ft_topk_rep"], env=env)
+    runner = (d / "out/run_stage2.sh").read_text(encoding="utf-8") if (d / "out/run_stage2.sh").exists() else ""
+    ctx.check("--conditions generates runs for exactly the named sets",
+              rc == 0 and runner.count("ft_topk_div") == 3 and runner.count("ft_topk_rep") == 3
+              and "ft_random" not in runner, f"rc={rc} {o[-200:]}")
+    rc, o = ctx.run(args + ["--conditions", "ft_topk_div,ft_nope"], env=env)
+    ctx.check("--conditions refuses a name with no files in the data dir",
+              rc != 0 and "ft_nope.en" in o, f"rc={rc} {o[-200:]}")
+    rc, o = ctx.run(args, env=env)
+    ctx.check("without --conditions it still wants the gate's own three sets",
+              rc != 0 or "ft_topk" in (d / "out/run_stage2.sh").read_text(encoding="utf-8"), f"rc={rc}")
