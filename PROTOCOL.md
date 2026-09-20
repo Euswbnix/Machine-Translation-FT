@@ -319,6 +319,13 @@ imbalance between the halves (length matching should keep it under the 2% thresh
 
 This is E0.4: an explanatory probe, not a gate. It cannot revive E0.3's NO-GO verdict.
 
+**Implementation note (2026-09-20, not part of the rule).** `phase0/e04_split.py` keys
+8-grams by a 64-bit BLAKE2b digest rather than builtin `hash()`, whose salt varies per
+process; the counts are the same but the split is now reproducible across machines. The
+split built on the rented box was lost when that instance was released and was rebuilt
+locally from `controls_primary/ft_topk.*`; no model had been trained on either half.
+
+
 ## E0.3 decisions required before controls
 
 **Status: FROZEN 2026-09-18**, before any stage-2 result existed. The chosen values are in

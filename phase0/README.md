@@ -260,6 +260,28 @@ path"). Three results are evidence, not logistics:
   thresholds (|mean| ≤ 2e-4, p99 ≤ 2e-3) on this sample; the full 16.6M-row
   calibration runs at the end of scoring.
 
+### QE scoring inventory after the rental was released (2026-09-20)
+
+The rented 4x RTX 5090 box was drained and destroyed. What its CometKiwi scoring
+produced, and where it now lives (`~/mt_local/phase0_final/`):
+
+| file | rows | state |
+| --- | --- | --- |
+| `v2_scored.tsv` (fixed en-fr full stream) | 38,275,284 | complete, `complete: true`, pulled (13.15 GB) |
+| `v1_scored.tsv` (v1.1 capped pretrain) | 9,312,233 | complete, pulled (2.97 GB) |
+| `ende_scored.tsv` (fixed en-de) | 0 of 4,238,227 | **not scored** |
+
+The en-de run was launched as 8 shards over 4 GPUs and died when shard 5 failed on
+device 1 (`mt/logs/queue_ende.log`); the shard directory did not survive, so there is
+nothing to resume from and the whole 4.24M rows must be scored again. This is the only
+GPU work lost with the rental. It is ~1h45m on one RTX 5090 (measured rate on that box:
+1,164,030 rows in 28m53s on a single card, batch 64), and the corpus it needs is already
+local: `~/mt_local/rebuild/ende_fixed/train.clean.{en,de}` has the same sha256 as the
+copy the rental held (`b976980a…` / `b662c96b…`, 4,238,227 rows each).
+
+Nothing downstream is blocked by it: the en-de QE scores feed the source-composition
+table, not E0.3 or E0.4.
+
 ## E0.3 RESULT (2026-09-19): NO-GO
 
 Run on a rented 4x RTX 5090 from the frozen decisions (`phase0/e03_decisions.json`,
