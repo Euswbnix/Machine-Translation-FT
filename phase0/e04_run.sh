@@ -23,7 +23,9 @@ say "run matrix over the two halves"
 "$PY" "$SFT/phase0/e03_run_matrix.py" --base-config "$SFT/configs/sft_base_enfr.yaml" \
   --data-dir "$DATA" --out-dir "$SFT/configs/phase0_e04" \
   --ckpt "$CKPT" --keep-last 1 \
-  --conditions ft_topk_div,ft_topk_rep 2>&1 | tail -12 || exit 1
+  --conditions ft_topk_div,ft_topk_rep 2>&1 | tail -12
+# the pipe's status is tail's, not the matrix's -- this repo has shipped that bug before
+[ "${PIPESTATUS[0]}" -eq 0 ] || { echo "run matrix FAILED"; exit 1; }
 
 say "6 runs at lr_scale 1.0"
 "$PY" "$SFT/phase0/run_parallel.py" --runner "$SFT/configs/phase0_e04/run_stage2.sh" \

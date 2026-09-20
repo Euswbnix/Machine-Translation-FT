@@ -282,6 +282,11 @@ copy the rental held (`b976980a…` / `b662c96b…`, 4,238,227 rows each).
 Nothing downstream is blocked by it: the en-de QE scores feed the source-composition
 table, not E0.3 or E0.4.
 
+E0.4 lost nothing with the rental either: its split was built on the author's own box, not
+on the rental, and is still there (`data/phase0_e04`, 242,022 rows per half). The repo's
+`phase0/e04_split.py` reproduces it byte for byte on that machine -- see PROTOCOL.md,
+"E0.4", for what does and does not reproduce across machines.
+
 ## E0.3 RESULT (2026-09-19): NO-GO
 
 Run on a rented 4x RTX 5090 from the frozen decisions (`phase0/e03_decisions.json`,

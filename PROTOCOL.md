@@ -319,11 +319,28 @@ imbalance between the halves (length matching should keep it under the 2% thresh
 
 This is E0.4: an explanatory probe, not a gate. It cannot revive E0.3's NO-GO verdict.
 
-**Implementation note (2026-09-20, not part of the rule).** `phase0/e04_split.py` keys
-8-grams by a 64-bit BLAKE2b digest rather than builtin `hash()`, whose salt varies per
-process; the counts are the same but the split is now reproducible across machines. The
-split built on the rented box was lost when that instance was released and was rebuilt
-locally from `controls_primary/ft_topk.*`; no model had been trained on either half.
+**Implementation and provenance note (2026-09-20, not part of the rule).**
+
+- `phase0/e04_split.py` keys 8-grams by a 64-bit BLAKE2b digest rather than builtin
+  `hash()`, whose salt varies per process. Verified on the training box: the rewritten
+  script reproduces the split that was already there **byte for byte** (`ft_topk_div.en`
+  `a14b8b76…`, `ft_topk_rep.en` `725ef594…`), so the change costs nothing and removes a
+  per-process dependence.
+- The split is **not** reproducible across Python versions: the same script under Python
+  3.14 on the Mac gives 242,022 rows per half with `len_mean` 26.32221 against 26.32213
+  under the box's Python 3.10, because `\w+` follows the interpreter's Unicode database.
+  The run of record is the box's, built before any model was trained on either half.
+- The split's input is `data/phase0_lr1/ft_topk.*` — the control sets rebuilt on the box
+  for the lr-1.0 probe, which is the experiment E0.4 is compared against. That set differs
+  from the E0.3 primary arm's `ft_topk` by **exactly one row of 926,999** (a tie at the
+  selection boundary: the primary arm scored the whole stream, the box's rebuild carried
+  `nan` outside the reused pool). Every set statistic is identical to 16 digits —
+  `qe_mean` 0.8991541266441345, and the same source counts — so the two are the same
+  experiment; the one-row difference is recorded rather than hidden.
+- **Deviation from decision D8 (`ft_checkpoint: avg-last5`), recorded before the runs.**
+  E0.4 evaluates the *final* checkpoint with `--keep-last 1`, because it is read against
+  the lr-1.0 control, which was run that way (`--ft-ckpt final`). Averaging here and not
+  there would confound the comparison. D8 governs the E0.3 gate; E0.4 is not a gate.
 
 
 ## E0.3 decisions required before controls

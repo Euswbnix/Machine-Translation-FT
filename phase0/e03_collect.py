@@ -88,7 +88,9 @@ def parse_runner(runner: Path, lr: str):
         if not m:
             continue
         cfg = m.group(1).replace("${LR}", lr)
-        cond = re.match(r"(ft_[a-z]+)_lr", Path(cfg).name)
+        # [a-z0-9_]+ so multi-word conditions parse too (E0.4: ft_topk_div, ft_topk_rep);
+        # greedy + backtracking still stops at the LAST _lr, so ft_topk_lr1 -> ft_topk.
+        cond = re.match(r"(ft_[a-z0-9_]+)_lr", Path(cfg).name)
         if not cond:
             sys.exit(f"cannot derive a condition from config name {cfg!r}")
         runs.append({"condition": cond.group(1), "seed": int(m.group(2)),

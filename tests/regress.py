@@ -998,6 +998,11 @@ def run_external_suites(d: Path):
             mod.suite(types.SimpleNamespace(d=sd, check=check, skip=skip, run=run, ROOT=ROOT,
                                             PY=PY, MT_REPO=MT_REPO, np=np, write_ckpt=write_ckpt,
                                             make_faketorch=make_faketorch))
+        except SystemExit as e:
+            # a suite that reaches sys.exit() (production code refusing its input) used to
+            # end the whole run with status 0 and no summary -- a silent green.
+            check(f"tests/suites/{sp.name} ran without calling sys.exit", False,
+                  f"SystemExit({e.code!r}): {traceback.format_exc()[-400:]}")
         except Exception:
             check(f"tests/suites/{sp.name} ran without crashing", False, traceback.format_exc()[-600:])
 
