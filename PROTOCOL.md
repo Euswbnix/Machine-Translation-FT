@@ -265,6 +265,51 @@ any reviewer can re-derive the result **under their own preferred stopping rule*
 
 ---
 
+## E0.4 — what does the QE top band select? (pre-registered 2026-09-20, before the runs)
+
+E0.3 returned NO-GO, and the lr-1.0 control showed that half the rejected paper's effect
+is the learning rate while the remainder is real but contradicts the domain explanation
+(`phase0/README.md`). The surviving hypothesis is about the selector, not the domain:
+
+> **H.** CometKiwi's top band selects text that is *easy to translate* — short, formulaic,
+> lexically thin — rather than text that teaches, and it is that property, not the domain
+> mix, that makes ft_topk worse than a matched random set.
+
+Measured on the E0.3 sets before any new run (926,999 rows each, 200,000-row sample for
+the sampled statistics): type/token ratio 0.007 (top) vs 0.016 (random) vs 0.034 (bottom);
+duplicate source rows 4.14% vs 0.97% vs 7.44%; repeated 8-grams 5.93% vs 4.66% vs 3.84%;
+source-length p90 35 vs 47 vs 40 tokens. A UN-heading regex fired *less* often in the top
+band (0.22% vs 0.63%), so "UN boilerplate" is not the right description; "low-diversity
+short text" is.
+
+**The test.** Split ft_topk in half on a statistic fixed here, hold size and length fixed,
+and fine-tune both halves at lr_scale 1.0 (the regime where the effect exists), 3 seeds each.
+
+- **Statistic (per row):** `rep(row)` = the fraction of the source's 8-gram tokens that
+  occur in at least one other row of ft_topk. Computed over the whole set, lowercased,
+  `\w+` tokens; rows shorter than 8 tokens take `rep = 0`.
+- **Split:** rows above the median `rep` form `ft_topk_rep`; rows at or below form
+  `ft_topk_div`. Each half is then **length-matched** to the other by discarding rows from
+  the longer-tailed half until mean and median source length agree within 1%; both halves
+  are then truncated to the same row count. The final size is whatever survives — reported,
+  not tuned.
+- **Runs:** `ft_topk_rep` and `ft_topk_div`, seeds 42/1/2, lr_scale 1.0, everything else as
+  in E0.3 (same base checkpoint, same steps, same eval).
+
+**Predictions, stated before the runs.**
+
+1. If **H** holds: `ft_topk_rep` degrades newstest2014 more than `ft_topk_div`, by more
+   than the seed-noise floor, and `ft_topk_div` is closer to (or better than) ft_random.
+2. If the two halves are indistinguishable: **H is refuted** — the damage is a property of
+   the whole top band (the 0.02-wide score plateau), not of repetitiveness within it.
+3. If `ft_topk_div` is *worse*: **H is refuted the other way**, and the story is that QE
+   rewards something else entirely; report that and stop this line.
+
+Secondary, reported but not gating: the same two sets on heldout_un, and the applied-token
+imbalance between the halves (length matching should keep it under the 2% threshold).
+
+This is E0.4: an explanatory probe, not a gate. It cannot revive E0.3's NO-GO verdict.
+
 ## E0.3 decisions required before controls
 
 **Status: FROZEN 2026-09-18**, before any stage-2 result existed. The chosen values are in
