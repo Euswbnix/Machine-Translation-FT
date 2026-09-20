@@ -440,6 +440,57 @@ paper's story that reproduces at all.
 Not pre-registered, and not part of the E0.3 verdict: the gate ran at the LR its frozen
 rule selected and returned NO-GO. This run exists to explain what the paper saw.
 
+## E0.4 RESULT (2026-09-20): H HOLDS — the top band's damage is repetitiveness
+
+Pre-registered in PROTOCOL.md, "E0.4", before the runs; applied by `phase0/e04_report.py`,
+which knows the three outcomes in advance. **Outcome 1: H holds.**
+
+Split `ft_topk` (926,999 rows) at its median within-set 8-gram repetitiveness, match the
+halves' source-length histograms bucket by bucket (242,022 rows each), fine-tune both at
+lr_scale 1.0 for the same 10,000 steps, 3 seeds each:
+
+| condition | rows | newstest2014 | sd | vs base | heldout_un | sd | vs base |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| baseline (v1.1 averaged) | — | 35.31 | — | — | 46.83 | — | — |
+| ft_random (lr-1.0 control) | 926,999 | 34.41 | 0.07 | −0.90 | 47.35 | 0.02 | +0.52 |
+| ft_topk (lr-1.0 control) | 926,999 | 33.62 | 0.11 | −1.69 | 45.27 | 0.14 | −1.56 |
+| **ft_topk_div** (diverse half) | 242,022 | **32.77** | 0.20 | −2.54 | 44.59 | 0.12 | −2.24 |
+| **ft_topk_rep** (repetitive half) | 242,022 | **30.05** | 0.28 | −5.26 | 44.49 | 0.17 | −2.34 |
+| ft_bottom (lr-1.0 control) | 926,999 | 29.49 | 0.13 | −5.82 | 36.65 | 0.53 | −10.18 |
+
+**The gap is 2.73 BLEU** against a seed-noise floor of 0.28 (Welch t = 13.96, df 3.6,
+crit 3.18). Two things stand out beyond the verdict:
+
+- **The repetitive half of the TOP band is within 0.55 BLEU of the BOTTOM band.** Text the
+  QE model scores at the very top (qe_mean 0.899) damages newstest almost exactly as much
+  as the text it scores at the bottom (0.450), once it is repetitive. Whatever CometKiwi
+  is rewarding in that sub-band, it is not usefulness as training data.
+- **Repetitiveness costs news BLEU specifically, not in-domain BLEU.** On heldout_un the
+  two halves are 44.59 vs 44.49 — a 0.11 gap inside the seed noise, while the news gap is
+  2.73. So this is not "the repetitive half is simply worse data"; it is narrower
+  competence, bought at a much higher price outside the fine-tuning distribution.
+
+**What this does NOT show, stated plainly.** Both halves are worse on news than the whole
+top band (32.77 and 30.05 vs 33.62), and ft_topk_div is *further* from ft_random than the
+whole set is. That part of prediction 1 cannot be read off these runs: the halves are a
+quarter of the size at the same step count, so they make roughly four times as many passes
+over their data. The half-vs-half contrast is size- and step-matched and is the only clean
+comparison here; every comparison to the 926,999-row arms carries that epoch difference.
+
+Secondary, as the protocol required: applied tokens 0.0727B (div) vs 0.0714B (rep), an
+imbalance of **1.80%**, inside the 2% threshold but in the same direction as the effect.
+Its cause is visible in the story itself — the split matched `\w+` word counts while the
+trainer counts SentencePiece pieces, and repetitive text compresses into fewer pieces.
+One over-long heldout_un row was dropped from every evaluation alike (`--max-src-tokens
+254`), newstest2014 lost none.
+
+The baseline was re-evaluated from scratch on this box's stack (the shared BLEU cache was
+moved aside first, since its key carries no python/torch identity) and reproduced the
+lr-1.0 control's 35.31 / 46.83 exactly, so the two experiments are directly comparable.
+
+E0.4 is an explanatory probe. It does not revive E0.3's NO-GO verdict — it says what the
+NO-GO was made of.
+
 ## Findings from the original training machine (2026-09-12)
 
 Pulled read-only from the Linux box; mirror at `~/mt_fetch/` (not committed —
