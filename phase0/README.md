@@ -269,15 +269,23 @@ produced, and where it now lives (`~/mt_local/phase0_final/`):
 | --- | --- | --- |
 | `v2_scored.tsv` (fixed en-fr full stream) | 38,275,284 | complete, `complete: true`, pulled (13.15 GB) |
 | `v1_scored.tsv` (v1.1 capped pretrain) | 9,312,233 | complete, pulled (2.97 GB) |
-| `ende_scored.tsv` (fixed en-de) | 0 of 4,238,227 | **not scored** |
+| `ende_scored.tsv` (fixed en-de) | 4,238,227 | complete 2026-09-20 on the author's box (1.20 GB) |
 
-The en-de run was launched as 8 shards over 4 GPUs and died when shard 5 failed on
-device 1 (`mt/logs/queue_ende.log`); the shard directory did not survive, so there is
-nothing to resume from and the whole 4.24M rows must be scored again. This is the only
-GPU work lost with the rental. It is ~1h45m on one RTX 5090 (measured rate on that box:
-1,164,030 rows in 28m53s on a single card, batch 64), and the corpus it needs is already
-local: `~/mt_local/rebuild/ende_fixed/train.clean.{en,de}` has the same sha256 as the
-copy the rental held (`b976980a…` / `b662c96b…`, 4,238,227 rows each).
+The en-de run was launched on the rental as 8 shards over 4 GPUs and died when shard 5
+failed on device 1 (`mt/logs/queue_ende.log`); the shard directory did not survive, so
+there was nothing to resume and the whole 4.24M rows had to be scored again. That was the
+only GPU work lost with the rental, and it was redone on the author's own RTX 5090 the
+same day: 8 shards, 1h35m, `complete: true`, `stack_mixed: false`, mean score 0.7626 over
+[0.0397, 0.9146], and the meta's `src_sha256`/`tgt_sha256` match the corpus
+(`b976980a…` / `b662c96b…`).
+
+One thing to carry into the write-up: these en-de scores come from a **different stack**
+than the en-fr ones — python 3.10.18 / torch 2.11.0+cu128 / sentencepiece 0.2.1 here
+against python 3.12.3 / torch 2.14.0 / sentencepiece 0.2.2 on the rental, with the same
+`unbabel-comet` 2.2.7, the same `transformers` 4.57.1 and the same pinned model revision.
+Nothing mixes *within* the en-de scores, and the stack difference was measured at ~2e-6
+BLEU-equivalent on 3,000 aligned rows (see above), but en-fr and en-de numbers should not
+be quoted as if they came off one run.
 
 Nothing downstream is blocked by it: the en-de QE scores feed the source-composition
 table, not E0.3 or E0.4.
