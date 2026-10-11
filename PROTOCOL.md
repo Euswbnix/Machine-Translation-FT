@@ -341,6 +341,17 @@ This is E0.4: an explanatory probe, not a gate. It cannot revive E0.3's NO-GO ve
   E0.4 evaluates the *final* checkpoint with `--keep-last 1`, because it is read against
   the lr-1.0 control, which was run that way (`--ft-ckpt final`). Averaging here and not
   there would confound the comparison. D8 governs the E0.3 gate; E0.4 is not a gate.
+- **The statistic as run differs from its wording above in one case** (found 2026-10-11).
+  The text says an 8-gram counts when it occurs "in at least one other row";
+  `e04_split.py` counts it when its total count over the set is above one, which is also
+  true when a single row repeats the 8-gram inside itself. Measured on the top band: 59 rows
+  of 926,999 take a different value and **44 change sides of the median** (250,008
+  repetitive rows as run, 249,964 by the wording). The runs used the code; the wording is
+  left as registered and this is the record of the difference. E0.5 uses the same code.
+- **The halves differ in source mix — found after the result, 2026-10-11.** The repetitive
+  half is 90.9% UN text and the diverse half 74.2%. Outcome 1 stands as what was registered
+  and measured, but the sentence "repetitiveness, not the domain mix" does not follow from
+  E0.4 alone. E0.5, below, holds the source fixed.
 - **Decision D9 (`loss_spike_ratio: 0`) was violated by the first launch and the runs were
   thrown away.** `e04_run.sh` did not pass `--spike-ratio 0`, so the generated configs
   inherited `1.3` from the base config. With the guard on, an arm whose loss spikes more
@@ -352,6 +363,137 @@ This is E0.4: an explanatory probe, not a gate. It cannot revive E0.3's NO-GO ve
   control runs — so nothing was measurably wrong; the runs were discarded because
   "it happened not to matter" is not the standard this protocol is for.
 
+
+## E0.5 — does the repetitiveness gap survive inside one source? (pre-registered 2026-10-11, before the runs)
+
+E0.4 found that the repetitive half of the QE top band costs 2.73 BLEU more on news than the
+diverse half. Two things, both established before any E0.5 run, mean that result cannot yet
+carry the reading "repetitiveness, not domain":
+
+1. **The halves differ in source mix.** Labelling every row by exact match against the pool
+   (`phase0/e05_source_labels.py`; it reproduces the control manifest's source counts for
+   both parent sets exactly), the repetitive half is **90.9% UN** text and the diverse half
+   **74.2%**. E0.4 cannot tell "repetitive" from "more UN".
+2. **E0.4 had no random arm of its own size.** Its halves hold 242,022 rows and the lr-1.0
+   control's arms 926,999 at the same step count, so the second clause of its prediction 1
+   ("the diverse half is closer to ft_random") was unreadable.
+
+A prior-art check run the same day (`phase0/PRIOR_ART_E04.md`) also found the bare
+phenomenon — a QE top slice doing no better than random — already published at least four
+times. What is not in print is the controlled test below, so that is what E0.5 is.
+
+**Design: six sets, five seeds, one machine.**
+
+| set | built from | rows (dry run) | UN share |
+| --- | --- | --- | --- |
+| `ft_topk_div`, `ft_topk_rep` | the top band, E0.4's rule unchanged (`e04_split.py`) | 242,022 each | 74.2% / 90.9% |
+| `ft_random_small` | `ft_random`, the halves' length histogram | 242,022 | 66.4% |
+| `ft_un_div`, `ft_un_rep` | the **UN rows** of the top band, the same rule | 214,489 each | 100% |
+| `ft_un_random` | the **UN rows** of `ft_random`, those halves' length histogram | 214,489 | 100% |
+
+- **The split, inside UN:** E0.4's statistic, computed over the whole top band exactly as
+  before, and E0.4's median (0.0): UN rows at or below it against UN rows above it, then
+  E0.4's stratified length matching (per length bucket, `min` of the two sides, random
+  within the bucket, seed 42). UN is the only source large enough: Europarl would give
+  16,296 rows per half and Common Crawl 5,814.
+- **The random controls:** for every source length L (the same lowercased `\w+` tokens),
+  exactly as many rows as the halves have at L, at random within the bucket, seed 42.
+  **Exact match or nothing** — a pool that is short in any bucket stops the build. E0.4's
+  first matching rule was unsatisfiable and had to be amended, so these were checked on the
+  real sets before being written down: no bucket short, the tightest holding 2.24x (all
+  sources) and 1.66x (UN) what is needed.
+- **Top-band rows are not removed from a random draw.** A random draw from the pool contains
+  them at their base rate; removing them would make the control "random minus the top
+  band". The overlap is counted in the manifest (dry run: about 2.2-3.1% of each set).
+- **Runs:** 6 sets x seeds **42, 1, 2, 3, 4** = 30, on one machine in one session,
+  lr_scale 1.0, spike guard off (D9), final checkpoint with `--keep-last 1` (E0.4's recorded
+  deviation from D8, for the same reason), the same base checkpoint, the same 10,000 steps,
+  the same evaluation (newstest2014 and heldout_un, `--max-src-tokens 254`).
+- **Why five seeds.** Simulating the rule below at E0.4's seed sds (0.20-0.28; 20,000
+  draws per cell), three seeds call a true 0.5 BLEU gap 30-52% of the time and five call it
+  67-92%; for a 0.3 gap it is 13-22% against 30-51%. The rule's false-alarm rate is 3.4-4.5%.
+  Q2 is expected to be a small gap, and seeds may not be added after results exist, so the
+  count is fixed now. Even with five, a gap near 0.3 BLEU is more likely missed than found.
+- **Inputs are pinned.** The build refuses source files whose sha256 is not the E0.3
+  primary arm's (`ft_topk.en` `787339d0…`, `ft_random.en` `937d4d4a…`, and the label files
+  `ft_topk.source` `a4ad4586…`, `ft_random.source` `fd675a19…`; all six are in
+  `e05_build.py`). Those sets differ from E0.4's input by one row of 926,999, and the split
+  follows the interpreter's Unicode tables, so **the halves are rebuilt, not reused**: no
+  E0.4 number is pooled with E0.5, and E0.5's all-source contrast is an independent
+  replication of E0.4. The manifest records the interpreter and the sha256 of every file.
+
+**Measured on the sets before any run** (dry run on the Mac; the run of record is built
+where it trains). At identical word counts:
+
+| set | repeated-8-gram share | source word types | duplicate sources |
+| --- | --- | --- | --- |
+| `ft_topk_div` | 0.000 | 38,783 | 0.00% |
+| `ft_topk_rep` | 0.417 | 27,524 | 8.13% |
+| `ft_random_small` | 0.065 | 94,897 | 0.16% |
+| `ft_un_div` | 0.000 | 33,874 | 0.00% |
+| `ft_un_rep` | 0.433 | 25,134 | 8.45% |
+| `ft_un_random` | 0.087 | 58,441 | 0.23% |
+
+So the "diverse" half is diverse only in the sense of the statistic: it has no repeated
+8-gram, but **well under half the vocabulary of random text of the same size and length**,
+inside UN as well. And the random sets are not free of repetition (a fifth to a quarter of
+their rows contain a repeated 8-gram). Both facts bear on how Q2 may be read, below.
+
+**The rule, for every contrast.** A gap counts only if it exceeds the seed-noise floor (the
+larger seed sd of the two sets) *and* is Welch-significant at 0.05, using the **exact**
+critical value at the fractional Welch-Satterthwaite df (`phase0/probe_stats.py`).
+`e03_decide.py`, and through it E0.4, looked the critical value up at `floor(df)`, which is
+stricter than the 0.05 it names. That was the safe direction for a gate whose hypothesis
+needed a difference; here "not detected" can be the convenient answer, so the rule is made
+exact rather than conveniently strict. (E0.4's t = 13.96 passes under either.) A contrast
+that does not clear the rule is reported as **not detected**, with the smallest gap the rule
+could have called with those seeds beside it — never as "equal".
+
+**Outcomes, stated before the runs**, applied by `phase0/e05_report.py` to newstest2014:
+
+*Q1 — does the gap survive inside one source?* `ft_un_rep` against `ft_un_div`.
+
+- **YES.** The repetitive half is worse. Repetitiveness is not reducible to source mix.
+- **NO.** Not detected. E0.4's contrast cannot be attributed to repetitiveness, and that
+  reading is withdrawn in `phase0/README.md` and wherever else it has been written.
+- **REVERSED.** The diverse half is worse.
+
+*Q2 — is the diverse half as good as matched random text?* `ft_un_div` against
+`ft_un_random`.
+
+- **A, not detected.** No net difference this design can see.
+- **B, the diverse half is worse.** The top band costs something beyond repetition: this
+  half has no repeated 8-gram and the random set has some, yet it does worse. Its thin
+  vocabulary is the obvious suspect and the next thing to test.
+- **C, the diverse half is better.** What repetition alone would produce, since the random
+  set contains some. Not by itself evidence that quality selection helps.
+
+*Replication.* `ft_topk_rep` against `ft_topk_div` over all sources: E0.4 replicates if the
+repetitive half is again worse. Reported whatever Q1 says; the two can disagree, and then
+the all-source gap is a source-mix effect.
+
+*Reported and deciding nothing:* the all-source `ft_topk_div` against `ft_random_small`
+(those sets differ in source mix); both repetitive halves against their random controls;
+all six sets on heldout_un.
+
+**Tokens.** The trainer's batches are capped by sentence count, so equal steps means equal
+sentence pairs: every arm of a triple makes the same number of passes over the same number
+of rows. Tokens then differ because the texts differ. From the trainer's own tokenisation
+of the top band: the two all-source halves differ by 1.80% in target pieces (E0.4 measured
+1.80% applied) and the two UN halves by **2.09%**; an audit's dry run puts `ft_un_div`
+against `ft_un_random` at about 2.4%. The 2% flag is therefore **known in advance to
+fire**, and its consequence is fixed now: for each deciding pair the report prints the
+imbalance from exact counts, which set got more, and a bound on its worth — the imbalance
+as a share of the fine-tuning steps, times the steeper of the two sets' own dev-BLEU slopes
+over the second half of training. A bound above the contrast's noise floor **qualifies**
+the outcome on its verdict line; a bound below it is immaterial. Sentence-matching is kept,
+rather than token-matching, because a pass over the data is what the sets have in common.
+
+**Not to be done after seeing results:** more sets, more seeds, other step counts, a
+different statistic or threshold, or any pooling with E0.4's or the lr-1.0 control's
+numbers.
+
+This is E0.5: an explanatory probe, not a gate. It cannot revive E0.3's NO-GO verdict.
 
 ## E0.3 decisions required before controls
 

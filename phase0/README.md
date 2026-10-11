@@ -448,10 +448,26 @@ paper's story that reproduces at all.
 Not pre-registered, and not part of the E0.3 verdict: the gate ran at the LR its frozen
 rule selected and returned NO-GO. This run exists to explain what the paper saw.
 
-## E0.4 RESULT (2026-09-20): H HOLDS — the top band's damage is repetitiveness
+## E0.4 RESULT (2026-09-20): outcome 1 — the repetitive half of the top band does more damage
+
+> **Read this first (added 2026-10-11).** The numbers below stand. The reading "it is
+> repetitiveness, not the domain mix" does **not** yet follow from them, for a reason found
+> three weeks after the result: labelling every row by its source shows the repetitive half
+> is **90.9% UN text and the diverse half 74.2%**. The 2.73 BLEU gap is a gap between two
+> sets that differ in repetitiveness *and* in source mix. E0.5 (PROTOCOL.md, "E0.5";
+> pre-registered, not yet run) repeats the comparison inside UN text alone and adds the
+> size-matched random control this experiment lacked. Until it reports, treat the heading
+> above as the claim and everything causal below as provisional.
+>
+> A prior-art check the same day (`PRIOR_ART_E04.md`, 36 papers opened and verified) found
+> the bare phenomenon — a QE top slice doing no better than random — already published at
+> least four times, and the remark that top-ranked sentences are redundant already made by
+> NRC in 2018 and 2019. What is not in print is a controlled test of the mechanism.
+> "First to observe" is not available to this project.
 
 Pre-registered in PROTOCOL.md, "E0.4", before the runs; applied by `phase0/e04_report.py`,
-which knows the three outcomes in advance. **Outcome 1: H holds.**
+which knows the three outcomes in advance. **Outcome 1** — as registered, "H holds"; see the
+note above for what that does and does not establish.
 
 Split `ft_topk` (926,999 rows) at its median within-set 8-gram repetitiveness, match the
 halves' source-length histograms bucket by bucket (242,022 rows each), fine-tune both at

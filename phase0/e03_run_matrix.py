@@ -113,6 +113,9 @@ def main() -> int:
                     help="do not hash --data-dir/manifest.json (offline tests only). By default the "
                          "controls content sha goes into matrix.json and every checkpoint dir name, "
                          "so a rebuilt control set can never reuse runs trained on the old one")
+    ap.add_argument("--seeds", default=None,
+                    help="comma list of seeds for the stage-2 runs (default: the gate's 42,1,2). "
+                         "For explanatory probes that register more seeds; the E0.3 gate never passes it.")
     ap.add_argument("--conditions", default=None,
                     help="comma list of condition names instead of the E0.3 three "
                          "(ft_topk,ft_random,ft_bottom). Each needs <name>.<src-ext> and "
@@ -132,6 +135,14 @@ def main() -> int:
                     help="training.loss_spike_ratio: 'inherit' (1.3 from the base config) or a number; "
                          "0 disables the spike guard (PROTOCOL.md 1.3)")
     args = ap.parse_args()
+    if args.seeds:
+        global SEEDS
+        try:
+            SEEDS = [int(x) for x in args.seeds.split(",") if x.strip()]
+        except ValueError:
+            sys.exit(f"--seeds {args.seeds!r} is not a comma list of integers")
+        if len(SEEDS) < 2 or len(set(SEEDS)) != len(SEEDS) or min(SEEDS) < 0:
+            sys.exit(f"--seeds needs at least two distinct non-negative integers, got {args.seeds!r}")
     if args.conditions:
         global CONDITIONS
         CONDITIONS = [c.strip() for c in args.conditions.split(",") if c.strip()]
