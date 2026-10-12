@@ -101,6 +101,11 @@ def contrast(a: list[float], b: list[float], alpha: float = 0.05):
     na, nb = len(a), len(b)
     if na < 2 or nb < 2:
         return None
+    if len(set(a)) == 1 and len(set(b)) == 1:
+        # no variance on either side. Tested on the values, not on se2 == 0: the mean of
+        # five copies of 7.27 is not exactly 7.27, so the computed variance can be 1e-31
+        # and a 'significant' t in the billions would come out of pure rounding.
+        return None
     (ma, sa), (mb, sb) = mean_sd(a), mean_sd(b)
     se2 = sa * sa / na + sb * sb / nb
     if se2 == 0:

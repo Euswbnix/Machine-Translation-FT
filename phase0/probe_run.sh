@@ -47,6 +47,14 @@ if out:
     raise SystemExit(1)
 ' "$DATA/manifest.json" "${CONDS[@]}" || exit 1
 [ -d "$MT" ] || { echo "MISSING training repo: $MT (set MT=)"; exit 1; }
+# A run or an evaluation leased to a GPU id that does not exist falls back to CPU without
+# an error and holds the whole pass open. Refuse a count the box cannot back.
+if command -v nvidia-smi >/dev/null 2>&1; then
+  have=$(nvidia-smi -L 2>/dev/null | grep -c '^GPU ' || true)
+  if [ "$GPUS" -gt "${have:-0}" ] || [ "$EVAL_JOBS" -gt "${have:-0}" ]; then
+    echo "GPUS=$GPUS EVAL_JOBS=$EVAL_JOBS but this box has ${have:-0} GPU(s)"; exit 1
+  fi
+fi
 # The token accounting these probes report (Tok(applied)) exists only in the trainer patch,
 # which lives in the working tree of $MT and is never committed. Without it the runs still
 # train, but the pre-registered secondary report cannot be produced afterwards.

@@ -52,7 +52,7 @@ main() {
   # resumed session shows up as a second entry instead of overwriting the first.
   {
     echo "===== $(date -Is) on $(hostname) ====="
-    echo "SFT  $(git -C "$SFT" rev-parse HEAD 2>&1)  uncommitted: $(git -C "$SFT" status --porcelain 2>/dev/null | wc -l | tr -d ' ') path(s)"
+    echo "SFT  $(git -C "$SFT" rev-parse HEAD 2>&1)  tracked diff sha256: $(git -C "$SFT" diff HEAD 2>/dev/null | sha256sum 2>/dev/null | cut -c1-64)  status: $(git -C "$SFT" status --porcelain 2>/dev/null | tr '\n' ';')"
     echo "MT   $(git -C "$mt" rev-parse HEAD 2>&1)  diff sha256: $(git -C "$mt" diff 2>/dev/null | sha256sum 2>/dev/null | cut -c1-64)"
     "$PY" -c 'import sys, torch; print("python", sys.version.split()[0], "| torch", torch.__version__, "| cuda", torch.version.cuda)' 2>&1
     nvidia-smi --query-gpu=index,name,memory.total,driver_version --format=csv,noheader 2>&1

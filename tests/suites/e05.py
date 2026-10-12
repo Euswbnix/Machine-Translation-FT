@@ -108,6 +108,9 @@ def suite(ctx):
               c is not None and c["clear"] and abs(c["p"] - 0.045) < 2e-3 and 3 < c["df"] < 4, str(c))
     ctx.check("zero variance on both sides, or one value a side, is 'undefined', not a verdict",
               ps.contrast([1.0, 1.0, 1.0], [2.0, 2.0, 2.0]) is None and ps.contrast([1.0], [2.0, 3.0]) is None)
+    ctx.check("two constant sets are 'undefined' even when float rounding leaves a variance of 1e-31",
+              ps.contrast([10.0] * 5, [7.27] * 5) is None and ps.contrast([28.06] * 5, [28.06] * 5) is None
+              and ps.contrast([1.0] * 5, [2.0, 2.1, 1.9, 2.05, 1.95]) is not None)
     ctx.check("the detection bound is never below the seed-noise floor",
               c["bound"] >= c["noise"] and abs(c["bound"] - max(c["noise"], c["crit"] * c["se"])) < 1e-12)
 
@@ -241,6 +244,13 @@ def suite(ctx):
     ctx.check("Q2 outcome B when the diverse half is below matched random", rc == 0 and "Q2 — OUTCOME B" in out, f"rc={rc} {out[-400:]}")
     rc, out = report(ctx, tsv(d / "r/c.tsv", {**good, "ft_un_random": t(31.5)}))
     ctx.check("Q2 outcome C when the diverse half is above matched random", rc == 0 and "Q2 — OUTCOME C" in out, f"rc={rc} {out[-400:]}")
+    rc, out = report(ctx, tsv(d / "r/no_b.tsv", {**good, "ft_un_rep": flat, "ft_un_random": t(34.5)}))
+    ctx.check("with Q1 not a YES, Q2 is reported by its letter and no reading in terms of repetition is printed",
+              rc == 0 and "Q1 — NO" in out and "Q2 — OUTCOME B" in out and "Reported by letter only" in out
+              and "beyond repetition" not in out, f"rc={rc} {out[-500:]}")
+    rc, out = report(ctx, tsv(d / "r/yes_b.tsv", {**good, "ft_un_random": t(34.5)}))
+    ctx.check("with Q1 a YES the same outcome carries its reading",
+              rc == 0 and "Q1 — YES" in out and "beyond repetition" in out and "by letter only" not in out, f"rc={rc} {out[-500:]}")
     three = {k: v[:3] for k, v in good.items()}
     rc, out = report(ctx, tsv(d / "r/edge.tsv", {**three, "ft_un_div": [32.57, 32.77, 32.97], "ft_un_random": [33.05, 33.20, 33.35]}),
                      "--expect-seeds", "3")
@@ -292,6 +302,15 @@ def suite(ctx):
     rc, out = report(ctx, p)
     ctx.check("without the logs the effect is reported as NOT BOUNDED, and Q1's verdict carries that",
               "NOT BOUNDED" in out and "[token imbalance above 2% and not bounded]" in out, out[-1200:])
+    p2 = tsv(d / "tok/norep.tsv", {**good, "ft_topk_rep": flat, "ft_topk_div": flat})
+    p2.with_suffix(".meta.json").write_text(json.dumps(
+        {"budget": {f"{c} {sd}": {"applied_target_tokens": v} for c, v in exact.items() for sd in seeds}}), encoding="utf-8")
+    logs(1.0)
+    rc, out = report(ctx, p2, "--logdir", str(ld))
+    line = next((ln for ln in out.split("\n") if "DOES NOT REPLICATE" in ln), "")
+    ctx.check("a failed replication carries its token note too, not only a successful one",
+              rc == 0 and "[QUALIFIED" in line, line[-300:])
+    logs(0.01)
     p.with_suffix(".meta.json").unlink()
     logs(0.01)
     rc, out = report(ctx, p, "--logdir", str(ld))
@@ -321,6 +340,20 @@ def suite(ctx):
     q = run({"PROBE": "zz", "CONDITIONS": "ft_topk_div,ft_extra", "DATA": str(stray), "SFT": str(ctx.ROOT), "PY": ctx.PY}, "probe_run.sh")
     ctx.check("probe_run.sh refuses a set that is on disk but not in the manifest (so outside the fingerprint)",
               q.returncode == 1 and "NOT IN THE MANIFEST" in q.stdout and "ft_extra.en" in q.stdout, (q.stdout + q.stderr)[-300:])
+    fake = d / "fakebin"
+    fake.mkdir()
+    (fake / "nvidia-smi").write_text('#!/bin/sh\necho "GPU 0: Fake (UUID: a)"\necho "GPU 1: Fake (UUID: b)"\n', encoding="utf-8")
+    (fake / "nvidia-smi").chmod(0o755)
+    mtdir = d / "fake_mt"
+    mtdir.mkdir()
+    genv = {"PROBE": "zz", "CONDITIONS": "ft_topk_div,ft_topk_rep", "DATA": str(half), "SFT": str(ctx.ROOT),
+            "PY": ctx.PY, "MT": str(mtdir), "PATH": f"{fake}:/usr/bin:/bin:/usr/local/bin"}
+    q = run({**genv, "GPUS": "4"}, "probe_run.sh")
+    ctx.check("probe_run.sh refuses GPUS=4 on a box with two cards (the extra slots would train on CPU)",
+              q.returncode == 1 and "this box has 2 GPU(s)" in q.stdout, (q.stdout + q.stderr)[-300:])
+    q = run({**genv, "GPUS": "2"}, "probe_run.sh")
+    ctx.check("and lets GPUS=2 through to the next check",
+              q.returncode == 1 and "this box has" not in q.stdout and "trainer patch not applied" in q.stdout, (q.stdout + q.stderr)[-300:])
     q = run({"DATA": str(empty), "SFT": str(scratch), "PY": ctx.PY}, "e05_run.sh")
     ctx.check("e05_run.sh asks for SRC when the sets are not built, and exits non-zero",
               q.returncode != 0 and "SRC" in q.stdout + q.stderr and "NOT BUILT" in q.stdout, (q.stdout + q.stderr)[-400:])

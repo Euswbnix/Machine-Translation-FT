@@ -33,7 +33,13 @@ Q2  IS THE DIVERSE HALF AS GOOD AS MATCHED RANDOM DATA?      ft_un_div vs ft_un_
     The same contrast over all sources (ft_topk_div vs ft_random_small) is printed too, but
     those two sets differ in source mix, so it is reported and decides nothing.
 
-REPLICATION of E0.4 on these runs: ft_topk_rep vs ft_topk_div over all sources.
+    The glosses on B and C assume Q1 = YES. If Q1 is NO or REVERSED they are not printed and
+    the outcome is reported by its letter alone.
+
+REPLICATION of E0.4 on these runs: ft_topk_rep vs ft_topk_div over all sources. Reported
+whatever Q1 says. No claim is drawn from the SIZE of this gap against the UN one: the two
+triples differ in rows (242,022 vs 214,489), hence in passes over the data (7.9 vs 9.0), and
+in how much of each set the base model has already seen.
 
 TOKENS. The arms are matched in sentence pairs seen, not in tokens: the sets share a length
 histogram in words, but their texts break into different numbers of subword pieces, so at
@@ -225,12 +231,13 @@ def main() -> int:
               f"worse, by {rep['gap']:.2f} BLEU.{note_r}")
     elif rep["clear"]:
         print(f"E0.4 DOES NOT REPLICATE: over all sources the DIVERSE half is the worse one here, "
-              f"by {-rep['gap']:.2f} BLEU.")
+              f"by {-rep['gap']:.2f} BLEU.{note_r}")
     else:
         print(f"E0.4 DOES NOT REPLICATE: over all sources the halves are not distinguishable here "
-              f"({rep['gap']:+.2f} BLEU; a gap under {rep['bound']:.2f} could not have been called).")
+              f"({rep['gap']:+.2f} BLEU; a gap under {rep['bound']:.2f} could not have been called).{note_r}")
 
-    if q1["clear"] and q1["gap"] > 0:
+    q1_yes = q1["clear"] and q1["gap"] > 0
+    if q1_yes:
         print(f"Q1 — YES: inside UN text alone the repetitive half is worse by {q1['gap']:.2f} BLEU. "
               f"Repetitiveness is not reducible to source mix.{note1}")
     elif q1["clear"]:
@@ -246,12 +253,18 @@ def main() -> int:
               f"This is a failure to detect, not a demonstration that they are equal.{note2}")
     elif q2["gap"] < 0:
         print(f"Q2 — OUTCOME B: the diverse half is worse than matched random UN text by "
-              f"{-q2['gap']:.2f} BLEU. The top band costs something beyond repetition: this half has no "
-              f"repeated 8-gram, the random set has some.{note2}")
+              f"{-q2['gap']:.2f} BLEU."
+              + (" The top band costs something beyond repetition: this half has no repeated 8-gram, "
+                 "the random set has some." if q1_yes else
+                 " Reported by letter only: with Q1 not a YES, no reading in terms of repetition is offered.")
+              + note2)
     else:
         print(f"Q2 — OUTCOME C: the diverse half is better than matched random UN text by "
-              f"{q2['gap']:.2f} BLEU. That is what repetition alone would produce (the random set "
-              f"contains some, this half none); it does not by itself show that quality selection helps.{note2}")
+              f"{q2['gap']:.2f} BLEU."
+              + (" That is what repetition alone would produce (the random set contains some, this half "
+                 "none); it does not by itself show that quality selection helps." if q1_yes else
+                 " Reported by letter only: with Q1 not a YES, no reading in terms of repetition is offered.")
+              + note2)
     print("E0.5 is an explanatory probe. It does not change E0.3's NO-GO verdict.")
     return 0
 

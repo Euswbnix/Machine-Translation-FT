@@ -425,19 +425,30 @@ times. What is not in print is the controlled test below, so that is what E0.5 i
 **Measured on the sets before any run** (dry run on the Mac; the run of record is built
 where it trains). At identical word counts:
 
-| set | repeated-8-gram share | source word types | duplicate sources |
-| --- | --- | --- | --- |
-| `ft_topk_div` | 0.000 | 38,783 | 0.00% |
-| `ft_topk_rep` | 0.417 | 27,524 | 8.13% |
-| `ft_random_small` | 0.065 | 94,897 | 0.16% |
-| `ft_un_div` | 0.000 | 33,874 | 0.00% |
-| `ft_un_rep` | 0.433 | 25,134 | 8.45% |
-| `ft_un_random` | 0.087 | 58,441 | 0.23% |
+| set | repeated-8-gram share | source word types | duplicate sources | already in pretraining |
+| --- | --- | --- | --- | --- |
+| `ft_topk_div` | 0.000 | 38,783 | 0.00% | 52.9% |
+| `ft_topk_rep` | 0.417 | 27,524 | 8.13% | 42.4% |
+| `ft_random_small` | 0.065 | 94,897 | 0.16% | 58.5% |
+| `ft_un_div` | 0.000 | 33,874 | 0.00% | 36.7% |
+| `ft_un_rep` | 0.433 | 25,134 | 8.45% | 36.7% |
+| `ft_un_random` | 0.087 | 58,441 | 0.23% | 37.9% |
 
-So the "diverse" half is diverse only in the sense of the statistic: it has no repeated
-8-gram, but **well under half the vocabulary of random text of the same size and length**,
-inside UN as well. And the random sets are not free of repetition (a fifth to a quarter of
-their rows contain a repeated 8-gram). Both facts bear on how Q2 may be read, below.
+("Already in pretraining" is the share of the set's pairs that occur, as exact pairs, in the
+v1.1 corpus the base model was trained on.)
+
+Three things follow, and all bear on how the outcomes below may be read:
+
+- The "diverse" half is diverse only in the sense of the statistic. It has no repeated
+  8-gram but **a much thinner vocabulary than random text of the same size and length**:
+  41% of its word types over all sources (38,783 / 94,897) and 58% inside UN
+  (33,874 / 58,441).
+- The random sets are not free of repetition: a fifth to a quarter of their rows contain a
+  repeated 8-gram.
+- **Inside UN the three sets are balanced in pretraining exposure (36.7 / 36.7 / 37.9%);
+  over all sources they are not (52.9 / 42.4 / 58.5%)**, because rows from the other sources
+  are almost all in the pretraining corpus. In the all-source triple, source mix and
+  pretraining exposure move together and cannot be separated.
 
 **The rule, for every contrast.** A gap counts only if it exceeds the seed-noise floor (the
 larger seed sd of the two sets) *and* is Welch-significant at 0.05, using the **exact**
@@ -468,9 +479,17 @@ could have called with those seeds beside it — never as "equal".
 - **C, the diverse half is better.** What repetition alone would produce, since the random
   set contains some. Not by itself evidence that quality selection helps.
 
+The glosses on B and C assume Q1 is a YES. If Q1 is NO or REVERSED, Q2 is reported by its
+letter alone and no reading in terms of repetition is offered.
+
 *Replication.* `ft_topk_rep` against `ft_topk_div` over all sources: E0.4 replicates if the
 repetitive half is again worse. Reported whatever Q1 says; the two can disagree, and then
-the all-source gap is a source-mix effect.
+the all-source gap is a source-mix or pretraining-exposure effect (the two are collinear
+there, see the table above). **No claim is drawn from the size of the all-source gap
+against the UN one**, in either direction: the triples differ in rows (242,022 against
+214,489), therefore in passes over the data at equal steps (7.9 against 9.0), and in
+pretraining exposure. "Repetitiveness explains x% of E0.4" is not a sentence these runs can
+support.
 
 *Reported and deciding nothing:* the all-source `ft_topk_div` against `ft_random_small`
 (those sets differ in source mix); both repetitive halves against their random controls;

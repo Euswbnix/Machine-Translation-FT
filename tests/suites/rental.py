@@ -274,6 +274,11 @@ def suite(ctx):
     shim = d / "shim"; shim.mkdir()
     (shim / "yaml.py").write_text("import json\ndef safe_load(f): return json.load(f)\n"
                                   "def safe_dump(o, f, **k): json.dump(o, f, indent=1)\n")
+    # The fixture's spm model is a two-byte placeholder. Where the real sentencepiece is
+    # importable (every training box) e03_collect would try to load it and die; where it is
+    # not (the Mac) it falls back to whitespace counting. Make every host take the fallback,
+    # so the suite means the same thing on the machine that runs the self-test.
+    (shim / "sentencepiece.py").write_text("raise ImportError('stubbed in the rental fixture')\n")
     bindir = d / "bin"; bindir.mkdir()
     (bindir / "python").symlink_to(ctx.PY)
     (bindir / "nvidia-smi").write_text('#!/bin/sh\ni=0\nwhile [ $i -lt "${FAKE_NGPU:-2}" ]; do echo "GPU $i: Fake (UUID: x)"; i=$((i+1)); done\n')
