@@ -448,6 +448,77 @@ paper's story that reproduces at all.
 Not pre-registered, and not part of the E0.3 verdict: the gate ran at the LR its frozen
 rule selected and returned NO-GO. This run exists to explain what the paper saw.
 
+## E0.5 RESULT (2026-10-16): Q1 YES, Q2 outcome B, E0.4 replicates
+
+Pre-registered in PROTOCOL.md "E0.5" (tag `e05-prereg-v1`, commit `0fb52a6`) and decided by
+`phase0/e05_report.py`. Six sets, five seeds each, all 30 runs on one rented 4x RTX 5090 box in
+one session; no run failed. newstest2014 BLEU, mean (sd) of five seeds:
+
+| set | rows | UN share | newstest2014 | vs base | heldout_un | vs base |
+| --- | --- | --- | --- | --- | --- | --- |
+| baseline (v1.1 averaged) | — | — | 35.31 | — | 46.83 | — |
+| `ft_topk_div` | 242,022 | 74.2% | 33.05 (0.16) | −2.26 | 44.60 | −2.23 |
+| `ft_topk_rep` | 242,022 | 90.9% | 30.01 (0.12) | −5.30 | 44.30 | −2.53 |
+| `ft_random_small` | 242,022 | 66.4% | 33.48 (0.07) | −1.83 | 46.80 | −0.03 |
+| `ft_un_div` | 214,489 | 100% | 30.58 (0.14) | −4.73 | 44.72 | −2.11 |
+| `ft_un_rep` | 214,489 | 100% | 27.95 (0.11) | −7.36 | 44.18 | −2.65 |
+| `ft_un_random` | 214,489 | 100% | 31.17 (0.12) | −4.14 | 47.03 | +0.20 |
+
+**The verdicts, as the script printed them:**
+
+- **Q1 — YES.** Inside UN text alone the repetitive half is worse by **2.63 BLEU** (Welch
+  t = 33.3, df 7.5; noise floor 0.14; the smallest gap the rule could have called was 0.18).
+  Repetitiveness is not reducible to source mix. The five seeds of the two sets do not overlap
+  (27.79–28.09 against 30.38–30.76).
+- **Q2 — outcome B.** The diverse half is worse than matched random UN text by **0.58 BLEU**
+  (t = −7.0, df 7.9, p < 0.001; bound 0.19). Again no overlap (30.38–30.76 against
+  31.02–31.31). The top band costs something beyond repetition: this half has no repeated
+  8-gram, the random set has some.
+- **Replication — E0.4 replicates** on another machine, another build of the split and five
+  seeds: over all sources the repetitive half is worse by 3.04 BLEU (E0.4: 2.73).
+- **Tokens** (registered rule): the Q1 pair differs by 2.15% in applied tokens and the Q2 pair
+  by 2.42%, above the 2% flag as expected. By the runs' own late dev-BLEU slopes that is worth at
+  most 0.043 and 0.034 BLEU against a noise floor of 0.14, so it is immaterial. (e03_collect's
+  separate warning, "applied-token imbalance across runs 1.0549", is the max/min over all 30 runs
+  across both triples; it is a different statistic and gates nothing.)
+
+**What this establishes.** Within one source, at matched size, matched length histogram and
+matched pretraining exposure (36.7 / 36.7 / 37.9%), the part of the QE top band whose sentences
+share 8-grams with other sentences costs 2.6 BLEU more on news than the part that does not. That
+is the reading E0.4 could not carry alone; it now rests on a source-controlled comparison.
+
+**What it does not establish, stated plainly.**
+
+- "Repetitive" is a bundle, not a single variable. The two UN halves also differ in vocabulary
+  (33,874 against 25,134 source word types) and in duplicate source sentences (0% against
+  8.45%). Which strand of the bundle does the damage is not separated here.
+- Q2's "something beyond repetition" is unidentified. The obvious suspect is vocabulary:
+  the diverse half has 58% of the word types of random UN text of the same size and length.
+  That is a hypothesis for the next experiment, not a result of this one.
+- One language pair, one QE model, one base model. Nothing here says QE metrics in general
+  select repetitive text.
+- The bare phenomenon — a QE top slice doing worse than random data — is already published
+  (`PRIOR_ART_E04.md`). The contribution is the controlled account of why.
+- No claim is drawn from the size of the UN gap against the all-source gap (registered): the
+  triples differ in rows, in passes over the data and in pretraining exposure.
+
+**Reported, not decisive, and worth the next experiment.** On the in-domain set the pattern
+changes shape. Random UN text leaves heldout_un where it was (+0.20), while both halves of the
+UN top band lose 2.1–2.7 BLEU on it, and repetitiveness separates them by only 0.54 there. So
+selecting the QE top band hurts translation of ordinary UN text too, and most of that is not
+repetitiveness. One reading that fits every number above: the whole top band is lexically narrow
+(hurting in and out of domain), and its repetitive part adds a large extra cost out of domain.
+It fits; it has not been tested.
+
+**Run record.** 2026-10-16, 21:24–00:18 UTC; SFT `0fb52a6`, clean tree; training repo `200f6c0`
+plus the trainer patch; Python 3.12.15, torch 2.14.1+cu132, four RTX 5090. Two operational notes:
+the image's pyarrow 26.0.0 needs NumPy 2 while the env pins 1.26.4, so pyarrow 19.0.1 was
+installed for `accept` (it only reads the dev/test parquet, whose text output is sha-checked);
+and the tokenisation-cache warm-up took 25 minutes because the trainer sizes its tokenisation
+pool at `cpu_count() // 2`, which is 192 processes on a 384-thread host. Artifacts:
+`~/mt_local/phase0_final/e05_results/` (archive sha256 `b671180f…`) and all 30 `final.pt` in
+`~/mt_local/phase0_final/e05_checkpoints/`, each checked against the box's sha256.
+
 ## E0.4 RESULT (2026-09-20): outcome 1 — the repetitive half of the top band does more damage
 
 > **Read this first (added 2026-10-11).** The numbers below stand. The reading "it is
@@ -455,9 +526,10 @@ rule selected and returned NO-GO. This run exists to explain what the paper saw.
 > three weeks after the result: labelling every row by its source shows the repetitive half
 > is **90.9% UN text and the diverse half 74.2%**. The 2.73 BLEU gap is a gap between two
 > sets that differ in repetitiveness *and* in source mix. E0.5 (PROTOCOL.md, "E0.5";
-> pre-registered, not yet run) repeats the comparison inside UN text alone and adds the
-> size-matched random control this experiment lacked. Until it reports, treat the heading
-> above as the claim and everything causal below as provisional.
+> pre-registered) repeats the comparison inside UN text alone and adds the size-matched
+> random control this experiment lacked. **E0.5 has reported (above): inside UN alone the
+> repetitive half is still 2.63 BLEU worse**, so the repetitiveness reading now stands on a
+> source-controlled test rather than on this one.
 >
 > A prior-art check the same day (`PRIOR_ART_E04.md`, 36 papers opened and verified) found
 > the bare phenomenon — a QE top slice doing no better than random — already published at

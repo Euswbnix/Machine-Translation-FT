@@ -514,6 +514,8 @@ numbers.
 
 This is E0.5: an explanatory probe, not a gate. It cannot revive E0.3's NO-GO verdict.
 
+**Result (2026-10-16): Q1 YES, Q2 outcome B, E0.4 replicates** — `phase0/README.md`, "E0.5 RESULT".
+
 ## E0.3 decisions required before controls
 
 **Status: FROZEN 2026-09-18**, before any stage-2 result existed. The chosen values are in
