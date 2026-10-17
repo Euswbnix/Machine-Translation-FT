@@ -1,0 +1,3017 @@
+{
+ "rows": 4238227,
+ "python": "3.14.3",
+ "qe_overall": {
+  "p0": 0.0397,
+  "p1": 0.2782,
+  "p5": 0.3802,
+  "p10": 0.493,
+  "p25": 0.7407,
+  "p50": 0.8349,
+  "p75": 0.8589,
+  "p90": 0.8694,
+  "p94": 0.8729,
+  "p95": 0.874,
+  "p99": 0.8809,
+  "p100": 0.9146
+ },
+ "qe_by_source": {
+  "europarl": {
+   "n": 1864681,
+   "p1": 0.5897,
+   "p10": 0.7933,
+   "p50": 0.8541,
+   "p90": 0.8728,
+   "p99": 0.8823,
+   "mean": 0.8386
+  },
+  "commoncrawl": {
+   "n": 2175206,
+   "p1": 0.2545,
+   "p10": 0.3841,
+   "p50": 0.7702,
+   "p90": 0.859,
+   "p99": 0.8765,
+   "mean": 0.6902
+  },
+  "news-commentary": {
+   "n": 198340,
+   "p1": 0.6104,
+   "p10": 0.7993,
+   "p50": 0.8568,
+   "p90": 0.8747,
+   "p99": 0.8837,
+   "mean": 0.8421
+  }
+ },
+ "corpus_sources": {
+  "commoncrawl": {
+   "n": 2175206,
+   "share": 0.5132
+  },
+  "europarl": {
+   "n": 1864681,
+   "share": 0.44
+  },
+  "news-commentary": {
+   "n": 198340,
+   "share": 0.0468
+  }
+ },
+ "unique_pairs": 4226158,
+ "unique_sources": 4168020,
+ "score_at_rank": {
+  "1": 0.9146,
+  "1000": 0.8917,
+  "10000": 0.8853,
+  "50000": 0.8803,
+  "100000": 0.8776,
+  "250000": 0.873,
+  "254596": 0.8729,
+  "500000": 0.868,
+  "1000000": 0.8599,
+  "2000000": 0.8387
+ },
+ "bands": {
+  "254596": {
+   "n_selected": 254596,
+   "n_unique": 252756,
+   "share_of_pool": 0.0601,
+   "dups_removed": 1840,
+   "score_min": 0.8729,
+   "score_max": 0.9146,
+   "score_mean": 0.8774,
+   "sources": {
+    "europarl": {
+     "n": 183064,
+     "share": 0.7243
+    },
+    "commoncrawl": {
+     "n": 43030,
+     "share": 0.1702
+    },
+    "news-commentary": {
+     "n": 26662,
+     "share": 0.1055
+    }
+   },
+   "rows_at_boundary_score": 51,
+   "rep": {
+    "median": 0.0,
+    "mean": 0.0245,
+    "share_rep_gt_0": 0.0928,
+    "share_rep_gt_median": 0.0928,
+    "rep_by_source": {
+     "commoncrawl": {
+      "n": 43030,
+      "share_rep_gt_0": 0.111
+     },
+     "europarl": {
+      "n": 183064,
+      "share_rep_gt_0": 0.0996
+     },
+     "news-commentary": {
+      "n": 26662,
+      "share_rep_gt_0": 0.0167
+     }
+    }
+   },
+   "halves_before_matching": {
+    "diverse": {
+     "rows": 229302,
+     "sources": {
+      "europarl": {
+       "n": 164831,
+       "share": 0.7188
+      },
+      "commoncrawl": {
+       "n": 38253,
+       "share": 0.1668
+      },
+      "news-commentary": {
+       "n": 26218,
+       "share": 0.1143
+      }
+     },
+     "len_mean": 19.47
+    },
+    "repetitive": {
+     "rows": 23454,
+     "sources": {
+      "europarl": {
+       "n": 18233,
+       "share": 0.7774
+      },
+      "commoncrawl": {
+       "n": 4777,
+       "share": 0.2037
+      },
+      "news-commentary": {
+       "n": 444,
+       "share": 0.0189
+      }
+     },
+     "len_mean": 24.66
+    }
+   },
+   "e04_all_source": {
+    "rows_each": 23440,
+    "random_from_ft_random_k": {
+     "buckets": 72,
+     "short_buckets": 0,
+     "shortfall_rows": 0,
+     "tightest_bucket_slack": 7.042,
+     "tightest_3": [
+      {
+       "len": 36,
+       "need": 431,
+       "have": 3035,
+       "slack": 7.042
+      },
+      {
+       "len": 33,
+       "need": 540,
+       "have": 3845,
+       "slack": 7.12
+      },
+      {
+       "len": 37,
+       "need": 399,
+       "have": 2865,
+       "slack": 7.18
+      }
+     ]
+    },
+    "random_from_whole_unique_pool": {
+     "buckets": 72,
+     "short_buckets": 0,
+     "shortfall_rows": 0,
+     "tightest_bucket_slack": 118.243,
+     "tightest_3": [
+      {
+       "len": 37,
+       "need": 399,
+       "have": 47179,
+       "slack": 118.243
+      },
+      {
+       "len": 36,
+       "need": 431,
+       "have": 50998,
+       "slack": 118.325
+      },
+      {
+       "len": 39,
+       "need": 333,
+       "have": 39764,
+       "slack": 119.411
+      }
+     ]
+    }
+   },
+   "ft_random_k_sources": {
+    "commoncrawl": {
+     "n": 130100,
+     "share": 0.5147
+    },
+    "europarl": {
+     "n": 110682,
+     "share": 0.4379
+    },
+    "news-commentary": {
+     "n": 11974,
+     "share": 0.0474
+    }
+   },
+   "single_source": {
+    "europarl": {
+     "band_rows": 183064,
+     "div_before": 164831,
+     "rep_before": 18233,
+     "rows_each": 18217,
+     "random_from_ft_random_k_same_source": {
+      "buckets": 71,
+      "short_buckets": 0,
+      "shortfall_rows": 0,
+      "tightest_bucket_slack": 4.047,
+      "tightest_3": [
+       {
+        "len": 30,
+        "need": 598,
+        "have": 2420,
+        "slack": 4.047
+       },
+       {
+        "len": 29,
+        "need": 638,
+        "have": 2639,
+        "slack": 4.136
+       },
+       {
+        "len": 33,
+        "need": 488,
+        "have": 2044,
+        "slack": 4.189
+       }
+      ]
+     },
+     "random_from_whole_pool_same_source": {
+      "buckets": 71,
+      "short_buckets": 0,
+      "shortfall_rows": 0,
+      "tightest_bucket_slack": 67.561,
+      "tightest_3": [
+       {
+        "len": 29,
+        "need": 638,
+        "have": 43104,
+        "slack": 67.561
+       },
+       {
+        "len": 30,
+        "need": 598,
+        "have": 41284,
+        "slack": 69.037
+       },
+       {
+        "len": 36,
+        "need": 402,
+        "have": 28116,
+        "slack": 69.94
+       }
+      ]
+     },
+     "random_from_pool_same_source_excluding_band": {
+      "buckets": 71,
+      "short_buckets": 0,
+      "shortfall_rows": 0,
+      "tightest_bucket_slack": 60.886,
+      "tightest_3": [
+       {
+        "len": 29,
+        "need": 638,
+        "have": 38845,
+        "slack": 60.886
+       },
+       {
+        "len": 30,
+        "need": 598,
+        "have": 37340,
+        "slack": 62.441
+       },
+       {
+        "len": 33,
+        "need": 488,
+        "have": 31672,
+        "slack": 64.902
+       }
+      ]
+     },
+     "sets": {
+      "div": {
+       "rows": 18217,
+       "len_mean": 26.855,
+       "len_median": 26,
+       "qe_mean": 0.8771,
+       "sources": {
+        "europarl": {
+         "n": 18217,
+         "share": 1.0
+        }
+       },
+       "rep_mean": 0.0,
+       "rep_positive_fraction": 0.0,
+       "source_words": 489221,
+       "source_word_types": 13129,
+       "duplicate_source_fraction": 0.0
+      },
+      "rep": {
+       "rows": 18217,
+       "len_mean": 26.855,
+       "len_median": 26,
+       "qe_mean": 0.8776,
+       "sources": {
+        "europarl": {
+         "n": 18217,
+         "share": 1.0
+        }
+       },
+       "rep_mean": 0.2035,
+       "rep_positive_fraction": 1.0,
+       "source_words": 489221,
+       "source_word_types": 10504,
+       "duplicate_source_fraction": 0.01444
+      },
+      "random_ft_random": {
+       "rows": 18217,
+       "len_mean": 26.855,
+       "len_median": 26,
+       "qe_mean": 0.8385,
+       "sources": {
+        "europarl": {
+         "n": 18217,
+         "share": 1.0
+        }
+       },
+       "rep_mean": 0.0102,
+       "rep_positive_fraction": 0.0676,
+       "source_words": 489221,
+       "source_word_types": 16550,
+       "duplicate_source_fraction": 5e-05
+      },
+      "random_whole_pool": {
+       "rows": 18217,
+       "len_mean": 26.855,
+       "len_median": 26,
+       "qe_mean": 0.8399,
+       "sources": {
+        "europarl": {
+         "n": 18217,
+         "share": 1.0
+        }
+       },
+       "source_words": 489221,
+       "source_word_types": 16292,
+       "duplicate_source_fraction": 0.0,
+       "overlap_with_band_rows": 1796
+      },
+      "random_pool_excl_band": {
+       "rows": 18217,
+       "len_mean": 26.855,
+       "len_median": 26,
+       "qe_mean": 0.8356,
+       "sources": {
+        "europarl": {
+         "n": 18217,
+         "share": 1.0
+        }
+       },
+       "source_words": 489221,
+       "source_word_types": 16676,
+       "duplicate_source_fraction": 0.0
+      }
+     }
+    },
+    "commoncrawl": {
+     "band_rows": 43030,
+     "div_before": 38253,
+     "rep_before": 4777,
+     "rows_each": 4777,
+     "random_from_ft_random_k_same_source": {
+      "buckets": 49,
+      "short_buckets": 0,
+      "shortfall_rows": 0,
+      "tightest_bucket_slack": 8.711,
+      "tightest_3": [
+       {
+        "len": 12,
+        "need": 686,
+        "have": 5976,
+        "slack": 8.711
+       },
+       {
+        "len": 11,
+        "need": 603,
+        "have": 5700,
+        "slack": 9.453
+       },
+       {
+        "len": 17,
+        "need": 541,
+        "have": 5623,
+        "slack": 10.394
+       }
+      ]
+     },
+     "random_from_whole_pool_same_source": {
+      "buckets": 49,
+      "short_buckets": 0,
+      "shortfall_rows": 0,
+      "tightest_bucket_slack": 147.59,
+      "tightest_3": [
+       {
+        "len": 12,
+        "need": 686,
+        "have": 101247,
+        "slack": 147.59
+       },
+       {
+        "len": 11,
+        "need": 603,
+        "have": 96373,
+        "slack": 159.823
+       },
+       {
+        "len": 17,
+        "need": 541,
+        "have": 94274,
+        "slack": 174.259
+       }
+      ]
+     },
+     "random_from_pool_same_source_excluding_band": {
+      "buckets": 49,
+      "short_buckets": 0,
+      "shortfall_rows": 0,
+      "tightest_bucket_slack": 142.462,
+      "tightest_3": [
+       {
+        "len": 12,
+        "need": 686,
+        "have": 97729,
+        "slack": 142.462
+       },
+       {
+        "len": 11,
+        "need": 603,
+        "have": 92683,
+        "slack": 153.703
+       },
+       {
+        "len": 17,
+        "need": 541,
+        "have": 91987,
+        "slack": 170.031
+       }
+      ]
+     },
+     "sets": {
+      "div": {
+       "rows": 4777,
+       "len_mean": 16.035,
+       "len_median": 14,
+       "qe_mean": 0.8777,
+       "sources": {
+        "commoncrawl": {
+         "n": 4777,
+         "share": 1.0
+        }
+       },
+       "rep_mean": 0.0,
+       "rep_positive_fraction": 0.0,
+       "source_words": 76599,
+       "source_word_types": 11631,
+       "duplicate_source_fraction": 0.0
+      },
+      "rep": {
+       "rows": 4777,
+       "len_mean": 16.035,
+       "len_median": 14,
+       "qe_mean": 0.8774,
+       "sources": {
+        "commoncrawl": {
+         "n": 4777,
+         "share": 1.0
+        }
+       },
+       "rep_mean": 0.4992,
+       "rep_positive_fraction": 1.0,
+       "source_words": 76599,
+       "source_word_types": 7166,
+       "duplicate_source_fraction": 0.0582
+      },
+      "random_ft_random": {
+       "rows": 4777,
+       "len_mean": 16.035,
+       "len_median": 14,
+       "qe_mean": 0.6964,
+       "sources": {
+        "commoncrawl": {
+         "n": 4777,
+         "share": 1.0
+        }
+       },
+       "rep_mean": 0.0206,
+       "rep_positive_fraction": 0.0396,
+       "source_words": 76599,
+       "source_word_types": 13536,
+       "duplicate_source_fraction": 0.00042
+      },
+      "random_whole_pool": {
+       "rows": 4777,
+       "len_mean": 16.035,
+       "len_median": 14,
+       "qe_mean": 0.7027,
+       "sources": {
+        "commoncrawl": {
+         "n": 4777,
+         "share": 1.0
+        }
+       },
+       "source_words": 76599,
+       "source_word_types": 13750,
+       "duplicate_source_fraction": 0.00042,
+       "overlap_with_band_rows": 98
+      },
+      "random_pool_excl_band": {
+       "rows": 4777,
+       "len_mean": 16.035,
+       "len_median": 14,
+       "qe_mean": 0.6997,
+       "sources": {
+        "commoncrawl": {
+         "n": 4777,
+         "share": 1.0
+        }
+       },
+       "source_words": 76599,
+       "source_word_types": 13848,
+       "duplicate_source_fraction": 0.0
+      }
+     }
+    },
+    "news-commentary": {
+     "band_rows": 26662,
+     "div_before": 26218,
+     "rep_before": 444,
+     "rows_each": 444,
+     "random_from_ft_random_k_same_source": {
+      "buckets": 44,
+      "short_buckets": 0,
+      "shortfall_rows": 0,
+      "tightest_bucket_slack": 12.5,
+      "tightest_3": [
+       {
+        "len": 39,
+        "need": 10,
+        "have": 125,
+        "slack": 12.5
+       },
+       {
+        "len": 30,
+        "need": 23,
+        "have": 294,
+        "slack": 12.783
+       },
+       {
+        "len": 28,
+        "need": 22,
+        "have": 306,
+        "slack": 13.909
+       }
+      ]
+     },
+     "random_from_whole_pool_same_source": {
+      "buckets": 44,
+      "short_buckets": 0,
+      "shortfall_rows": 0,
+      "tightest_bucket_slack": 196.043,
+      "tightest_3": [
+       {
+        "len": 30,
+        "need": 23,
+        "have": 4509,
+        "slack": 196.043
+       },
+       {
+        "len": 50,
+        "need": 3,
+        "have": 589,
+        "slack": 196.333
+       },
+       {
+        "len": 39,
+        "need": 10,
+        "have": 2070,
+        "slack": 207.0
+       }
+      ]
+     },
+     "random_from_pool_same_source_excluding_band": {
+      "buckets": 44,
+      "short_buckets": 0,
+      "shortfall_rows": 0,
+      "tightest_bucket_slack": 175.0,
+      "tightest_3": [
+       {
+        "len": 30,
+        "need": 23,
+        "have": 4025,
+        "slack": 175.0
+       },
+       {
+        "len": 50,
+        "need": 3,
+        "have": 575,
+        "slack": 191.667
+       },
+       {
+        "len": 39,
+        "need": 10,
+        "have": 1937,
+        "slack": 193.7
+       }
+      ]
+     },
+     "sets": {
+      "div": {
+       "rows": 444,
+       "len_mean": 25.579,
+       "len_median": 25,
+       "qe_mean": 0.8773,
+       "sources": {
+        "news-commentary": {
+         "n": 444,
+         "share": 1.0
+        }
+       },
+       "rep_mean": 0.0,
+       "rep_positive_fraction": 0.0,
+       "source_words": 11357,
+       "source_word_types": 2947,
+       "duplicate_source_fraction": 0.0
+      },
+      "rep": {
+       "rows": 444,
+       "len_mean": 25.579,
+       "len_median": 25,
+       "qe_mean": 0.8784,
+       "sources": {
+        "news-commentary": {
+         "n": 444,
+         "share": 1.0
+        }
+       },
+       "rep_mean": 0.195,
+       "rep_positive_fraction": 1.0,
+       "source_words": 11357,
+       "source_word_types": 2319,
+       "duplicate_source_fraction": 0.02027
+      },
+      "random_ft_random": {
+       "rows": 444,
+       "len_mean": 25.579,
+       "len_median": 25,
+       "qe_mean": 0.8425,
+       "sources": {
+        "news-commentary": {
+         "n": 444,
+         "share": 1.0
+        }
+       },
+       "rep_mean": 0.0005,
+       "rep_positive_fraction": 0.0045,
+       "source_words": 11357,
+       "source_word_types": 3330,
+       "duplicate_source_fraction": 0.0
+      },
+      "random_whole_pool": {
+       "rows": 444,
+       "len_mean": 25.579,
+       "len_median": 25,
+       "qe_mean": 0.8403,
+       "sources": {
+        "news-commentary": {
+         "n": 444,
+         "share": 1.0
+        }
+       },
+       "source_words": 11357,
+       "source_word_types": 3337,
+       "duplicate_source_fraction": 0.0,
+       "overlap_with_band_rows": 56
+      },
+      "random_pool_excl_band": {
+       "rows": 444,
+       "len_mean": 25.579,
+       "len_median": 25,
+       "qe_mean": 0.8401,
+       "sources": {
+        "news-commentary": {
+         "n": 444,
+         "share": 1.0
+        }
+       },
+       "source_words": 11357,
+       "source_word_types": 3430,
+       "duplicate_source_fraction": 0.0
+      }
+     }
+    }
+   },
+   "sets_all_source": {
+    "topk_div": {
+     "rows": 23440,
+     "len_mean": 24.63,
+     "len_median": 23,
+     "qe_mean": 0.8772,
+     "sources": {
+      "europarl": {
+       "n": 17783,
+       "share": 0.7587
+      },
+      "commoncrawl": {
+       "n": 3055,
+       "share": 0.1303
+      },
+      "news-commentary": {
+       "n": 2602,
+       "share": 0.111
+      }
+     },
+     "rep_mean": 0.0,
+     "rep_positive_fraction": 0.0,
+     "source_words": 577330,
+     "source_word_types": 18832,
+     "duplicate_source_fraction": 0.0
+    },
+    "topk_rep": {
+     "rows": 23440,
+     "len_mean": 24.63,
+     "len_median": 23,
+     "qe_mean": 0.8776,
+     "sources": {
+      "europarl": {
+       "n": 18219,
+       "share": 0.7773
+      },
+      "commoncrawl": {
+       "n": 4777,
+       "share": 0.2038
+      },
+      "news-commentary": {
+       "n": 444,
+       "share": 0.0189
+      }
+     },
+     "rep_mean": 0.2636,
+     "rep_positive_fraction": 1.0,
+     "source_words": 577330,
+     "source_word_types": 14791,
+     "duplicate_source_fraction": 0.02351
+    },
+    "random_small": {
+     "rows": 23440,
+     "len_mean": 24.63,
+     "len_median": 23,
+     "qe_mean": 0.7616,
+     "sources": {
+      "commoncrawl": {
+       "n": 12074,
+       "share": 0.5151
+      },
+      "europarl": {
+       "n": 10190,
+       "share": 0.4347
+      },
+      "news-commentary": {
+       "n": 1176,
+       "share": 0.0502
+      }
+     },
+     "rep_mean": 0.0157,
+     "rep_positive_fraction": 0.0529,
+     "source_words": 577330,
+     "source_word_types": 35009,
+     "duplicate_source_fraction": 0.0003,
+     "overlap_with_band_rows": 1412
+    }
+   }
+  },
+  "250000": {
+   "n_selected": 250000,
+   "n_unique": 248198,
+   "share_of_pool": 0.059,
+   "dups_removed": 1802,
+   "score_min": 0.873,
+   "score_max": 0.9146,
+   "score_mean": 0.8775,
+   "sources": {
+    "europarl": {
+     "n": 179722,
+     "share": 0.7241
+    },
+    "commoncrawl": {
+     "n": 42247,
+     "share": 0.1702
+    },
+    "news-commentary": {
+     "n": 26229,
+     "share": 0.1057
+    }
+   },
+   "rows_at_boundary_score": 39,
+   "rep": {
+    "median": 0.0,
+    "mean": 0.0244,
+    "share_rep_gt_0": 0.0923,
+    "share_rep_gt_median": 0.0923,
+    "rep_by_source": {
+     "commoncrawl": {
+      "n": 42247,
+      "share_rep_gt_0": 0.1103
+     },
+     "europarl": {
+      "n": 179722,
+      "share_rep_gt_0": 0.0991
+     },
+     "news-commentary": {
+      "n": 26229,
+      "share_rep_gt_0": 0.0163
+     }
+    }
+   },
+   "halves_before_matching": {
+    "diverse": {
+     "rows": 225294,
+     "sources": {
+      "europarl": {
+       "n": 161904,
+       "share": 0.7186
+      },
+      "commoncrawl": {
+       "n": 37588,
+       "share": 0.1668
+      },
+      "news-commentary": {
+       "n": 25802,
+       "share": 0.1145
+      }
+     },
+     "len_mean": 19.46
+    },
+    "repetitive": {
+     "rows": 22904,
+     "sources": {
+      "europarl": {
+       "n": 17818,
+       "share": 0.7779
+      },
+      "commoncrawl": {
+       "n": 4659,
+       "share": 0.2034
+      },
+      "news-commentary": {
+       "n": 427,
+       "share": 0.0186
+      }
+     },
+     "len_mean": 24.65
+    }
+   },
+   "e04_all_source": {
+    "rows_each": 22893,
+    "random_from_ft_random_k": {
+     "buckets": 72,
+     "short_buckets": 0,
+     "shortfall_rows": 0,
+     "tightest_bucket_slack": 7.09,
+     "tightest_3": [
+      {
+       "len": 36,
+       "need": 421,
+       "have": 2985,
+       "slack": 7.09
+      },
+      {
+       "len": 33,
+       "need": 525,
+       "have": 3767,
+       "slack": 7.175
+      },
+      {
+       "len": 37,
+       "need": 388,
+       "have": 2809,
+       "slack": 7.24
+      }
+     ]
+    },
+    "random_from_whole_unique_pool": {
+     "buckets": 72,
+     "short_buckets": 0,
+     "shortfall_rows": 0,
+     "tightest_bucket_slack": 121.135,
+     "tightest_3": [
+      {
+       "len": 36,
+       "need": 421,
+       "have": 50998,
+       "slack": 121.135
+      },
+      {
+       "len": 37,
+       "need": 388,
+       "have": 47179,
+       "slack": 121.595
+      },
+      {
+       "len": 39,
+       "need": 322,
+       "have": 39764,
+       "slack": 123.491
+      }
+     ]
+    }
+   },
+   "ft_random_k_sources": {
+    "commoncrawl": {
+     "n": 127756,
+     "share": 0.5147
+    },
+    "europarl": {
+     "n": 108686,
+     "share": 0.4379
+    },
+    "news-commentary": {
+     "n": 11756,
+     "share": 0.0474
+    }
+   },
+   "single_source": {
+    "europarl": {
+     "band_rows": 179722,
+     "div_before": 161904,
+     "rep_before": 17818,
+     "rows_each": 17805,
+     "random_from_ft_random_k_same_source": {
+      "buckets": 71,
+      "short_buckets": 0,
+      "shortfall_rows": 0,
+      "tightest_bucket_slack": 4.058,
+      "tightest_3": [
+       {
+        "len": 30,
+        "need": 585,
+        "have": 2374,
+        "slack": 4.058
+       },
+       {
+        "len": 29,
+        "need": 621,
+        "have": 2595,
+        "slack": 4.179
+       },
+       {
+        "len": 33,
+        "need": 475,
+        "have": 1994,
+        "slack": 4.198
+       }
+      ]
+     },
+     "random_from_whole_pool_same_source": {
+      "buckets": 71,
+      "short_buckets": 0,
+      "shortfall_rows": 0,
+      "tightest_bucket_slack": 69.411,
+      "tightest_3": [
+       {
+        "len": 29,
+        "need": 621,
+        "have": 43104,
+        "slack": 69.411
+       },
+       {
+        "len": 30,
+        "need": 585,
+        "have": 41284,
+        "slack": 70.571
+       },
+       {
+        "len": 36,
+        "need": 393,
+        "have": 28116,
+        "slack": 71.542
+       }
+      ]
+     },
+     "random_from_pool_same_source_excluding_band": {
+      "buckets": 71,
+      "short_buckets": 0,
+      "shortfall_rows": 0,
+      "tightest_bucket_slack": 62.66,
+      "tightest_3": [
+       {
+        "len": 29,
+        "need": 621,
+        "have": 38912,
+        "slack": 62.66
+       },
+       {
+        "len": 30,
+        "need": 585,
+        "have": 37419,
+        "slack": 63.964
+       },
+       {
+        "len": 36,
+        "need": 393,
+        "have": 26174,
+        "slack": 66.601
+       }
+      ]
+     },
+     "sets": {
+      "div": {
+       "rows": 17805,
+       "len_mean": 26.839,
+       "len_median": 25,
+       "qe_mean": 0.8772,
+       "sources": {
+        "europarl": {
+         "n": 17805,
+         "share": 1.0
+        }
+       },
+       "rep_mean": 0.0,
+       "rep_positive_fraction": 0.0,
+       "source_words": 477868,
+       "source_word_types": 12872,
+       "duplicate_source_fraction": 0.0
+      },
+      "rep": {
+       "rows": 17805,
+       "len_mean": 26.839,
+       "len_median": 25,
+       "qe_mean": 0.8777,
+       "sources": {
+        "europarl": {
+         "n": 17805,
+         "share": 1.0
+        }
+       },
+       "rep_mean": 0.2039,
+       "rep_positive_fraction": 1.0,
+       "source_words": 477868,
+       "source_word_types": 10387,
+       "duplicate_source_fraction": 0.01455
+      },
+      "random_ft_random": {
+       "rows": 17805,
+       "len_mean": 26.839,
+       "len_median": 25,
+       "qe_mean": 0.8388,
+       "sources": {
+        "europarl": {
+         "n": 17805,
+         "share": 1.0
+        }
+       },
+       "rep_mean": 0.0103,
+       "rep_positive_fraction": 0.0667,
+       "source_words": 477868,
+       "source_word_types": 16496,
+       "duplicate_source_fraction": 0.0
+      },
+      "random_whole_pool": {
+       "rows": 17805,
+       "len_mean": 26.839,
+       "len_median": 25,
+       "qe_mean": 0.84,
+       "sources": {
+        "europarl": {
+         "n": 17805,
+         "share": 1.0
+        }
+       },
+       "source_words": 477868,
+       "source_word_types": 16042,
+       "duplicate_source_fraction": 0.0,
+       "overlap_with_band_rows": 1779
+      },
+      "random_pool_excl_band": {
+       "rows": 17805,
+       "len_mean": 26.839,
+       "len_median": 25,
+       "qe_mean": 0.8355,
+       "sources": {
+        "europarl": {
+         "n": 17805,
+         "share": 1.0
+        }
+       },
+       "source_words": 477868,
+       "source_word_types": 16486,
+       "duplicate_source_fraction": 6e-05
+      }
+     }
+    },
+    "commoncrawl": {
+     "band_rows": 42247,
+     "div_before": 37588,
+     "rep_before": 4659,
+     "rows_each": 4659,
+     "random_from_ft_random_k_same_source": {
+      "buckets": 49,
+      "short_buckets": 0,
+      "shortfall_rows": 0,
+      "tightest_bucket_slack": 8.789,
+      "tightest_3": [
+       {
+        "len": 12,
+        "need": 669,
+        "have": 5880,
+        "slack": 8.789
+       },
+       {
+        "len": 11,
+        "need": 585,
+        "have": 5605,
+        "slack": 9.581
+       },
+       {
+        "len": 17,
+        "need": 536,
+        "have": 5520,
+        "slack": 10.299
+       }
+      ]
+     },
+     "random_from_whole_pool_same_source": {
+      "buckets": 49,
+      "short_buckets": 0,
+      "shortfall_rows": 0,
+      "tightest_bucket_slack": 151.341,
+      "tightest_3": [
+       {
+        "len": 12,
+        "need": 669,
+        "have": 101247,
+        "slack": 151.341
+       },
+       {
+        "len": 11,
+        "need": 585,
+        "have": 96373,
+        "slack": 164.74
+       },
+       {
+        "len": 17,
+        "need": 536,
+        "have": 94274,
+        "slack": 175.884
+       }
+      ]
+     },
+     "random_from_pool_same_source_excluding_band": {
+      "buckets": 49,
+      "short_buckets": 0,
+      "shortfall_rows": 0,
+      "tightest_bucket_slack": 146.166,
+      "tightest_3": [
+       {
+        "len": 12,
+        "need": 669,
+        "have": 97785,
+        "slack": 146.166
+       },
+       {
+        "len": 11,
+        "need": 585,
+        "have": 92753,
+        "slack": 158.552
+       },
+       {
+        "len": 17,
+        "need": 536,
+        "have": 92022,
+        "slack": 171.683
+       }
+      ]
+     },
+     "sets": {
+      "div": {
+       "rows": 4659,
+       "len_mean": 16.041,
+       "len_median": 14,
+       "qe_mean": 0.8777,
+       "sources": {
+        "commoncrawl": {
+         "n": 4659,
+         "share": 1.0
+        }
+       },
+       "rep_mean": 0.0,
+       "rep_positive_fraction": 0.0,
+       "source_words": 74735,
+       "source_word_types": 11517,
+       "duplicate_source_fraction": 0.0
+      },
+      "rep": {
+       "rows": 4659,
+       "len_mean": 16.041,
+       "len_median": 14,
+       "qe_mean": 0.8775,
+       "sources": {
+        "commoncrawl": {
+         "n": 4659,
+         "share": 1.0
+        }
+       },
+       "rep_mean": 0.4993,
+       "rep_positive_fraction": 1.0,
+       "source_words": 74735,
+       "source_word_types": 7060,
+       "duplicate_source_fraction": 0.05881
+      },
+      "random_ft_random": {
+       "rows": 4659,
+       "len_mean": 16.041,
+       "len_median": 14,
+       "qe_mean": 0.6964,
+       "sources": {
+        "commoncrawl": {
+         "n": 4659,
+         "share": 1.0
+        }
+       },
+       "rep_mean": 0.0205,
+       "rep_positive_fraction": 0.0401,
+       "source_words": 74735,
+       "source_word_types": 13314,
+       "duplicate_source_fraction": 0.00043
+      },
+      "random_whole_pool": {
+       "rows": 4659,
+       "len_mean": 16.041,
+       "len_median": 14,
+       "qe_mean": 0.7016,
+       "sources": {
+        "commoncrawl": {
+         "n": 4659,
+         "share": 1.0
+        }
+       },
+       "source_words": 74735,
+       "source_word_types": 13527,
+       "duplicate_source_fraction": 0.00043,
+       "overlap_with_band_rows": 94
+      },
+      "random_pool_excl_band": {
+       "rows": 4659,
+       "len_mean": 16.041,
+       "len_median": 14,
+       "qe_mean": 0.6979,
+       "sources": {
+        "commoncrawl": {
+         "n": 4659,
+         "share": 1.0
+        }
+       },
+       "source_words": 74735,
+       "source_word_types": 13829,
+       "duplicate_source_fraction": 0.00021
+      }
+     }
+    },
+    "news-commentary": {
+     "band_rows": 26229,
+     "div_before": 25802,
+     "rep_before": 427,
+     "rows_each": 427,
+     "random_from_ft_random_k_same_source": {
+      "buckets": 43,
+      "short_buckets": 0,
+      "shortfall_rows": 0,
+      "tightest_bucket_slack": 12.522,
+      "tightest_3": [
+       {
+        "len": 30,
+        "need": 23,
+        "have": 288,
+        "slack": 12.522
+       },
+       {
+        "len": 42,
+        "need": 6,
+        "have": 83,
+        "slack": 13.833
+       },
+       {
+        "len": 28,
+        "need": 21,
+        "have": 294,
+        "slack": 14.0
+       }
+      ]
+     },
+     "random_from_whole_pool_same_source": {
+      "buckets": 43,
+      "short_buckets": 0,
+      "shortfall_rows": 0,
+      "tightest_bucket_slack": 196.043,
+      "tightest_3": [
+       {
+        "len": 30,
+        "need": 23,
+        "have": 4509,
+        "slack": 196.043
+       },
+       {
+        "len": 50,
+        "need": 3,
+        "have": 589,
+        "slack": 196.333
+       },
+       {
+        "len": 37,
+        "need": 10,
+        "have": 2370,
+        "slack": 237.0
+       }
+      ]
+     },
+     "random_from_pool_same_source_excluding_band": {
+      "buckets": 43,
+      "short_buckets": 0,
+      "shortfall_rows": 0,
+      "tightest_bucket_slack": 175.478,
+      "tightest_3": [
+       {
+        "len": 30,
+        "need": 23,
+        "have": 4036,
+        "slack": 175.478
+       },
+       {
+        "len": 50,
+        "need": 3,
+        "have": 577,
+        "slack": 192.333
+       },
+       {
+        "len": 37,
+        "need": 10,
+        "have": 2172,
+        "slack": 217.2
+       }
+      ]
+     },
+     "sets": {
+      "div": {
+       "rows": 427,
+       "len_mean": 25.489,
+       "len_median": 25,
+       "qe_mean": 0.8775,
+       "sources": {
+        "news-commentary": {
+         "n": 427,
+         "share": 1.0
+        }
+       },
+       "rep_mean": 0.0,
+       "rep_positive_fraction": 0.0,
+       "source_words": 10884,
+       "source_word_types": 2908,
+       "duplicate_source_fraction": 0.0
+      },
+      "rep": {
+       "rows": 427,
+       "len_mean": 25.489,
+       "len_median": 25,
+       "qe_mean": 0.8785,
+       "sources": {
+        "news-commentary": {
+         "n": 427,
+         "share": 1.0
+        }
+       },
+       "rep_mean": 0.1993,
+       "rep_positive_fraction": 1.0,
+       "source_words": 10884,
+       "source_word_types": 2263,
+       "duplicate_source_fraction": 0.02108
+      },
+      "random_ft_random": {
+       "rows": 427,
+       "len_mean": 25.489,
+       "len_median": 25,
+       "qe_mean": 0.8447,
+       "sources": {
+        "news-commentary": {
+         "n": 427,
+         "share": 1.0
+        }
+       },
+       "rep_mean": 0.0006,
+       "rep_positive_fraction": 0.0047,
+       "source_words": 10884,
+       "source_word_types": 3229,
+       "duplicate_source_fraction": 0.0
+      },
+      "random_whole_pool": {
+       "rows": 427,
+       "len_mean": 25.489,
+       "len_median": 25,
+       "qe_mean": 0.8435,
+       "sources": {
+        "news-commentary": {
+         "n": 427,
+         "share": 1.0
+        }
+       },
+       "source_words": 10884,
+       "source_word_types": 3202,
+       "duplicate_source_fraction": 0.0,
+       "overlap_with_band_rows": 63
+      },
+      "random_pool_excl_band": {
+       "rows": 427,
+       "len_mean": 25.489,
+       "len_median": 25,
+       "qe_mean": 0.8378,
+       "sources": {
+        "news-commentary": {
+         "n": 427,
+         "share": 1.0
+        }
+       },
+       "source_words": 10884,
+       "source_word_types": 3295,
+       "duplicate_source_fraction": 0.0
+      }
+     }
+    }
+   },
+   "sets_all_source": {
+    "topk_div": {
+     "rows": 22893,
+     "len_mean": 24.621,
+     "len_median": 23,
+     "qe_mean": 0.8773,
+     "sources": {
+      "europarl": {
+       "n": 17294,
+       "share": 0.7554
+      },
+      "commoncrawl": {
+       "n": 2950,
+       "share": 0.1289
+      },
+      "news-commentary": {
+       "n": 2649,
+       "share": 0.1157
+      }
+     },
+     "rep_mean": 0.0,
+     "rep_positive_fraction": 0.0,
+     "source_words": 563640,
+     "source_word_types": 18725,
+     "duplicate_source_fraction": 0.0
+    },
+    "topk_rep": {
+     "rows": 22893,
+     "len_mean": 24.621,
+     "len_median": 23,
+     "qe_mean": 0.8777,
+     "sources": {
+      "europarl": {
+       "n": 17807,
+       "share": 0.7778
+      },
+      "commoncrawl": {
+       "n": 4659,
+       "share": 0.2035
+      },
+      "news-commentary": {
+       "n": 427,
+       "share": 0.0187
+      }
+     },
+     "rep_mean": 0.264,
+     "rep_positive_fraction": 1.0,
+     "source_words": 563640,
+     "source_word_types": 14610,
+     "duplicate_source_fraction": 0.02372
+    },
+    "random_small": {
+     "rows": 22893,
+     "len_mean": 24.621,
+     "len_median": 23,
+     "qe_mean": 0.7613,
+     "sources": {
+      "commoncrawl": {
+       "n": 11795,
+       "share": 0.5152
+      },
+      "europarl": {
+       "n": 9954,
+       "share": 0.4348
+      },
+      "news-commentary": {
+       "n": 1144,
+       "share": 0.05
+      }
+     },
+     "rep_mean": 0.0156,
+     "rep_positive_fraction": 0.0545,
+     "source_words": 563640,
+     "source_word_types": 34768,
+     "duplicate_source_fraction": 0.00031,
+     "overlap_with_band_rows": 1337
+    }
+   }
+  },
+  "500000": {
+   "n_selected": 500000,
+   "n_unique": 496863,
+   "share_of_pool": 0.118,
+   "dups_removed": 3137,
+   "score_min": 0.868,
+   "score_max": 0.9146,
+   "score_mean": 0.8739,
+   "sources": {
+    "europarl": {
+     "n": 358954,
+     "share": 0.7224
+    },
+    "commoncrawl": {
+     "n": 89687,
+     "share": 0.1805
+    },
+    "news-commentary": {
+     "n": 48222,
+     "share": 0.0971
+    }
+   },
+   "rows_at_boundary_score": 68,
+   "rep": {
+    "median": 0.0,
+    "mean": 0.0312,
+    "share_rep_gt_0": 0.1151,
+    "share_rep_gt_median": 0.1151,
+    "rep_by_source": {
+     "commoncrawl": {
+      "n": 89687,
+      "share_rep_gt_0": 0.1375
+     },
+     "europarl": {
+      "n": 358954,
+      "share_rep_gt_0": 0.1224
+     },
+     "news-commentary": {
+      "n": 48222,
+      "share_rep_gt_0": 0.0194
+     }
+    }
+   },
+   "halves_before_matching": {
+    "diverse": {
+     "rows": 439656,
+     "sources": {
+      "europarl": {
+       "n": 315016,
+       "share": 0.7165
+      },
+      "commoncrawl": {
+       "n": 77355,
+       "share": 0.1759
+      },
+      "news-commentary": {
+       "n": 47285,
+       "share": 0.1075
+      }
+     },
+     "len_mean": 19.82
+    },
+    "repetitive": {
+     "rows": 57207,
+     "sources": {
+      "europarl": {
+       "n": 43938,
+       "share": 0.7681
+      },
+      "commoncrawl": {
+       "n": 12332,
+       "share": 0.2156
+      },
+      "news-commentary": {
+       "n": 937,
+       "share": 0.0164
+      }
+     },
+     "len_mean": 25.05
+    }
+   },
+   "e04_all_source": {
+    "rows_each": 57172,
+    "random_from_ft_random_k": {
+     "buckets": 83,
+     "short_buckets": 0,
+     "shortfall_rows": 0,
+     "tightest_bucket_slack": 5.704,
+     "tightest_3": [
+      {
+       "len": 36,
+       "need": 1034,
+       "have": 5898,
+       "slack": 5.704
+      },
+      {
+       "len": 39,
+       "need": 818,
+       "have": 4689,
+       "slack": 5.732
+      },
+      {
+       "len": 38,
+       "need": 882,
+       "have": 5152,
+       "slack": 5.841
+      }
+     ]
+    },
+    "random_from_whole_unique_pool": {
+     "buckets": 83,
+     "short_buckets": 0,
+     "shortfall_rows": 0,
+     "tightest_bucket_slack": 48.611,
+     "tightest_3": [
+      {
+       "len": 39,
+       "need": 818,
+       "have": 39764,
+       "slack": 48.611
+      },
+      {
+       "len": 36,
+       "need": 1034,
+       "have": 50998,
+       "slack": 49.321
+      },
+      {
+       "len": 38,
+       "need": 882,
+       "have": 43585,
+       "slack": 49.416
+      }
+     ]
+    }
+   },
+   "ft_random_k_sources": {
+    "commoncrawl": {
+     "n": 255830,
+     "share": 0.5149
+    },
+    "europarl": {
+     "n": 217412,
+     "share": 0.4376
+    },
+    "news-commentary": {
+     "n": 23621,
+     "share": 0.0475
+    }
+   },
+   "single_source": {
+    "europarl": {
+     "band_rows": 358954,
+     "div_before": 315016,
+     "rep_before": 43938,
+     "rows_each": 43901,
+     "random_from_ft_random_k_same_source": {
+      "buckets": 83,
+      "short_buckets": 0,
+      "shortfall_rows": 0,
+      "tightest_bucket_slack": 3.366,
+      "tightest_3": [
+       {
+        "len": 36,
+        "need": 967,
+        "have": 3255,
+        "slack": 3.366
+       },
+       {
+        "len": 30,
+        "need": 1381,
+        "have": 4745,
+        "slack": 3.436
+       },
+       {
+        "len": 39,
+        "need": 775,
+        "have": 2680,
+        "slack": 3.458
+       }
+      ]
+     },
+     "random_from_whole_pool_same_source": {
+      "buckets": 83,
+      "short_buckets": 0,
+      "shortfall_rows": 0,
+      "tightest_bucket_slack": 29.075,
+      "tightest_3": [
+       {
+        "len": 36,
+        "need": 967,
+        "have": 28116,
+        "slack": 29.075
+       },
+       {
+        "len": 29,
+        "need": 1460,
+        "have": 43104,
+        "slack": 29.523
+       },
+       {
+        "len": 39,
+        "need": 775,
+        "have": 22889,
+        "slack": 29.534
+       }
+      ]
+     },
+     "random_from_pool_same_source_excluding_band": {
+      "buckets": 83,
+      "short_buckets": 0,
+      "shortfall_rows": 0,
+      "tightest_bucket_slack": 23.755,
+      "tightest_3": [
+       {
+        "len": 29,
+        "need": 1460,
+        "have": 34682,
+        "slack": 23.755
+       },
+       {
+        "len": 30,
+        "need": 1381,
+        "have": 33356,
+        "slack": 24.154
+       },
+       {
+        "len": 36,
+        "need": 967,
+        "have": 23814,
+        "slack": 24.627
+       }
+      ]
+     },
+     "sets": {
+      "div": {
+       "rows": 43901,
+       "len_mean": 27.629,
+       "len_median": 26,
+       "qe_mean": 0.8737,
+       "sources": {
+        "europarl": {
+         "n": 43901,
+         "share": 1.0
+        }
+       },
+       "rep_mean": 0.0,
+       "rep_positive_fraction": 0.0,
+       "source_words": 1212962,
+       "source_word_types": 19067,
+       "duplicate_source_fraction": 0.0
+      },
+      "rep": {
+       "rows": 43901,
+       "len_mean": 27.629,
+       "len_median": 26,
+       "qe_mean": 0.8741,
+       "sources": {
+        "europarl": {
+         "n": 43901,
+         "share": 1.0
+        }
+       },
+       "rep_mean": 0.2023,
+       "rep_positive_fraction": 1.0,
+       "source_words": 1212962,
+       "source_word_types": 15336,
+       "duplicate_source_fraction": 0.01294
+      },
+      "random_ft_random": {
+       "rows": 43901,
+       "len_mean": 27.629,
+       "len_median": 26,
+       "qe_mean": 0.8394,
+       "sources": {
+        "europarl": {
+         "n": 43901,
+         "share": 1.0
+        }
+       },
+       "rep_mean": 0.0134,
+       "rep_positive_fraction": 0.0918,
+       "source_words": 1212962,
+       "source_word_types": 23643,
+       "duplicate_source_fraction": 5e-05
+      },
+      "random_whole_pool": {
+       "rows": 43901,
+       "len_mean": 27.629,
+       "len_median": 26,
+       "qe_mean": 0.8396,
+       "sources": {
+        "europarl": {
+         "n": 43901,
+         "share": 1.0
+        }
+       },
+       "source_words": 1212962,
+       "source_word_types": 23437,
+       "duplicate_source_fraction": 5e-05,
+       "overlap_with_band_rows": 8442
+      },
+      "random_pool_excl_band": {
+       "rows": 43901,
+       "len_mean": 27.629,
+       "len_median": 26,
+       "qe_mean": 0.8312,
+       "sources": {
+        "europarl": {
+         "n": 43901,
+         "share": 1.0
+        }
+       },
+       "source_words": 1212962,
+       "source_word_types": 24142,
+       "duplicate_source_fraction": 2e-05
+      }
+     }
+    },
+    "commoncrawl": {
+     "band_rows": 89687,
+     "div_before": 77355,
+     "rep_before": 12332,
+     "rows_each": 12330,
+     "random_from_ft_random_k_same_source": {
+      "buckets": 55,
+      "short_buckets": 0,
+      "shortfall_rows": 0,
+      "tightest_bucket_slack": 5.862,
+      "tightest_3": [
+       {
+        "len": 11,
+        "need": 1901,
+        "have": 11144,
+        "slack": 5.862
+       },
+       {
+        "len": 12,
+        "need": 1840,
+        "have": 11786,
+        "slack": 6.405
+       },
+       {
+        "len": 10,
+        "need": 1137,
+        "have": 10598,
+        "slack": 9.321
+       }
+      ]
+     },
+     "random_from_whole_pool_same_source": {
+      "buckets": 55,
+      "short_buckets": 0,
+      "shortfall_rows": 0,
+      "tightest_bucket_slack": 50.696,
+      "tightest_3": [
+       {
+        "len": 11,
+        "need": 1901,
+        "have": 96373,
+        "slack": 50.696
+       },
+       {
+        "len": 12,
+        "need": 1840,
+        "have": 101247,
+        "slack": 55.026
+       },
+       {
+        "len": 10,
+        "need": 1137,
+        "have": 90193,
+        "slack": 79.325
+       }
+      ]
+     },
+     "random_from_pool_same_source_excluding_band": {
+      "buckets": 55,
+      "short_buckets": 0,
+      "shortfall_rows": 0,
+      "tightest_bucket_slack": 46.619,
+      "tightest_3": [
+       {
+        "len": 11,
+        "need": 1901,
+        "have": 88622,
+        "slack": 46.619
+       },
+       {
+        "len": 12,
+        "need": 1840,
+        "have": 93873,
+        "slack": 51.018
+       },
+       {
+        "len": 10,
+        "need": 1137,
+        "have": 83590,
+        "slack": 73.518
+       }
+      ]
+     },
+     "sets": {
+      "div": {
+       "rows": 12330,
+       "len_mean": 15.584,
+       "len_median": 13,
+       "qe_mean": 0.8739,
+       "sources": {
+        "commoncrawl": {
+         "n": 12330,
+         "share": 1.0
+        }
+       },
+       "rep_mean": 0.0,
+       "rep_positive_fraction": 0.0,
+       "source_words": 192146,
+       "source_word_types": 19631,
+       "duplicate_source_fraction": 0.0
+      },
+      "rep": {
+       "rows": 12330,
+       "len_mean": 15.584,
+       "len_median": 13,
+       "qe_mean": 0.8735,
+       "sources": {
+        "commoncrawl": {
+         "n": 12330,
+         "share": 1.0
+        }
+       },
+       "rep_mean": 0.5225,
+       "rep_positive_fraction": 1.0,
+       "source_words": 192146,
+       "source_word_types": 12507,
+       "duplicate_source_fraction": 0.05053
+      },
+      "random_ft_random": {
+       "rows": 12330,
+       "len_mean": 15.584,
+       "len_median": 13,
+       "qe_mean": 0.7024,
+       "sources": {
+        "commoncrawl": {
+         "n": 12330,
+         "share": 1.0
+        }
+       },
+       "rep_mean": 0.0323,
+       "rep_positive_fraction": 0.0599,
+       "source_words": 192146,
+       "source_word_types": 23941,
+       "duplicate_source_fraction": 0.00089
+      },
+      "random_whole_pool": {
+       "rows": 12330,
+       "len_mean": 15.584,
+       "len_median": 13,
+       "qe_mean": 0.7029,
+       "sources": {
+        "commoncrawl": {
+         "n": 12330,
+         "share": 1.0
+        }
+       },
+       "source_words": 192146,
+       "source_word_types": 24238,
+       "duplicate_source_fraction": 0.00178,
+       "overlap_with_band_rows": 679
+      },
+      "random_pool_excl_band": {
+       "rows": 12330,
+       "len_mean": 15.584,
+       "len_median": 13,
+       "qe_mean": 0.6936,
+       "sources": {
+        "commoncrawl": {
+         "n": 12330,
+         "share": 1.0
+        }
+       },
+       "source_words": 192146,
+       "source_word_types": 24387,
+       "duplicate_source_fraction": 0.00097
+      }
+     }
+    },
+    "news-commentary": {
+     "band_rows": 48222,
+     "div_before": 47285,
+     "rep_before": 937,
+     "rows_each": 936,
+     "random_from_ft_random_k_same_source": {
+      "buckets": 49,
+      "short_buckets": 0,
+      "shortfall_rows": 0,
+      "tightest_bucket_slack": 9.938,
+      "tightest_3": [
+       {
+        "len": 42,
+        "need": 16,
+        "have": 159,
+        "slack": 9.938
+       },
+       {
+        "len": 36,
+        "need": 27,
+        "have": 299,
+        "slack": 11.074
+       },
+       {
+        "len": 29,
+        "need": 47,
+        "have": 560,
+        "slack": 11.915
+       }
+      ]
+     },
+     "random_from_whole_pool_same_source": {
+      "buckets": 49,
+      "short_buckets": 0,
+      "shortfall_rows": 0,
+      "tightest_bucket_slack": 89.25,
+      "tightest_3": [
+       {
+        "len": 42,
+        "need": 16,
+        "have": 1428,
+        "slack": 89.25
+       },
+       {
+        "len": 36,
+        "need": 27,
+        "have": 2702,
+        "slack": 100.074
+       },
+       {
+        "len": 29,
+        "need": 47,
+        "have": 4851,
+        "slack": 103.213
+       }
+      ]
+     },
+     "random_from_pool_same_source_excluding_band": {
+      "buckets": 49,
+      "short_buckets": 0,
+      "shortfall_rows": 0,
+      "tightest_bucket_slack": 75.75,
+      "tightest_3": [
+       {
+        "len": 42,
+        "need": 16,
+        "have": 1212,
+        "slack": 75.75
+       },
+       {
+        "len": 29,
+        "need": 47,
+        "have": 3793,
+        "slack": 80.702
+       },
+       {
+        "len": 36,
+        "need": 27,
+        "have": 2218,
+        "slack": 82.148
+       }
+      ]
+     },
+     "sets": {
+      "div": {
+       "rows": 936,
+       "len_mean": 26.597,
+       "len_median": 26,
+       "qe_mean": 0.874,
+       "sources": {
+        "news-commentary": {
+         "n": 936,
+         "share": 1.0
+        }
+       },
+       "rep_mean": 0.0,
+       "rep_positive_fraction": 0.0,
+       "source_words": 24895,
+       "source_word_types": 4822,
+       "duplicate_source_fraction": 0.0
+      },
+      "rep": {
+       "rows": 936,
+       "len_mean": 26.597,
+       "len_median": 26,
+       "qe_mean": 0.8754,
+       "sources": {
+        "news-commentary": {
+         "n": 936,
+         "share": 1.0
+        }
+       },
+       "rep_mean": 0.1804,
+       "rep_positive_fraction": 1.0,
+       "source_words": 24895,
+       "source_word_types": 3784,
+       "duplicate_source_fraction": 0.01603
+      },
+      "random_ft_random": {
+       "rows": 936,
+       "len_mean": 26.597,
+       "len_median": 26,
+       "qe_mean": 0.8437,
+       "sources": {
+        "news-commentary": {
+         "n": 936,
+         "share": 1.0
+        }
+       },
+       "rep_mean": 0.0013,
+       "rep_positive_fraction": 0.0096,
+       "source_words": 24895,
+       "source_word_types": 5418,
+       "duplicate_source_fraction": 0.0
+      },
+      "random_whole_pool": {
+       "rows": 936,
+       "len_mean": 26.597,
+       "len_median": 26,
+       "qe_mean": 0.8438,
+       "sources": {
+        "news-commentary": {
+         "n": 936,
+         "share": 1.0
+        }
+       },
+       "source_words": 24895,
+       "source_word_types": 5418,
+       "duplicate_source_fraction": 0.0,
+       "overlap_with_band_rows": 215
+      },
+      "random_pool_excl_band": {
+       "rows": 936,
+       "len_mean": 26.597,
+       "len_median": 26,
+       "qe_mean": 0.8306,
+       "sources": {
+        "news-commentary": {
+         "n": 936,
+         "share": 1.0
+        }
+       },
+       "source_words": 24895,
+       "source_word_types": 5596,
+       "duplicate_source_fraction": 0.0
+      }
+     }
+    }
+   },
+   "sets_all_source": {
+    "topk_div": {
+     "rows": 57172,
+     "len_mean": 25.018,
+     "len_median": 23,
+     "qe_mean": 0.8738,
+     "sources": {
+      "europarl": {
+       "n": 42999,
+       "share": 0.7521
+      },
+      "commoncrawl": {
+       "n": 8107,
+       "share": 0.1418
+      },
+      "news-commentary": {
+       "n": 6066,
+       "share": 0.1061
+      }
+     },
+     "rep_mean": 0.0,
+     "rep_positive_fraction": 0.0,
+     "source_words": 1430348,
+     "source_word_types": 29556,
+     "duplicate_source_fraction": 0.0
+    },
+    "topk_rep": {
+     "rows": 57172,
+     "len_mean": 25.018,
+     "len_median": 23,
+     "qe_mean": 0.874,
+     "sources": {
+      "europarl": {
+       "n": 43904,
+       "share": 0.7679
+      },
+      "commoncrawl": {
+       "n": 12332,
+       "share": 0.2157
+      },
+      "news-commentary": {
+       "n": 936,
+       "share": 0.0164
+      }
+     },
+     "rep_mean": 0.271,
+     "rep_positive_fraction": 1.0,
+     "source_words": 1430348,
+     "source_word_types": 23008,
+     "duplicate_source_fraction": 0.02113
+    },
+    "random_small": {
+     "rows": 57172,
+     "len_mean": 25.018,
+     "len_median": 23,
+     "qe_mean": 0.7614,
+     "sources": {
+      "commoncrawl": {
+       "n": 28791,
+       "share": 0.5036
+      },
+      "europarl": {
+       "n": 25657,
+       "share": 0.4488
+      },
+      "news-commentary": {
+       "n": 2724,
+       "share": 0.0476
+      }
+     },
+     "rep_mean": 0.0216,
+     "rep_positive_fraction": 0.0718,
+     "source_words": 1430348,
+     "source_word_types": 57966,
+     "duplicate_source_fraction": 0.00047,
+     "overlap_with_band_rows": 6647
+    }
+   }
+  },
+  "1000000": {
+   "n_selected": 1000000,
+   "n_unique": 994881,
+   "share_of_pool": 0.2359,
+   "dups_removed": 5119,
+   "score_min": 0.8599,
+   "score_max": 0.9146,
+   "score_mean": 0.8689,
+   "sources": {
+    "europarl": {
+     "n": 706190,
+     "share": 0.7098
+    },
+    "commoncrawl": {
+     "n": 202562,
+     "share": 0.2036
+    },
+    "news-commentary": {
+     "n": 86129,
+     "share": 0.0866
+    }
+   },
+   "rows_at_boundary_score": 59,
+   "rep": {
+    "median": 0.0,
+    "mean": 0.0356,
+    "share_rep_gt_0": 0.1352,
+    "share_rep_gt_median": 0.1352,
+    "rep_by_source": {
+     "commoncrawl": {
+      "n": 202562,
+      "share_rep_gt_0": 0.1377
+     },
+     "europarl": {
+      "n": 706190,
+      "share_rep_gt_0": 0.1481
+     },
+     "news-commentary": {
+      "n": 86129,
+      "share_rep_gt_0": 0.0239
+     }
+    }
+   },
+   "halves_before_matching": {
+    "diverse": {
+     "rows": 860334,
+     "sources": {
+      "europarl": {
+       "n": 601597,
+       "share": 0.6993
+      },
+      "commoncrawl": {
+       "n": 174666,
+       "share": 0.203
+      },
+      "news-commentary": {
+       "n": 84071,
+       "share": 0.0977
+      }
+     },
+     "len_mean": 20.35
+    },
+    "repetitive": {
+     "rows": 134547,
+     "sources": {
+      "europarl": {
+       "n": 104593,
+       "share": 0.7774
+      },
+      "commoncrawl": {
+       "n": 27896,
+       "share": 0.2073
+      },
+      "news-commentary": {
+       "n": 2058,
+       "share": 0.0153
+      }
+     },
+     "len_mean": 26.59
+    }
+   },
+   "e04_all_source": {
+    "rows_each": 134479,
+    "random_from_ft_random_k": {
+     "buckets": 101,
+     "short_buckets": 0,
+     "shortfall_rows": 0,
+     "tightest_bucket_slack": 4.3,
+     "tightest_3": [
+      {
+       "len": 51,
+       "need": 769,
+       "have": 3307,
+       "slack": 4.3
+      },
+      {
+       "len": 46,
+       "need": 1157,
+       "have": 5149,
+       "slack": 4.45
+      },
+      {
+       "len": 49,
+       "need": 879,
+       "have": 3941,
+       "slack": 4.484
+      }
+     ]
+    },
+    "random_from_whole_unique_pool": {
+     "buckets": 101,
+     "short_buckets": 0,
+     "shortfall_rows": 0,
+     "tightest_bucket_slack": 18.151,
+     "tightest_3": [
+      {
+       "len": 51,
+       "need": 769,
+       "have": 13958,
+       "slack": 18.151
+      },
+      {
+       "len": 53,
+       "need": 614,
+       "have": 11535,
+       "slack": 18.787
+      },
+      {
+       "len": 49,
+       "need": 879,
+       "have": 16617,
+       "slack": 18.904
+      }
+     ]
+    }
+   },
+   "ft_random_k_sources": {
+    "commoncrawl": {
+     "n": 512300,
+     "share": 0.5149
+    },
+    "europarl": {
+     "n": 435629,
+     "share": 0.4379
+    },
+    "news-commentary": {
+     "n": 46952,
+     "share": 0.0472
+    }
+   },
+   "single_source": {
+    "europarl": {
+     "band_rows": 706190,
+     "div_before": 601597,
+     "rep_before": 104593,
+     "rows_each": 104521,
+     "random_from_ft_random_k_same_source": {
+      "buckets": 101,
+      "short_buckets": 0,
+      "shortfall_rows": 0,
+      "tightest_bucket_slack": 2.776,
+      "tightest_3": [
+       {
+        "len": 38,
+        "need": 2131,
+        "have": 5915,
+        "slack": 2.776
+       },
+       {
+        "len": 42,
+        "need": 1475,
+        "have": 4139,
+        "slack": 2.806
+       },
+       {
+        "len": 46,
+        "need": 1103,
+        "have": 3124,
+        "slack": 2.832
+       }
+      ]
+     },
+     "random_from_whole_pool_same_source": {
+      "buckets": 101,
+      "short_buckets": 0,
+      "shortfall_rows": 0,
+      "tightest_bucket_slack": 11.701,
+      "tightest_3": [
+       {
+        "len": 38,
+        "need": 2131,
+        "have": 24935,
+        "slack": 11.701
+       },
+       {
+        "len": 36,
+        "need": 2341,
+        "have": 28116,
+        "slack": 12.01
+       },
+       {
+        "len": 39,
+        "need": 1904,
+        "have": 22889,
+        "slack": 12.022
+       }
+      ]
+     },
+     "random_from_pool_same_source_excluding_band": {
+      "buckets": 101,
+      "short_buckets": 0,
+      "shortfall_rows": 0,
+      "tightest_bucket_slack": 7.751,
+      "tightest_3": [
+       {
+        "len": 33,
+        "need": 2856,
+        "have": 22136,
+        "slack": 7.751
+       },
+       {
+        "len": 38,
+        "need": 2131,
+        "have": 16950,
+        "slack": 7.954
+       },
+       {
+        "len": 29,
+        "need": 3298,
+        "have": 26383,
+        "slack": 8.0
+       }
+      ]
+     },
+     "sets": {
+      "div": {
+       "rows": 104521,
+       "len_mean": 29.127,
+       "len_median": 27,
+       "qe_mean": 0.8686,
+       "sources": {
+        "europarl": {
+         "n": 104521,
+         "share": 1.0
+        }
+       },
+       "rep_mean": 0.0,
+       "rep_positive_fraction": 0.0,
+       "source_words": 3044342,
+       "source_word_types": 27898,
+       "duplicate_source_fraction": 0.0
+      },
+      "rep": {
+       "rows": 104521,
+       "len_mean": 29.127,
+       "len_median": 27,
+       "qe_mean": 0.8692,
+       "sources": {
+        "europarl": {
+         "n": 104521,
+         "share": 1.0
+        }
+       },
+       "rep_mean": 0.197,
+       "rep_positive_fraction": 1.0,
+       "source_words": 3044342,
+       "source_word_types": 22538,
+       "duplicate_source_fraction": 0.01031
+      },
+      "random_ft_random": {
+       "rows": 104521,
+       "len_mean": 29.127,
+       "len_median": 27,
+       "qe_mean": 0.8388,
+       "sources": {
+        "europarl": {
+         "n": 104521,
+         "share": 1.0
+        }
+       },
+       "rep_mean": 0.0186,
+       "rep_positive_fraction": 0.128,
+       "source_words": 3044342,
+       "source_word_types": 32860,
+       "duplicate_source_fraction": 8e-05
+      },
+      "random_whole_pool": {
+       "rows": 104521,
+       "len_mean": 29.127,
+       "len_median": 27,
+       "qe_mean": 0.8388,
+       "sources": {
+        "europarl": {
+         "n": 104521,
+         "share": 1.0
+        }
+       },
+       "source_words": 3044342,
+       "source_word_types": 33002,
+       "duplicate_source_fraction": 0.00011,
+       "overlap_with_band_rows": 38649
+      },
+      "random_pool_excl_band": {
+       "rows": 104521,
+       "len_mean": 29.127,
+       "len_median": 27,
+       "qe_mean": 0.8209,
+       "sources": {
+        "europarl": {
+         "n": 104521,
+         "share": 1.0
+        }
+       },
+       "source_words": 3044342,
+       "source_word_types": 34473,
+       "duplicate_source_fraction": 0.00014
+      }
+     }
+    },
+    "commoncrawl": {
+     "band_rows": 202562,
+     "div_before": 174666,
+     "rep_before": 27896,
+     "rows_each": 27886,
+     "random_from_ft_random_k_same_source": {
+      "buckets": 66,
+      "short_buckets": 0,
+      "shortfall_rows": 0,
+      "tightest_bucket_slack": 6.634,
+      "tightest_3": [
+       {
+        "len": 11,
+        "need": 3378,
+        "have": 22410,
+        "slack": 6.634
+       },
+       {
+        "len": 12,
+        "need": 3363,
+        "have": 23891,
+        "slack": 7.104
+       },
+       {
+        "len": 10,
+        "need": 2570,
+        "have": 21435,
+        "slack": 8.34
+       }
+      ]
+     },
+     "random_from_whole_pool_same_source": {
+      "buckets": 66,
+      "short_buckets": 0,
+      "shortfall_rows": 0,
+      "tightest_bucket_slack": 28.53,
+      "tightest_3": [
+       {
+        "len": 11,
+        "need": 3378,
+        "have": 96373,
+        "slack": 28.53
+       },
+       {
+        "len": 12,
+        "need": 3363,
+        "have": 101247,
+        "slack": 30.106
+       },
+       {
+        "len": 10,
+        "need": 2570,
+        "have": 90193,
+        "slack": 35.095
+       }
+      ]
+     },
+     "random_from_pool_same_source_excluding_band": {
+      "buckets": 66,
+      "short_buckets": 0,
+      "shortfall_rows": 0,
+      "tightest_bucket_slack": 23.986,
+      "tightest_3": [
+       {
+        "len": 11,
+        "need": 3378,
+        "have": 81024,
+        "slack": 23.986
+       },
+       {
+        "len": 12,
+        "need": 3363,
+        "have": 86552,
+        "slack": 25.737
+       },
+       {
+        "len": 10,
+        "need": 2570,
+        "have": 76296,
+        "slack": 29.687
+       }
+      ]
+     },
+     "sets": {
+      "div": {
+       "rows": 27886,
+       "len_mean": 16.793,
+       "len_median": 14,
+       "qe_mean": 0.8681,
+       "sources": {
+        "commoncrawl": {
+         "n": 27886,
+         "share": 1.0
+        }
+       },
+       "rep_mean": 0.0,
+       "rep_positive_fraction": 0.0,
+       "source_words": 468287,
+       "source_word_types": 32865,
+       "duplicate_source_fraction": 0.0
+      },
+      "rep": {
+       "rows": 27886,
+       "len_mean": 16.793,
+       "len_median": 14,
+       "qe_mean": 0.8688,
+       "sources": {
+        "commoncrawl": {
+         "n": 27886,
+         "share": 1.0
+        }
+       },
+       "rep_mean": 0.5179,
+       "rep_positive_fraction": 1.0,
+       "source_words": 468287,
+       "source_word_types": 21682,
+       "duplicate_source_fraction": 0.05415
+      },
+      "random_ft_random": {
+       "rows": 27886,
+       "len_mean": 16.793,
+       "len_median": 14,
+       "qe_mean": 0.7007,
+       "sources": {
+        "commoncrawl": {
+         "n": 27886,
+         "share": 1.0
+        }
+       },
+       "rep_mean": 0.0433,
+       "rep_positive_fraction": 0.0784,
+       "source_words": 468287,
+       "source_word_types": 40916,
+       "duplicate_source_fraction": 0.00143
+      },
+      "random_whole_pool": {
+       "rows": 27886,
+       "len_mean": 16.793,
+       "len_median": 14,
+       "qe_mean": 0.6991,
+       "sources": {
+        "commoncrawl": {
+         "n": 27886,
+         "share": 1.0
+        }
+       },
+       "source_words": 468287,
+       "source_word_types": 41064,
+       "duplicate_source_fraction": 0.00169,
+       "overlap_with_band_rows": 3125
+      },
+      "random_pool_excl_band": {
+       "rows": 27886,
+       "len_mean": 16.793,
+       "len_median": 14,
+       "qe_mean": 0.6784,
+       "sources": {
+        "commoncrawl": {
+         "n": 27886,
+         "share": 1.0
+        }
+       },
+       "source_words": 468287,
+       "source_word_types": 41632,
+       "duplicate_source_fraction": 0.00194
+      }
+     }
+    },
+    "news-commentary": {
+     "band_rows": 86129,
+     "div_before": 84071,
+     "rep_before": 2058,
+     "rows_each": 2055,
+     "random_from_ft_random_k_same_source": {
+      "buckets": 58,
+      "short_buckets": 0,
+      "shortfall_rows": 0,
+      "tightest_bucket_slack": 1.0,
+      "tightest_3": [
+       {
+        "len": 78,
+        "need": 1,
+        "have": 1,
+        "slack": 1.0
+       },
+       {
+        "len": 70,
+        "need": 1,
+        "have": 7,
+        "slack": 7.0
+       },
+       {
+        "len": 66,
+        "need": 2,
+        "have": 16,
+        "slack": 8.0
+       }
+      ]
+     },
+     "random_from_whole_pool_same_source": {
+      "buckets": 58,
+      "short_buckets": 0,
+      "shortfall_rows": 0,
+      "tightest_bucket_slack": 17.0,
+      "tightest_3": [
+       {
+        "len": 78,
+        "need": 1,
+        "have": 17,
+        "slack": 17.0
+       },
+       {
+        "len": 66,
+        "need": 2,
+        "have": 62,
+        "slack": 31.0
+       },
+       {
+        "len": 51,
+        "need": 14,
+        "have": 564,
+        "slack": 40.286
+       }
+      ]
+     },
+     "random_from_pool_same_source_excluding_band": {
+      "buckets": 58,
+      "short_buckets": 0,
+      "shortfall_rows": 0,
+      "tightest_bucket_slack": 14.0,
+      "tightest_3": [
+       {
+        "len": 78,
+        "need": 1,
+        "have": 14,
+        "slack": 14.0
+       },
+       {
+        "len": 36,
+        "need": 65,
+        "have": 1717,
+        "slack": 26.415
+       },
+       {
+        "len": 66,
+        "need": 2,
+        "have": 56,
+        "slack": 28.0
+       }
+      ]
+     },
+     "sets": {
+      "div": {
+       "rows": 2055,
+       "len_mean": 27.984,
+       "len_median": 27,
+       "qe_mean": 0.8693,
+       "sources": {
+        "news-commentary": {
+         "n": 2055,
+         "share": 1.0
+        }
+       },
+       "rep_mean": 0.0,
+       "rep_positive_fraction": 0.0,
+       "source_words": 57507,
+       "source_word_types": 7763,
+       "duplicate_source_fraction": 0.0
+      },
+      "rep": {
+       "rows": 2055,
+       "len_mean": 27.984,
+       "len_median": 27,
+       "qe_mean": 0.8707,
+       "sources": {
+        "news-commentary": {
+         "n": 2055,
+         "share": 1.0
+        }
+       },
+       "rep_mean": 0.174,
+       "rep_positive_fraction": 1.0,
+       "source_words": 57507,
+       "source_word_types": 6238,
+       "duplicate_source_fraction": 0.01265
+      },
+      "random_ft_random": {
+       "rows": 2055,
+       "len_mean": 27.984,
+       "len_median": 27,
+       "qe_mean": 0.8437,
+       "sources": {
+        "news-commentary": {
+         "n": 2055,
+         "share": 1.0
+        }
+       },
+       "rep_mean": 0.0011,
+       "rep_positive_fraction": 0.0161,
+       "source_words": 57507,
+       "source_word_types": 8659,
+       "duplicate_source_fraction": 0.0
+      },
+      "random_whole_pool": {
+       "rows": 2055,
+       "len_mean": 27.984,
+       "len_median": 27,
+       "qe_mean": 0.8432,
+       "sources": {
+        "news-commentary": {
+         "n": 2055,
+         "share": 1.0
+        }
+       },
+       "source_words": 57507,
+       "source_word_types": 8642,
+       "duplicate_source_fraction": 0.0,
+       "overlap_with_band_rows": 807
+      },
+      "random_pool_excl_band": {
+       "rows": 2055,
+       "len_mean": 27.984,
+       "len_median": 27,
+       "qe_mean": 0.8235,
+       "sources": {
+        "news-commentary": {
+         "n": 2055,
+         "share": 1.0
+        }
+       },
+       "source_words": 57507,
+       "source_word_types": 9094,
+       "duplicate_source_fraction": 0.0
+      }
+     }
+    }
+   },
+   "sets_all_source": {
+    "topk_div": {
+     "rows": 134479,
+     "len_mean": 26.557,
+     "len_median": 25,
+     "qe_mean": 0.8686,
+     "sources": {
+      "europarl": {
+       "n": 99663,
+       "share": 0.7411
+      },
+      "commoncrawl": {
+       "n": 21716,
+       "share": 0.1615
+      },
+      "news-commentary": {
+       "n": 13100,
+       "share": 0.0974
+      }
+     },
+     "rep_mean": 0.0,
+     "rep_positive_fraction": 0.0,
+     "source_words": 3571409,
+     "source_word_types": 47734,
+     "duplicate_source_fraction": 0.0
+    },
+    "topk_rep": {
+     "rows": 134479,
+     "len_mean": 26.557,
+     "len_median": 25,
+     "qe_mean": 0.8691,
+     "sources": {
+      "europarl": {
+       "n": 104526,
+       "share": 0.7773
+      },
+      "commoncrawl": {
+       "n": 27895,
+       "share": 0.2074
+      },
+      "news-commentary": {
+       "n": 2058,
+       "share": 0.0153
+      }
+     },
+     "rep_mean": 0.2632,
+     "rep_positive_fraction": 1.0,
+     "source_words": 3571409,
+     "source_word_types": 36264,
+     "duplicate_source_fraction": 0.01948
+    },
+    "random_small": {
+     "rows": 134479,
+     "len_mean": 26.557,
+     "len_median": 25,
+     "qe_mean": 0.7624,
+     "sources": {
+      "commoncrawl": {
+       "n": 66516,
+       "share": 0.4946
+      },
+      "europarl": {
+       "n": 61757,
+       "share": 0.4592
+      },
+      "news-commentary": {
+       "n": 6206,
+       "share": 0.0461
+      }
+     },
+     "rep_mean": 0.0303,
+     "rep_positive_fraction": 0.1032,
+     "source_words": 3571409,
+     "source_word_types": 94539,
+     "duplicate_source_fraction": 0.0008,
+     "overlap_with_band_rows": 30683
+    }
+   }
+  }
+ }
+}

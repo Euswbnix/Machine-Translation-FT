@@ -1,0 +1,49 @@
+{
+ "rows": 4238227,
+ "tsv_alignment_mismatches": 2,
+ "tsv_mismatch_examples": [
+  1246484,
+  1246485
+ ],
+ "statmt": {
+  "europarl": {
+   "statmt_lines": 1920209,
+   "undecodable_lines": 0
+  },
+  "commoncrawl": {
+   "statmt_lines": 2399123,
+   "undecodable_lines": 0
+  },
+  "news-commentary": {
+   "statmt_lines": 201288,
+   "undecodable_lines": 0
+  }
+ },
+ "statmt_total_lines": 4520620,
+ "match_rate_corpus_form": 1.0,
+ "match_rate_raw_line_exact": 0.9927948644562927,
+ "labels": {
+  "europarl": 1864681,
+  "commoncrawl": 2175206,
+  "news-commentary": 198340,
+  "unmatched": 0
+ },
+ "ambiguous_rows": 318,
+ "ambiguous_by_mask": {
+  "3": 4,
+  "5": 314
+ },
+ "label_contiguity": {
+  "first_row": {
+   "europarl": 0,
+   "commoncrawl": 1864564,
+   "news-commentary": 4039772
+  },
+  "last_row": {
+   "europarl": 4236275,
+   "commoncrawl": 4039771,
+   "news-commentary": 4238226
+  }
+ },
+ "python": "3.14.3"
+}

@@ -1,0 +1,6 @@
+loaded 4,238,227 rows (2s)
+band 254,596: k=252,756 med=0.0 rows_each=23,440 (20s)
+band 250,000: k=248,198 med=0.0 rows_each=22,893 (19s)
+band 500,000: k=496,863 med=0.0 rows_each=57,172 (38s)
+band 1,000,000: k=994,881 med=0.0 rows_each=134,479 (79s)
+done 162s
