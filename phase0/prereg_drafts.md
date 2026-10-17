@@ -1062,7 +1062,8 @@ The rate is then frozen, and stage-1 runs are not reused as seeds.
 - *Checkpoints:* at 25%, 50% and 100% of the epoch (steps 419, 838 and 1,676, *derived*). The
   primary result is at 100%, and the trajectory is secondary.
 - *Full fine-tuning (stage 3):* the same, with lr 2e-5 and 8-bit AdamW. The memo's arithmetic puts
-  memory at about 17 GB plus activations, which fits one 32 GB card.
+  memory at about 17 GB plus activations, which fits one card (the arm runs on 4x B200, about
+  180 GB per card; plan §6.5).
 - *Decoding:* greedy, stopping at newline or EOS, with a fixed inference batch size. The maximum
   number of new tokens is fixed in the pilot.
 
@@ -1113,7 +1114,8 @@ The rate is then frozen, and stage-1 runs are not reused as seeds.
   - per run: about 1 h of training plus 0.4 h of evaluation for Qwen LoRA, 1.5 + 0.4 h for full
     fine-tuning, 2 + 0.4 h for Gemma-3-4b-pt LoRA;
   - in total about 53 GPU-hours (the memo also rounds this to 55), $32-42 at $0.60-0.80 per
-    GPU-hour, under $90 with 2x contingency, and about 14 h of wall-clock on a 4x RTX 5090 box.
+    GPU-hour, under $90 with 2x contingency, and about 14 h of wall-clock on a 4x RTX 5090 box. These are RTX 5090 figures; the arm now runs
+    on 4x B200 (plan §6.5), so wall-clock and cost are re-measured in the pilot.
     This covers the pilot (about 2 h) and the 30 registered runs. If the amendment adds E0.6's
     sets, add about 7-14 GPU-hours (*derived*: 5-10 Qwen LoRA runs x 1.4 h), $4-11, and about
     2-4 h of wall-clock (*derived*: 7-14 GPU-hours over the four cards).
@@ -1235,9 +1237,10 @@ This is E1.0: an explanatory replication in a second paradigm, not a gate.
    (base or instruct model, split, tokenizer, COMET model) is read before this decision is taken
    (plan §6.2, by Fri 20 Nov), so the gate is registered against a known reference. If the paper
    does not say, record that and state in the registration which reading the tolerance assumes.
-3. **Fallback if the gate fails.** The memo says Gemma-3-4b-pt becomes primary. Stage 3 then cannot
-   run on one card for Gemma. The options are to keep stage 3 on Qwen3-1.7B-Base, to rent a larger
-   card, or to use Qwen3-4B-Base as primary. **Recommendation: Qwen3-4B-Base as primary if the
+3. **Fallback if the gate fails.** The memo says Gemma-3-4b-pt becomes primary. On a 32 GB card
+   stage 3 could not run for Gemma; on the B200 cards now planned (about 180 GB each, plan §6.5) it
+   can, so that constraint is gone. The options are Gemma-3-4b-pt or Qwen3-4B-Base as primary, or
+   keeping Qwen3-1.7B-Base for stage 3 only. **Recommendation: Qwen3-4B-Base as primary if the
    failure is Qwen-specific; Gemma-3-4b-pt if the gate shows a pipeline problem that Gemma's
    published numbers can check.** Either way, it is re-registered before stage 1.
 4. **Learning-rate schedule.** Warmup plus cosine (LLM practice), or a fixed rate to mirror the
