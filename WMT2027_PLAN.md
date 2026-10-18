@@ -69,7 +69,16 @@ All results are on the CR-safe corpus. All fine-tuning starts from the same rele
 pretrained v1.1 Transformer-base (step 105,000, averaged; newstest2014 35.31 BLEU, heldout_un
 46.83) [R]. It is not called converged: README E0.2 finds every original cell under-trained
 (Base capped 12.4 tokens per parameter against a reference of about 36-41), and the question
-waits on re-measurement on the real cache [R].
+waits on re-measurement on the real cache [R]. How the base was trained (found 17 October 2026,
+from the code and the training records; to be written into README): steps 0-100,000 ran in one
+session (about 2.06 epochs of about 48,500 batches), then it was resumed from step 100,000 to
+122,294. The trainer reseeds on every start and does not skip consumed batches, so that second
+session re-trained the first 22,294 batches of the first epoch's order, about 46% of the rows, a
+content-random subset. The released average ("step 105,000") is the mean of steps 105,000 to
+122,294, all from that second session. No row went unseen; about 46% were seen three times and
+most recently, the rest twice. Every E0.3-E0.5 fine-tune ran in one session from that checkpoint
+(one resume line per log) and is not affected by the replay itself; §3.2 item 7 checks that the
+replayed rows are balanced across the E0.x sets.
 
 | date | experiment | result | source |
 | --- | --- | --- | --- |
@@ -352,6 +361,13 @@ the pre-registration work are.
    re-decode also covers FLORES+ devtest for those 30 checkpoints (the outline's N1); WMT24++
    is paragraph-level and is not used for this arm (OD 11). E0.6's own evaluation must write
    its outputs ([PR] E0.6 OD 11).
+7. **The base's replayed rows (§0.2):** rebuild the first-epoch batch order of the v1.1 base
+   (`np.random.seed(42)`, one shuffle of the 9.31M row indices, the sampler's chunk sort and
+   batching on the base's token lengths, `spm_enfr_v1_fixed`), mark the rows in its first 22,294
+   batches, and report that share for every E0.5 and E0.6 set and for their pretraining-exposed
+   rows. A content-random replay predicts equal shares; any gap between the sets of a contrast
+   is reported beside it. Needs the v1.1 corpus (`~/mt_local/rebuild/v1_fixed/`) and the SPM model
+   from item 1; CPU only.
 
 ### 3.3 E0.6: testing the strands of "repetitive" (EAMT)
 
@@ -443,7 +459,9 @@ GPU-hours and $10-14 in all (derived). The E0.5 box is destroyed, so upload the 
 sentence cap, CommonCrawl arm, held-out sets, base recipe and stopping rule, test sets, checks),
 by Fri 6 Nov (§7). OD 3 (the base) and OD 9 (its recipe and stopping rule) must be answered
 before the en-de base is trained, so before R2. The en-de base must be retrained in any case,
-because its corpus was misaligned [Ge] [R].
+because its corpus was misaligned [Ge] [R]. It trains in one uninterrupted session, or on a
+trainer fixed and tested to continue the data stream on resume: the old en-de base was resumed
+three times and replayed its first epoch's order from the start each time (§0.2).
 
 **What it can and cannot show:** [PR] E0.7's opening paragraphs (four ways weaker, four ways
 stronger, stated before any run) and the Q1-de and Q2-de outcomes, drafted there to be
