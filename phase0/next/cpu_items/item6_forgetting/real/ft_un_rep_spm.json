@@ -1,0 +1,3899 @@
+{
+ "item": "item6_forgetting",
+ "label": "ft_un_rep",
+ "definition": "Per test segment s and reference token type v: B=min(count in base hyp, count in ref), F=min(count in fine-tuned hyp, count in ref), lost L=max(0,B-F), gained G=max(0,F-B). ForgetGenUse_X = sum L / sum B over (s,v) with v in X. ID = types occurring >= id_min_count times in the fine-tuning set's target side under the same tokeniser; OOD = the rest. _macro = mean over types of X with sum_s B>0 of sum_s L / sum_s B. Copy splits: v also in the source segment (same tokeniser) or not. Operationalisation of Saunders & DeNeefe (2024) Sec 2.1 as described in groundwork.json's saunders2024 note; Eq 1's exact normalisation is to be checked against the paper.",
+ "options": {
+  "tok": "spm",
+  "model": "/Users/euswbnic/e06data/spm/spm_enfr_v1_fixed.model",
+  "model_sha256": "d1c10ea80fb95984f3f240b3579c87a16313b77aa9bc103ca0d6a0e06672a561",
+  "pieces": 32000,
+  "sentencepiece": "0.2.2",
+  "rule": "SentencePiece pieces of raw text",
+  "id_min_count": 1,
+  "src_lang": "en",
+  "tgt_lang": "fr"
+ },
+ "note": null,
+ "inputs": {
+  "src": {
+   "path": "real_refs/test.en",
+   "sha256": "967dca935c7cde4ffc2fc8c9424c682335e1690440dbda104948eb1ffa537fc2",
+   "lines": 3003
+  },
+  "ref": {
+   "path": "real_refs/test.fr",
+   "sha256": "82526d36ae1cd4d5f20919fbf8130e519cc68a0e57fe47bb205d199626457de9",
+   "lines": 3003
+  },
+  "base_hyp": {
+   "path": "real_hyps/baseline_v1.1_averaged.newstest2014.hyp",
+   "sha256": "21f41ffbf6877515d6ce0fdf3dbf62458eeea56bb6ac6a31f907917c95b8cee4",
+   "lines": 3003
+  }
+ },
+ "ft_train": {
+  "files": [
+   {
+    "tgt": "/Users/euswbnic/e06data/phase0_e05/ft_un_rep.fr",
+    "tgt_sha256": "9373be1fc7afb86a1b5ebf76d7cb567bde0ef349443ca9c3c6a87c175185edbd",
+    "rows": 214489,
+    "src": "/Users/euswbnic/e06data/phase0_e05/ft_un_rep.en",
+    "src_sha256": "940cde0f051d6b473c55a6771af64900a20c9c52d66e1a4772e18a5bf9cafe68"
+   }
+  ],
+  "target_types": 18980,
+  "id_types": 18980,
+  "target_tokens": 7731883
+ },
+ "runs": [
+  {
+   "ft_hyp": "real_hyps/ft_un_rep_lr1_s42_st2.newstest2014.hyp",
+   "sha256": "7455e7ba0d54bb70c882ebca551d0891274e255ee83b890227d5736e5b622ead",
+   "lines": 3003,
+   "results": {
+    "All": {
+     "ref_occ": 99972,
+     "base_correct": 63369,
+     "ft_correct": 58222,
+     "lost": 9830,
+     "gained": 4683,
+     "forgetgenuse": 0.15512316747936689,
+     "ref_types": 10701,
+     "types_base_correct": 7738,
+     "forgetgenuse_macro": 0.2581130029810007
+    },
+    "ID": {
+     "ref_occ": 97965,
+     "base_correct": 62261,
+     "ft_correct": 58047,
+     "lost": 8885,
+     "gained": 4671,
+     "forgetgenuse": 0.142705706622123,
+     "ref_types": 9875,
+     "types_base_correct": 7230,
+     "forgetgenuse_macro": 0.2168009132308671
+    },
+    "OOD": {
+     "ref_occ": 2007,
+     "base_correct": 1108,
+     "ft_correct": 175,
+     "lost": 945,
+     "gained": 12,
+     "forgetgenuse": 0.8528880866425993,
+     "ref_types": 826,
+     "types_base_correct": 508,
+     "forgetgenuse_macro": 0.8460783748185323
+    },
+    "ID_in_src": {
+     "ref_occ": 18555,
+     "base_correct": 16752,
+     "ft_correct": 15872,
+     "lost": 1312,
+     "gained": 432,
+     "forgetgenuse": 0.07831900668576887
+    },
+    "ID_not_in_src": {
+     "ref_occ": 79410,
+     "base_correct": 45509,
+     "ft_correct": 42175,
+     "lost": 7573,
+     "gained": 4239,
+     "forgetgenuse": 0.1664066448394823
+    },
+    "OOD_in_src": {
+     "ref_occ": 993,
+     "base_correct": 801,
+     "ft_correct": 173,
+     "lost": 639,
+     "gained": 11,
+     "forgetgenuse": 0.797752808988764
+    },
+    "OOD_not_in_src": {
+     "ref_occ": 1014,
+     "base_correct": 307,
+     "ft_correct": 2,
+     "lost": 306,
+     "gained": 1,
+     "forgetgenuse": 0.996742671009772
+    },
+    "ref_occ_share_ID": 0.9799243788260713
+   },
+   "top_lost_OOD": [
+    {
+     "type": "▁Google",
+     "ref_occ": 26,
+     "base_correct": 26,
+     "ft_correct": 0,
+     "lost": 26,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁FA",
+     "ref_occ": 19,
+     "base_correct": 19,
+     "ft_correct": 0,
+     "lost": 19,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁chiens",
+     "ref_occ": 22,
+     "base_correct": 18,
+     "ft_correct": 0,
+     "lost": 18,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "MC",
+     "ref_occ": 16,
+     "base_correct": 15,
+     "ft_correct": 0,
+     "lost": 15,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Airbus",
+     "ref_occ": 12,
+     "base_correct": 12,
+     "ft_correct": 0,
+     "lost": 12,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Bomb",
+     "ref_occ": 12,
+     "base_correct": 12,
+     "ft_correct": 0,
+     "lost": 12,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁brevets",
+     "ref_occ": 13,
+     "base_correct": 11,
+     "ft_correct": 0,
+     "lost": 11,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁commandes",
+     "ref_occ": 13,
+     "base_correct": 11,
+     "ft_correct": 0,
+     "lost": 11,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Ford",
+     "ref_occ": 10,
+     "base_correct": 10,
+     "ft_correct": 0,
+     "lost": 10,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "athan",
+     "ref_occ": 9,
+     "base_correct": 9,
+     "ft_correct": 0,
+     "lost": 9,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁chien",
+     "ref_occ": 11,
+     "base_correct": 9,
+     "ft_correct": 0,
+     "lost": 9,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁queue",
+     "ref_occ": 16,
+     "base_correct": 9,
+     "ft_correct": 0,
+     "lost": 9,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Disney",
+     "ref_occ": 8,
+     "base_correct": 8,
+     "ft_correct": 0,
+     "lost": 8,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁GM",
+     "ref_occ": 8,
+     "base_correct": 8,
+     "ft_correct": 0,
+     "lost": 8,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁HS",
+     "ref_occ": 8,
+     "base_correct": 8,
+     "ft_correct": 0,
+     "lost": 8,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁News",
+     "ref_occ": 9,
+     "base_correct": 8,
+     "ft_correct": 0,
+     "lost": 8,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁bagages",
+     "ref_occ": 16,
+     "base_correct": 8,
+     "ft_correct": 0,
+     "lost": 8,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "&",
+     "ref_occ": 8,
+     "base_correct": 7,
+     "ft_correct": 1,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "anteur",
+     "ref_occ": 10,
+     "base_correct": 6,
+     "ft_correct": 0,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Beau",
+     "ref_occ": 6,
+     "base_correct": 6,
+     "ft_correct": 0,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Broad",
+     "ref_occ": 6,
+     "base_correct": 6,
+     "ft_correct": 0,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Delta",
+     "ref_occ": 6,
+     "base_correct": 6,
+     "ft_correct": 0,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Express",
+     "ref_occ": 8,
+     "base_correct": 8,
+     "ft_correct": 2,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Renault",
+     "ref_occ": 6,
+     "base_correct": 6,
+     "ft_correct": 0,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Roger",
+     "ref_occ": 6,
+     "base_correct": 6,
+     "ft_correct": 0,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    }
+   ],
+   "top_lost_ID": [
+    {
+     "type": "▁de",
+     "ref_occ": 3856,
+     "base_correct": 2970,
+     "ft_correct": 2913,
+     "lost": 322,
+     "gained": 265,
+     "ft_train_count": 390647
+    },
+    {
+     "type": "'",
+     "ref_occ": 3967,
+     "base_correct": 3006,
+     "ft_correct": 3029,
+     "lost": 263,
+     "gained": 286,
+     "ft_train_count": 337022
+    },
+    {
+     "type": "▁a",
+     "ref_occ": 1222,
+     "base_correct": 1001,
+     "ft_correct": 851,
+     "lost": 183,
+     "gained": 33,
+     "ft_train_count": 45041
+    },
+    {
+     "type": "▁la",
+     "ref_occ": 1911,
+     "base_correct": 1338,
+     "ft_correct": 1289,
+     "lost": 166,
+     "gained": 117,
+     "ft_train_count": 256905
+    },
+    {
+     "type": "-",
+     "ref_occ": 812,
+     "base_correct": 611,
+     "ft_correct": 487,
+     "lost": 152,
+     "gained": 28,
+     "ft_train_count": 28885
+    },
+    {
+     "type": "▁les",
+     "ref_occ": 1314,
+     "base_correct": 954,
+     "ft_correct": 878,
+     "lost": 140,
+     "gained": 64,
+     "ft_train_count": 163066
+    },
+    {
+     "type": "▁à",
+     "ref_occ": 1400,
+     "base_correct": 885,
+     "ft_correct": 861,
+     "lost": 140,
+     "gained": 116,
+     "ft_train_count": 144398
+    },
+    {
+     "type": "▁le",
+     "ref_occ": 1339,
+     "base_correct": 872,
+     "ft_correct": 845,
+     "lost": 119,
+     "gained": 92,
+     "ft_train_count": 130958
+    },
+    {
+     "type": "▁d",
+     "ref_occ": 1185,
+     "base_correct": 720,
+     "ft_correct": 700,
+     "lost": 114,
+     "gained": 94,
+     "ft_train_count": 90651
+    },
+    {
+     "type": "▁des",
+     "ref_occ": 1262,
+     "base_correct": 825,
+     "ft_correct": 824,
+     "lost": 114,
+     "gained": 113,
+     "ft_train_count": 179795
+    },
+    {
+     "type": "▁l",
+     "ref_occ": 1363,
+     "base_correct": 953,
+     "ft_correct": 946,
+     "lost": 102,
+     "gained": 95,
+     "ft_train_count": 174943
+    },
+    {
+     "type": ",",
+     "ref_occ": 3265,
+     "base_correct": 2640,
+     "ft_correct": 2683,
+     "lost": 100,
+     "gained": 143,
+     "ft_train_count": 242476
+    },
+    {
+     "type": "▁»,",
+     "ref_occ": 144,
+     "base_correct": 100,
+     "ft_correct": 6,
+     "lost": 95,
+     "gained": 1,
+     "ft_train_count": 202
+    },
+    {
+     "type": "▁un",
+     "ref_occ": 723,
+     "base_correct": 483,
+     "ft_correct": 430,
+     "lost": 81,
+     "gained": 28,
+     "ft_train_count": 31665
+    },
+    {
+     "type": "▁\"",
+     "ref_occ": 285,
+     "base_correct": 123,
+     "ft_correct": 92,
+     "lost": 69,
+     "gained": 38,
+     "ft_train_count": 264
+    },
+    {
+     "type": "▁déclaré",
+     "ref_occ": 185,
+     "base_correct": 115,
+     "ft_correct": 54,
+     "lost": 69,
+     "gained": 8,
+     "ft_train_count": 1025
+    },
+    {
+     "type": "▁du",
+     "ref_occ": 736,
+     "base_correct": 406,
+     "ft_correct": 382,
+     "lost": 68,
+     "gained": 44,
+     "ft_train_count": 84176
+    },
+    {
+     "type": "▁en",
+     "ref_occ": 917,
+     "base_correct": 474,
+     "ft_correct": 488,
+     "lost": 62,
+     "gained": 76,
+     "ft_train_count": 101096
+    },
+    {
+     "type": "▁pour",
+     "ref_occ": 527,
+     "base_correct": 345,
+     "ft_correct": 316,
+     "lost": 62,
+     "gained": 33,
+     "ft_train_count": 62172
+    },
+    {
+     "type": "▁une",
+     "ref_occ": 561,
+     "base_correct": 347,
+     "ft_correct": 318,
+     "lost": 58,
+     "gained": 29,
+     "ft_train_count": 32390
+    },
+    {
+     "type": "▁«",
+     "ref_occ": 331,
+     "base_correct": 163,
+     "ft_correct": 199,
+     "lost": 58,
+     "gained": 94,
+     "ft_train_count": 3453
+    },
+    {
+     "type": "t",
+     "ref_occ": 102,
+     "base_correct": 70,
+     "ft_correct": 19,
+     "lost": 53,
+     "gained": 2,
+     "ft_train_count": 877
+    },
+    {
+     "type": "▁que",
+     "ref_occ": 765,
+     "base_correct": 563,
+     "ft_correct": 557,
+     "lost": 52,
+     "gained": 46,
+     "ft_train_count": 67558
+    },
+    {
+     "type": "▁au",
+     "ref_occ": 420,
+     "base_correct": 208,
+     "ft_correct": 180,
+     "lost": 49,
+     "gained": 21,
+     "ft_train_count": 44798
+    },
+    {
+     "type": "▁sur",
+     "ref_occ": 468,
+     "base_correct": 285,
+     "ft_correct": 259,
+     "lost": 48,
+     "gained": 22,
+     "ft_train_count": 34079
+    }
+   ],
+   "top_gained": [
+    {
+     "type": "'",
+     "ref_occ": 3967,
+     "base_correct": 3006,
+     "ft_correct": 3029,
+     "lost": 263,
+     "gained": 286,
+     "ft_train_count": 337022
+    },
+    {
+     "type": "▁de",
+     "ref_occ": 3856,
+     "base_correct": 2970,
+     "ft_correct": 2913,
+     "lost": 322,
+     "gained": 265,
+     "ft_train_count": 390647
+    },
+    {
+     "type": ",",
+     "ref_occ": 3265,
+     "base_correct": 2640,
+     "ft_correct": 2683,
+     "lost": 100,
+     "gained": 143,
+     "ft_train_count": 242476
+    },
+    {
+     "type": "▁la",
+     "ref_occ": 1911,
+     "base_correct": 1338,
+     "ft_correct": 1289,
+     "lost": 166,
+     "gained": 117,
+     "ft_train_count": 256905
+    },
+    {
+     "type": "▁à",
+     "ref_occ": 1400,
+     "base_correct": 885,
+     "ft_correct": 861,
+     "lost": 140,
+     "gained": 116,
+     "ft_train_count": 144398
+    },
+    {
+     "type": "▁des",
+     "ref_occ": 1262,
+     "base_correct": 825,
+     "ft_correct": 824,
+     "lost": 114,
+     "gained": 113,
+     "ft_train_count": 179795
+    },
+    {
+     "type": "▁l",
+     "ref_occ": 1363,
+     "base_correct": 953,
+     "ft_correct": 946,
+     "lost": 102,
+     "gained": 95,
+     "ft_train_count": 174943
+    },
+    {
+     "type": "▁d",
+     "ref_occ": 1185,
+     "base_correct": 720,
+     "ft_correct": 700,
+     "lost": 114,
+     "gained": 94,
+     "ft_train_count": 90651
+    },
+    {
+     "type": "▁«",
+     "ref_occ": 331,
+     "base_correct": 163,
+     "ft_correct": 199,
+     "lost": 58,
+     "gained": 94,
+     "ft_train_count": 3453
+    },
+    {
+     "type": "▁le",
+     "ref_occ": 1339,
+     "base_correct": 872,
+     "ft_correct": 845,
+     "lost": 119,
+     "gained": 92,
+     "ft_train_count": 130958
+    },
+    {
+     "type": "▁en",
+     "ref_occ": 917,
+     "base_correct": 474,
+     "ft_correct": 488,
+     "lost": 62,
+     "gained": 76,
+     "ft_train_count": 101096
+    },
+    {
+     "type": "▁les",
+     "ref_occ": 1314,
+     "base_correct": 954,
+     "ft_correct": 878,
+     "lost": 140,
+     "gained": 64,
+     "ft_train_count": 163066
+    },
+    {
+     "type": "▁dans",
+     "ref_occ": 561,
+     "base_correct": 361,
+     "ft_correct": 369,
+     "lost": 38,
+     "gained": 46,
+     "ft_train_count": 61120
+    },
+    {
+     "type": "▁que",
+     "ref_occ": 765,
+     "base_correct": 563,
+     "ft_correct": 557,
+     "lost": 52,
+     "gained": 46,
+     "ft_train_count": 67558
+    },
+    {
+     "type": "▁du",
+     "ref_occ": 736,
+     "base_correct": 406,
+     "ft_correct": 382,
+     "lost": 68,
+     "gained": 44,
+     "ft_train_count": 84176
+    },
+    {
+     "type": "▁\"",
+     "ref_occ": 285,
+     "base_correct": 123,
+     "ft_correct": 92,
+     "lost": 69,
+     "gained": 38,
+     "ft_train_count": 264
+    },
+    {
+     "type": "▁a",
+     "ref_occ": 1222,
+     "base_correct": 1001,
+     "ft_correct": 851,
+     "lost": 183,
+     "gained": 33,
+     "ft_train_count": 45041
+    },
+    {
+     "type": "▁pour",
+     "ref_occ": 527,
+     "base_correct": 345,
+     "ft_correct": 316,
+     "lost": 62,
+     "gained": 33,
+     "ft_train_count": 62172
+    },
+    {
+     "type": ".",
+     "ref_occ": 2691,
+     "base_correct": 2566,
+     "ft_correct": 2583,
+     "lost": 13,
+     "gained": 30,
+     "ft_train_count": 186701
+    },
+    {
+     "type": "▁et",
+     "ref_occ": 1317,
+     "base_correct": 1171,
+     "ft_correct": 1182,
+     "lost": 18,
+     "gained": 29,
+     "ft_train_count": 234039
+    },
+    {
+     "type": "▁une",
+     "ref_occ": 561,
+     "base_correct": 347,
+     "ft_correct": 318,
+     "lost": 58,
+     "gained": 29,
+     "ft_train_count": 32390
+    },
+    {
+     "type": "-",
+     "ref_occ": 812,
+     "base_correct": 611,
+     "ft_correct": 487,
+     "lost": 152,
+     "gained": 28,
+     "ft_train_count": 28885
+    },
+    {
+     "type": "▁un",
+     "ref_occ": 723,
+     "base_correct": 483,
+     "ft_correct": 430,
+     "lost": 81,
+     "gained": 28,
+     "ft_train_count": 31665
+    },
+    {
+     "type": "▁:",
+     "ref_occ": 64,
+     "base_correct": 8,
+     "ft_correct": 35,
+     "lost": 0,
+     "gained": 27,
+     "ft_train_count": 6049
+    },
+    {
+     "type": "▁par",
+     "ref_occ": 408,
+     "base_correct": 272,
+     "ft_correct": 277,
+     "lost": 21,
+     "gained": 26,
+     "ft_train_count": 37654
+    }
+   ]
+  },
+  {
+   "ft_hyp": "real_hyps/ft_un_rep_lr1_s1_st2.newstest2014.hyp",
+   "sha256": "ed730dac9bf998e77b5e60996224983f1d6eef4e218b6f781102a63eeb2f12de",
+   "lines": 3003,
+   "results": {
+    "All": {
+     "ref_occ": 99972,
+     "base_correct": 63369,
+     "ft_correct": 58325,
+     "lost": 9785,
+     "gained": 4741,
+     "forgetgenuse": 0.15441304107686724,
+     "ref_types": 10701,
+     "types_base_correct": 7738,
+     "forgetgenuse_macro": 0.2594275294406819
+    },
+    "ID": {
+     "ref_occ": 97965,
+     "base_correct": 62261,
+     "ft_correct": 58145,
+     "lost": 8844,
+     "gained": 4728,
+     "forgetgenuse": 0.14204718844862754,
+     "ref_types": 9875,
+     "types_base_correct": 7230,
+     "forgetgenuse_macro": 0.21821311748514702
+    },
+    "OOD": {
+     "ref_occ": 2007,
+     "base_correct": 1108,
+     "ft_correct": 180,
+     "lost": 941,
+     "gained": 13,
+     "forgetgenuse": 0.8492779783393501,
+     "ref_types": 826,
+     "types_base_correct": 508,
+     "forgetgenuse_macro": 0.8460027232172902
+    },
+    "ID_in_src": {
+     "ref_occ": 18555,
+     "base_correct": 16752,
+     "ft_correct": 15874,
+     "lost": 1284,
+     "gained": 406,
+     "forgetgenuse": 0.07664756446991404
+    },
+    "ID_not_in_src": {
+     "ref_occ": 79410,
+     "base_correct": 45509,
+     "ft_correct": 42271,
+     "lost": 7560,
+     "gained": 4322,
+     "forgetgenuse": 0.1661209870575051
+    },
+    "OOD_in_src": {
+     "ref_occ": 993,
+     "base_correct": 801,
+     "ft_correct": 176,
+     "lost": 635,
+     "gained": 10,
+     "forgetgenuse": 0.7927590511860175
+    },
+    "OOD_not_in_src": {
+     "ref_occ": 1014,
+     "base_correct": 307,
+     "ft_correct": 4,
+     "lost": 306,
+     "gained": 3,
+     "forgetgenuse": 0.996742671009772
+    },
+    "ref_occ_share_ID": 0.9799243788260713
+   },
+   "top_lost_OOD": [
+    {
+     "type": "▁Google",
+     "ref_occ": 26,
+     "base_correct": 26,
+     "ft_correct": 0,
+     "lost": 26,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁FA",
+     "ref_occ": 19,
+     "base_correct": 19,
+     "ft_correct": 0,
+     "lost": 19,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁chiens",
+     "ref_occ": 22,
+     "base_correct": 18,
+     "ft_correct": 0,
+     "lost": 18,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "MC",
+     "ref_occ": 16,
+     "base_correct": 15,
+     "ft_correct": 0,
+     "lost": 15,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Airbus",
+     "ref_occ": 12,
+     "base_correct": 12,
+     "ft_correct": 0,
+     "lost": 12,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Bomb",
+     "ref_occ": 12,
+     "base_correct": 12,
+     "ft_correct": 0,
+     "lost": 12,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁brevets",
+     "ref_occ": 13,
+     "base_correct": 11,
+     "ft_correct": 0,
+     "lost": 11,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁commandes",
+     "ref_occ": 13,
+     "base_correct": 11,
+     "ft_correct": 0,
+     "lost": 11,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Ford",
+     "ref_occ": 10,
+     "base_correct": 10,
+     "ft_correct": 0,
+     "lost": 10,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "athan",
+     "ref_occ": 9,
+     "base_correct": 9,
+     "ft_correct": 0,
+     "lost": 9,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁chien",
+     "ref_occ": 11,
+     "base_correct": 9,
+     "ft_correct": 0,
+     "lost": 9,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁queue",
+     "ref_occ": 16,
+     "base_correct": 9,
+     "ft_correct": 0,
+     "lost": 9,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Disney",
+     "ref_occ": 8,
+     "base_correct": 8,
+     "ft_correct": 0,
+     "lost": 8,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁GM",
+     "ref_occ": 8,
+     "base_correct": 8,
+     "ft_correct": 0,
+     "lost": 8,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁HS",
+     "ref_occ": 8,
+     "base_correct": 8,
+     "ft_correct": 0,
+     "lost": 8,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁News",
+     "ref_occ": 9,
+     "base_correct": 8,
+     "ft_correct": 0,
+     "lost": 8,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁bagages",
+     "ref_occ": 16,
+     "base_correct": 8,
+     "ft_correct": 0,
+     "lost": 8,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "&",
+     "ref_occ": 8,
+     "base_correct": 7,
+     "ft_correct": 0,
+     "lost": 7,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "anteur",
+     "ref_occ": 10,
+     "base_correct": 6,
+     "ft_correct": 0,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Beau",
+     "ref_occ": 6,
+     "base_correct": 6,
+     "ft_correct": 0,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Broad",
+     "ref_occ": 6,
+     "base_correct": 6,
+     "ft_correct": 0,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Delta",
+     "ref_occ": 6,
+     "base_correct": 6,
+     "ft_correct": 0,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Renault",
+     "ref_occ": 6,
+     "base_correct": 6,
+     "ft_correct": 0,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Roger",
+     "ref_occ": 6,
+     "base_correct": 6,
+     "ft_correct": 0,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁horm",
+     "ref_occ": 6,
+     "base_correct": 6,
+     "ft_correct": 0,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    }
+   ],
+   "top_lost_ID": [
+    {
+     "type": "▁de",
+     "ref_occ": 3856,
+     "base_correct": 2970,
+     "ft_correct": 2946,
+     "lost": 284,
+     "gained": 260,
+     "ft_train_count": 390647
+    },
+    {
+     "type": "'",
+     "ref_occ": 3967,
+     "base_correct": 3006,
+     "ft_correct": 3054,
+     "lost": 242,
+     "gained": 290,
+     "ft_train_count": 337022
+    },
+    {
+     "type": "▁la",
+     "ref_occ": 1911,
+     "base_correct": 1338,
+     "ft_correct": 1277,
+     "lost": 174,
+     "gained": 113,
+     "ft_train_count": 256905
+    },
+    {
+     "type": "▁a",
+     "ref_occ": 1222,
+     "base_correct": 1001,
+     "ft_correct": 882,
+     "lost": 161,
+     "gained": 42,
+     "ft_train_count": 45041
+    },
+    {
+     "type": "-",
+     "ref_occ": 812,
+     "base_correct": 611,
+     "ft_correct": 484,
+     "lost": 150,
+     "gained": 23,
+     "ft_train_count": 28885
+    },
+    {
+     "type": "▁à",
+     "ref_occ": 1400,
+     "base_correct": 885,
+     "ft_correct": 879,
+     "lost": 130,
+     "gained": 124,
+     "ft_train_count": 144398
+    },
+    {
+     "type": "▁les",
+     "ref_occ": 1314,
+     "base_correct": 954,
+     "ft_correct": 906,
+     "lost": 128,
+     "gained": 80,
+     "ft_train_count": 163066
+    },
+    {
+     "type": ",",
+     "ref_occ": 3265,
+     "base_correct": 2640,
+     "ft_correct": 2641,
+     "lost": 126,
+     "gained": 127,
+     "ft_train_count": 242476
+    },
+    {
+     "type": "▁le",
+     "ref_occ": 1339,
+     "base_correct": 872,
+     "ft_correct": 849,
+     "lost": 124,
+     "gained": 101,
+     "ft_train_count": 130958
+    },
+    {
+     "type": "▁d",
+     "ref_occ": 1185,
+     "base_correct": 720,
+     "ft_correct": 694,
+     "lost": 116,
+     "gained": 90,
+     "ft_train_count": 90651
+    },
+    {
+     "type": "▁des",
+     "ref_occ": 1262,
+     "base_correct": 825,
+     "ft_correct": 829,
+     "lost": 110,
+     "gained": 114,
+     "ft_train_count": 179795
+    },
+    {
+     "type": "▁l",
+     "ref_occ": 1363,
+     "base_correct": 953,
+     "ft_correct": 946,
+     "lost": 102,
+     "gained": 95,
+     "ft_train_count": 174943
+    },
+    {
+     "type": "▁\"",
+     "ref_occ": 285,
+     "base_correct": 123,
+     "ft_correct": 47,
+     "lost": 96,
+     "gained": 20,
+     "ft_train_count": 264
+    },
+    {
+     "type": "▁»,",
+     "ref_occ": 144,
+     "base_correct": 100,
+     "ft_correct": 6,
+     "lost": 94,
+     "gained": 0,
+     "ft_train_count": 202
+    },
+    {
+     "type": "▁en",
+     "ref_occ": 917,
+     "base_correct": 474,
+     "ft_correct": 473,
+     "lost": 79,
+     "gained": 78,
+     "ft_train_count": 101096
+    },
+    {
+     "type": "▁un",
+     "ref_occ": 723,
+     "base_correct": 483,
+     "ft_correct": 441,
+     "lost": 78,
+     "gained": 36,
+     "ft_train_count": 31665
+    },
+    {
+     "type": "▁une",
+     "ref_occ": 561,
+     "base_correct": 347,
+     "ft_correct": 311,
+     "lost": 68,
+     "gained": 32,
+     "ft_train_count": 32390
+    },
+    {
+     "type": "▁du",
+     "ref_occ": 736,
+     "base_correct": 406,
+     "ft_correct": 382,
+     "lost": 65,
+     "gained": 41,
+     "ft_train_count": 84176
+    },
+    {
+     "type": "▁que",
+     "ref_occ": 765,
+     "base_correct": 563,
+     "ft_correct": 538,
+     "lost": 64,
+     "gained": 39,
+     "ft_train_count": 67558
+    },
+    {
+     "type": "▁déclaré",
+     "ref_occ": 185,
+     "base_correct": 115,
+     "ft_correct": 70,
+     "lost": 55,
+     "gained": 10,
+     "ft_train_count": 1025
+    },
+    {
+     "type": "▁dans",
+     "ref_occ": 561,
+     "base_correct": 361,
+     "ft_correct": 352,
+     "lost": 54,
+     "gained": 45,
+     "ft_train_count": 61120
+    },
+    {
+     "type": "▁pour",
+     "ref_occ": 527,
+     "base_correct": 345,
+     "ft_correct": 327,
+     "lost": 53,
+     "gained": 35,
+     "ft_train_count": 62172
+    },
+    {
+     "type": "t",
+     "ref_occ": 102,
+     "base_correct": 70,
+     "ft_correct": 19,
+     "lost": 52,
+     "gained": 1,
+     "ft_train_count": 877
+    },
+    {
+     "type": "▁Le",
+     "ref_occ": 288,
+     "base_correct": 200,
+     "ft_correct": 158,
+     "lost": 51,
+     "gained": 9,
+     "ft_train_count": 43318
+    },
+    {
+     "type": "▁sur",
+     "ref_occ": 468,
+     "base_correct": 285,
+     "ft_correct": 265,
+     "lost": 48,
+     "gained": 28,
+     "ft_train_count": 34079
+    }
+   ],
+   "top_gained": [
+    {
+     "type": "'",
+     "ref_occ": 3967,
+     "base_correct": 3006,
+     "ft_correct": 3054,
+     "lost": 242,
+     "gained": 290,
+     "ft_train_count": 337022
+    },
+    {
+     "type": "▁de",
+     "ref_occ": 3856,
+     "base_correct": 2970,
+     "ft_correct": 2946,
+     "lost": 284,
+     "gained": 260,
+     "ft_train_count": 390647
+    },
+    {
+     "type": ",",
+     "ref_occ": 3265,
+     "base_correct": 2640,
+     "ft_correct": 2641,
+     "lost": 126,
+     "gained": 127,
+     "ft_train_count": 242476
+    },
+    {
+     "type": "▁«",
+     "ref_occ": 331,
+     "base_correct": 163,
+     "ft_correct": 257,
+     "lost": 32,
+     "gained": 126,
+     "ft_train_count": 3453
+    },
+    {
+     "type": "▁à",
+     "ref_occ": 1400,
+     "base_correct": 885,
+     "ft_correct": 879,
+     "lost": 130,
+     "gained": 124,
+     "ft_train_count": 144398
+    },
+    {
+     "type": "▁des",
+     "ref_occ": 1262,
+     "base_correct": 825,
+     "ft_correct": 829,
+     "lost": 110,
+     "gained": 114,
+     "ft_train_count": 179795
+    },
+    {
+     "type": "▁la",
+     "ref_occ": 1911,
+     "base_correct": 1338,
+     "ft_correct": 1277,
+     "lost": 174,
+     "gained": 113,
+     "ft_train_count": 256905
+    },
+    {
+     "type": "▁le",
+     "ref_occ": 1339,
+     "base_correct": 872,
+     "ft_correct": 849,
+     "lost": 124,
+     "gained": 101,
+     "ft_train_count": 130958
+    },
+    {
+     "type": "▁l",
+     "ref_occ": 1363,
+     "base_correct": 953,
+     "ft_correct": 946,
+     "lost": 102,
+     "gained": 95,
+     "ft_train_count": 174943
+    },
+    {
+     "type": "▁d",
+     "ref_occ": 1185,
+     "base_correct": 720,
+     "ft_correct": 694,
+     "lost": 116,
+     "gained": 90,
+     "ft_train_count": 90651
+    },
+    {
+     "type": "▁les",
+     "ref_occ": 1314,
+     "base_correct": 954,
+     "ft_correct": 906,
+     "lost": 128,
+     "gained": 80,
+     "ft_train_count": 163066
+    },
+    {
+     "type": "▁en",
+     "ref_occ": 917,
+     "base_correct": 474,
+     "ft_correct": 473,
+     "lost": 79,
+     "gained": 78,
+     "ft_train_count": 101096
+    },
+    {
+     "type": "▁dans",
+     "ref_occ": 561,
+     "base_correct": 361,
+     "ft_correct": 352,
+     "lost": 54,
+     "gained": 45,
+     "ft_train_count": 61120
+    },
+    {
+     "type": "▁a",
+     "ref_occ": 1222,
+     "base_correct": 1001,
+     "ft_correct": 882,
+     "lost": 161,
+     "gained": 42,
+     "ft_train_count": 45041
+    },
+    {
+     "type": "▁du",
+     "ref_occ": 736,
+     "base_correct": 406,
+     "ft_correct": 382,
+     "lost": 65,
+     "gained": 41,
+     "ft_train_count": 84176
+    },
+    {
+     "type": "▁:",
+     "ref_occ": 64,
+     "base_correct": 8,
+     "ft_correct": 46,
+     "lost": 1,
+     "gained": 39,
+     "ft_train_count": 6049
+    },
+    {
+     "type": "▁que",
+     "ref_occ": 765,
+     "base_correct": 563,
+     "ft_correct": 538,
+     "lost": 64,
+     "gained": 39,
+     "ft_train_count": 67558
+    },
+    {
+     "type": "▁un",
+     "ref_occ": 723,
+     "base_correct": 483,
+     "ft_correct": 441,
+     "lost": 78,
+     "gained": 36,
+     "ft_train_count": 31665
+    },
+    {
+     "type": "▁au",
+     "ref_occ": 420,
+     "base_correct": 208,
+     "ft_correct": 204,
+     "lost": 39,
+     "gained": 35,
+     "ft_train_count": 44798
+    },
+    {
+     "type": "▁pour",
+     "ref_occ": 527,
+     "base_correct": 345,
+     "ft_correct": 327,
+     "lost": 53,
+     "gained": 35,
+     "ft_train_count": 62172
+    },
+    {
+     "type": "▁une",
+     "ref_occ": 561,
+     "base_correct": 347,
+     "ft_correct": 311,
+     "lost": 68,
+     "gained": 32,
+     "ft_train_count": 32390
+    },
+    {
+     "type": "▁qui",
+     "ref_occ": 539,
+     "base_correct": 378,
+     "ft_correct": 380,
+     "lost": 28,
+     "gained": 30,
+     "ft_train_count": 31577
+    },
+    {
+     "type": "▁ont",
+     "ref_occ": 311,
+     "base_correct": 220,
+     "ft_correct": 223,
+     "lost": 25,
+     "gained": 28,
+     "ft_train_count": 23652
+    },
+    {
+     "type": "▁sur",
+     "ref_occ": 468,
+     "base_correct": 285,
+     "ft_correct": 265,
+     "lost": 48,
+     "gained": 28,
+     "ft_train_count": 34079
+    },
+    {
+     "type": "▁»",
+     "ref_occ": 126,
+     "base_correct": 22,
+     "ft_correct": 42,
+     "lost": 7,
+     "gained": 27,
+     "ft_train_count": 903
+    }
+   ]
+  },
+  {
+   "ft_hyp": "real_hyps/ft_un_rep_lr1_s2_st2.newstest2014.hyp",
+   "sha256": "2607626d0beaedd7cd352626129b7a0be92e979d37325772e8c491f11d5ef834",
+   "lines": 3003,
+   "results": {
+    "All": {
+     "ref_occ": 99972,
+     "base_correct": 63369,
+     "ft_correct": 58173,
+     "lost": 9958,
+     "gained": 4762,
+     "forgetgenuse": 0.15714308257981033,
+     "ref_types": 10701,
+     "types_base_correct": 7738,
+     "forgetgenuse_macro": 0.2660446501022455
+    },
+    "ID": {
+     "ref_occ": 97965,
+     "base_correct": 62261,
+     "ft_correct": 57987,
+     "lost": 9025,
+     "gained": 4751,
+     "forgetgenuse": 0.14495430526332695,
+     "ref_types": 9875,
+     "types_base_correct": 7230,
+     "forgetgenuse_macro": 0.22552535874979485
+    },
+    "OOD": {
+     "ref_occ": 2007,
+     "base_correct": 1108,
+     "ft_correct": 186,
+     "lost": 933,
+     "gained": 11,
+     "forgetgenuse": 0.842057761732852,
+     "ref_types": 826,
+     "types_base_correct": 508,
+     "forgetgenuse_macro": 0.8427266904136983
+    },
+    "ID_in_src": {
+     "ref_occ": 18555,
+     "base_correct": 16752,
+     "ft_correct": 15821,
+     "lost": 1345,
+     "gained": 414,
+     "forgetgenuse": 0.08028892072588348
+    },
+    "ID_not_in_src": {
+     "ref_occ": 79410,
+     "base_correct": 45509,
+     "ft_correct": 42166,
+     "lost": 7680,
+     "gained": 4337,
+     "forgetgenuse": 0.16875782812190995
+    },
+    "OOD_in_src": {
+     "ref_occ": 993,
+     "base_correct": 801,
+     "ft_correct": 183,
+     "lost": 627,
+     "gained": 9,
+     "forgetgenuse": 0.7827715355805244
+    },
+    "OOD_not_in_src": {
+     "ref_occ": 1014,
+     "base_correct": 307,
+     "ft_correct": 3,
+     "lost": 306,
+     "gained": 2,
+     "forgetgenuse": 0.996742671009772
+    },
+    "ref_occ_share_ID": 0.9799243788260713
+   },
+   "top_lost_OOD": [
+    {
+     "type": "▁Google",
+     "ref_occ": 26,
+     "base_correct": 26,
+     "ft_correct": 0,
+     "lost": 26,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁FA",
+     "ref_occ": 19,
+     "base_correct": 19,
+     "ft_correct": 0,
+     "lost": 19,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁chiens",
+     "ref_occ": 22,
+     "base_correct": 18,
+     "ft_correct": 0,
+     "lost": 18,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "MC",
+     "ref_occ": 16,
+     "base_correct": 15,
+     "ft_correct": 0,
+     "lost": 15,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Airbus",
+     "ref_occ": 12,
+     "base_correct": 12,
+     "ft_correct": 0,
+     "lost": 12,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁brevets",
+     "ref_occ": 13,
+     "base_correct": 11,
+     "ft_correct": 0,
+     "lost": 11,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁commandes",
+     "ref_occ": 13,
+     "base_correct": 11,
+     "ft_correct": 0,
+     "lost": 11,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Ford",
+     "ref_occ": 10,
+     "base_correct": 10,
+     "ft_correct": 0,
+     "lost": 10,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "athan",
+     "ref_occ": 9,
+     "base_correct": 9,
+     "ft_correct": 0,
+     "lost": 9,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁chien",
+     "ref_occ": 11,
+     "base_correct": 9,
+     "ft_correct": 0,
+     "lost": 9,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁queue",
+     "ref_occ": 16,
+     "base_correct": 9,
+     "ft_correct": 0,
+     "lost": 9,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Disney",
+     "ref_occ": 8,
+     "base_correct": 8,
+     "ft_correct": 0,
+     "lost": 8,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁GM",
+     "ref_occ": 8,
+     "base_correct": 8,
+     "ft_correct": 0,
+     "lost": 8,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁HS",
+     "ref_occ": 8,
+     "base_correct": 8,
+     "ft_correct": 0,
+     "lost": 8,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁News",
+     "ref_occ": 9,
+     "base_correct": 8,
+     "ft_correct": 0,
+     "lost": 8,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁bagages",
+     "ref_occ": 16,
+     "base_correct": 8,
+     "ft_correct": 0,
+     "lost": 8,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "&",
+     "ref_occ": 8,
+     "base_correct": 7,
+     "ft_correct": 0,
+     "lost": 7,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Bomb",
+     "ref_occ": 12,
+     "base_correct": 12,
+     "ft_correct": 5,
+     "lost": 7,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "anteur",
+     "ref_occ": 10,
+     "base_correct": 6,
+     "ft_correct": 0,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Beau",
+     "ref_occ": 6,
+     "base_correct": 6,
+     "ft_correct": 0,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Broad",
+     "ref_occ": 6,
+     "base_correct": 6,
+     "ft_correct": 0,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Delta",
+     "ref_occ": 6,
+     "base_correct": 6,
+     "ft_correct": 0,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Renault",
+     "ref_occ": 6,
+     "base_correct": 6,
+     "ft_correct": 0,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Roger",
+     "ref_occ": 6,
+     "base_correct": 6,
+     "ft_correct": 0,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁horm",
+     "ref_occ": 6,
+     "base_correct": 6,
+     "ft_correct": 0,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    }
+   ],
+   "top_lost_ID": [
+    {
+     "type": "▁de",
+     "ref_occ": 3856,
+     "base_correct": 2970,
+     "ft_correct": 2887,
+     "lost": 325,
+     "gained": 242,
+     "ft_train_count": 390647
+    },
+    {
+     "type": "'",
+     "ref_occ": 3967,
+     "base_correct": 3006,
+     "ft_correct": 3042,
+     "lost": 249,
+     "gained": 285,
+     "ft_train_count": 337022
+    },
+    {
+     "type": "▁la",
+     "ref_occ": 1911,
+     "base_correct": 1338,
+     "ft_correct": 1247,
+     "lost": 187,
+     "gained": 96,
+     "ft_train_count": 256905
+    },
+    {
+     "type": "▁a",
+     "ref_occ": 1222,
+     "base_correct": 1001,
+     "ft_correct": 872,
+     "lost": 164,
+     "gained": 35,
+     "ft_train_count": 45041
+    },
+    {
+     "type": "-",
+     "ref_occ": 812,
+     "base_correct": 611,
+     "ft_correct": 484,
+     "lost": 154,
+     "gained": 27,
+     "ft_train_count": 28885
+    },
+    {
+     "type": "▁à",
+     "ref_occ": 1400,
+     "base_correct": 885,
+     "ft_correct": 847,
+     "lost": 153,
+     "gained": 115,
+     "ft_train_count": 144398
+    },
+    {
+     "type": "▁les",
+     "ref_occ": 1314,
+     "base_correct": 954,
+     "ft_correct": 875,
+     "lost": 148,
+     "gained": 69,
+     "ft_train_count": 163066
+    },
+    {
+     "type": "▁le",
+     "ref_occ": 1339,
+     "base_correct": 872,
+     "ft_correct": 842,
+     "lost": 132,
+     "gained": 102,
+     "ft_train_count": 130958
+    },
+    {
+     "type": ",",
+     "ref_occ": 3265,
+     "base_correct": 2640,
+     "ft_correct": 2617,
+     "lost": 130,
+     "gained": 107,
+     "ft_train_count": 242476
+    },
+    {
+     "type": "▁l",
+     "ref_occ": 1363,
+     "base_correct": 953,
+     "ft_correct": 930,
+     "lost": 114,
+     "gained": 91,
+     "ft_train_count": 174943
+    },
+    {
+     "type": "▁des",
+     "ref_occ": 1262,
+     "base_correct": 825,
+     "ft_correct": 831,
+     "lost": 102,
+     "gained": 108,
+     "ft_train_count": 179795
+    },
+    {
+     "type": "▁\"",
+     "ref_occ": 285,
+     "base_correct": 123,
+     "ft_correct": 53,
+     "lost": 99,
+     "gained": 29,
+     "ft_train_count": 264
+    },
+    {
+     "type": "▁d",
+     "ref_occ": 1185,
+     "base_correct": 720,
+     "ft_correct": 725,
+     "lost": 98,
+     "gained": 103,
+     "ft_train_count": 90651
+    },
+    {
+     "type": "▁»,",
+     "ref_occ": 144,
+     "base_correct": 100,
+     "ft_correct": 12,
+     "lost": 90,
+     "gained": 2,
+     "ft_train_count": 202
+    },
+    {
+     "type": "▁déclaré",
+     "ref_occ": 185,
+     "base_correct": 115,
+     "ft_correct": 56,
+     "lost": 67,
+     "gained": 8,
+     "ft_train_count": 1025
+    },
+    {
+     "type": "▁un",
+     "ref_occ": 723,
+     "base_correct": 483,
+     "ft_correct": 455,
+     "lost": 66,
+     "gained": 38,
+     "ft_train_count": 31665
+    },
+    {
+     "type": "▁en",
+     "ref_occ": 917,
+     "base_correct": 474,
+     "ft_correct": 495,
+     "lost": 65,
+     "gained": 86,
+     "ft_train_count": 101096
+    },
+    {
+     "type": "▁du",
+     "ref_occ": 736,
+     "base_correct": 406,
+     "ft_correct": 402,
+     "lost": 62,
+     "gained": 58,
+     "ft_train_count": 84176
+    },
+    {
+     "type": "▁une",
+     "ref_occ": 561,
+     "base_correct": 347,
+     "ft_correct": 319,
+     "lost": 60,
+     "gained": 32,
+     "ft_train_count": 32390
+    },
+    {
+     "type": "▁pour",
+     "ref_occ": 527,
+     "base_correct": 345,
+     "ft_correct": 329,
+     "lost": 55,
+     "gained": 39,
+     "ft_train_count": 62172
+    },
+    {
+     "type": "▁que",
+     "ref_occ": 765,
+     "base_correct": 563,
+     "ft_correct": 564,
+     "lost": 53,
+     "gained": 54,
+     "ft_train_count": 67558
+    },
+    {
+     "type": "▁dans",
+     "ref_occ": 561,
+     "base_correct": 361,
+     "ft_correct": 348,
+     "lost": 52,
+     "gained": 39,
+     "ft_train_count": 61120
+    },
+    {
+     "type": "t",
+     "ref_occ": 102,
+     "base_correct": 70,
+     "ft_correct": 22,
+     "lost": 50,
+     "gained": 2,
+     "ft_train_count": 877
+    },
+    {
+     "type": "▁au",
+     "ref_occ": 420,
+     "base_correct": 208,
+     "ft_correct": 185,
+     "lost": 47,
+     "gained": 24,
+     "ft_train_count": 44798
+    },
+    {
+     "type": "▁gouvernement",
+     "ref_occ": 72,
+     "base_correct": 65,
+     "ft_correct": 22,
+     "lost": 44,
+     "gained": 1,
+     "ft_train_count": 4862
+    }
+   ],
+   "top_gained": [
+    {
+     "type": "'",
+     "ref_occ": 3967,
+     "base_correct": 3006,
+     "ft_correct": 3042,
+     "lost": 249,
+     "gained": 285,
+     "ft_train_count": 337022
+    },
+    {
+     "type": "▁de",
+     "ref_occ": 3856,
+     "base_correct": 2970,
+     "ft_correct": 2887,
+     "lost": 325,
+     "gained": 242,
+     "ft_train_count": 390647
+    },
+    {
+     "type": "▁«",
+     "ref_occ": 331,
+     "base_correct": 163,
+     "ft_correct": 247,
+     "lost": 35,
+     "gained": 119,
+     "ft_train_count": 3453
+    },
+    {
+     "type": "▁à",
+     "ref_occ": 1400,
+     "base_correct": 885,
+     "ft_correct": 847,
+     "lost": 153,
+     "gained": 115,
+     "ft_train_count": 144398
+    },
+    {
+     "type": "▁des",
+     "ref_occ": 1262,
+     "base_correct": 825,
+     "ft_correct": 831,
+     "lost": 102,
+     "gained": 108,
+     "ft_train_count": 179795
+    },
+    {
+     "type": ",",
+     "ref_occ": 3265,
+     "base_correct": 2640,
+     "ft_correct": 2617,
+     "lost": 130,
+     "gained": 107,
+     "ft_train_count": 242476
+    },
+    {
+     "type": "▁d",
+     "ref_occ": 1185,
+     "base_correct": 720,
+     "ft_correct": 725,
+     "lost": 98,
+     "gained": 103,
+     "ft_train_count": 90651
+    },
+    {
+     "type": "▁le",
+     "ref_occ": 1339,
+     "base_correct": 872,
+     "ft_correct": 842,
+     "lost": 132,
+     "gained": 102,
+     "ft_train_count": 130958
+    },
+    {
+     "type": "▁la",
+     "ref_occ": 1911,
+     "base_correct": 1338,
+     "ft_correct": 1247,
+     "lost": 187,
+     "gained": 96,
+     "ft_train_count": 256905
+    },
+    {
+     "type": "▁l",
+     "ref_occ": 1363,
+     "base_correct": 953,
+     "ft_correct": 930,
+     "lost": 114,
+     "gained": 91,
+     "ft_train_count": 174943
+    },
+    {
+     "type": "▁en",
+     "ref_occ": 917,
+     "base_correct": 474,
+     "ft_correct": 495,
+     "lost": 65,
+     "gained": 86,
+     "ft_train_count": 101096
+    },
+    {
+     "type": "▁les",
+     "ref_occ": 1314,
+     "base_correct": 954,
+     "ft_correct": 875,
+     "lost": 148,
+     "gained": 69,
+     "ft_train_count": 163066
+    },
+    {
+     "type": "▁du",
+     "ref_occ": 736,
+     "base_correct": 406,
+     "ft_correct": 402,
+     "lost": 62,
+     "gained": 58,
+     "ft_train_count": 84176
+    },
+    {
+     "type": "▁que",
+     "ref_occ": 765,
+     "base_correct": 563,
+     "ft_correct": 564,
+     "lost": 53,
+     "gained": 54,
+     "ft_train_count": 67558
+    },
+    {
+     "type": "▁:",
+     "ref_occ": 64,
+     "base_correct": 8,
+     "ft_correct": 50,
+     "lost": 1,
+     "gained": 43,
+     "ft_train_count": 6049
+    },
+    {
+     "type": "▁dans",
+     "ref_occ": 561,
+     "base_correct": 361,
+     "ft_correct": 348,
+     "lost": 52,
+     "gained": 39,
+     "ft_train_count": 61120
+    },
+    {
+     "type": "▁pour",
+     "ref_occ": 527,
+     "base_correct": 345,
+     "ft_correct": 329,
+     "lost": 55,
+     "gained": 39,
+     "ft_train_count": 62172
+    },
+    {
+     "type": "▁un",
+     "ref_occ": 723,
+     "base_correct": 483,
+     "ft_correct": 455,
+     "lost": 66,
+     "gained": 38,
+     "ft_train_count": 31665
+    },
+    {
+     "type": "▁a",
+     "ref_occ": 1222,
+     "base_correct": 1001,
+     "ft_correct": 872,
+     "lost": 164,
+     "gained": 35,
+     "ft_train_count": 45041
+    },
+    {
+     "type": "▁et",
+     "ref_occ": 1317,
+     "base_correct": 1171,
+     "ft_correct": 1181,
+     "lost": 22,
+     "gained": 32,
+     "ft_train_count": 234039
+    },
+    {
+     "type": "▁une",
+     "ref_occ": 561,
+     "base_correct": 347,
+     "ft_correct": 319,
+     "lost": 60,
+     "gained": 32,
+     "ft_train_count": 32390
+    },
+    {
+     "type": "▁sur",
+     "ref_occ": 468,
+     "base_correct": 285,
+     "ft_correct": 273,
+     "lost": 42,
+     "gained": 30,
+     "ft_train_count": 34079
+    },
+    {
+     "type": "▁\"",
+     "ref_occ": 285,
+     "base_correct": 123,
+     "ft_correct": 53,
+     "lost": 99,
+     "gained": 29,
+     "ft_train_count": 264
+    },
+    {
+     "type": "▁»",
+     "ref_occ": 126,
+     "base_correct": 22,
+     "ft_correct": 44,
+     "lost": 7,
+     "gained": 29,
+     "ft_train_count": 903
+    },
+    {
+     "type": "-",
+     "ref_occ": 812,
+     "base_correct": 611,
+     "ft_correct": 484,
+     "lost": 154,
+     "gained": 27,
+     "ft_train_count": 28885
+    }
+   ]
+  },
+  {
+   "ft_hyp": "real_hyps/ft_un_rep_lr1_s3_st2.newstest2014.hyp",
+   "sha256": "a3ea081f9049a520c4a00a3e3827442b25d7888e49bbba4ab4ecd532e9094a13",
+   "lines": 3003,
+   "results": {
+    "All": {
+     "ref_occ": 99972,
+     "base_correct": 63369,
+     "ft_correct": 58172,
+     "lost": 9907,
+     "gained": 4710,
+     "forgetgenuse": 0.1563382726569774,
+     "ref_types": 10701,
+     "types_base_correct": 7738,
+     "forgetgenuse_macro": 0.264194109741847
+    },
+    "ID": {
+     "ref_occ": 97965,
+     "base_correct": 62261,
+     "ft_correct": 57985,
+     "lost": 8979,
+     "gained": 4703,
+     "forgetgenuse": 0.1442154799955028,
+     "ref_types": 9875,
+     "types_base_correct": 7230,
+     "forgetgenuse_macro": 0.22403076287217238
+    },
+    "OOD": {
+     "ref_occ": 2007,
+     "base_correct": 1108,
+     "ft_correct": 187,
+     "lost": 928,
+     "gained": 7,
+     "forgetgenuse": 0.8375451263537906,
+     "ref_types": 826,
+     "types_base_correct": 508,
+     "forgetgenuse_macro": 0.8358102472767827
+    },
+    "ID_in_src": {
+     "ref_occ": 18555,
+     "base_correct": 16752,
+     "ft_correct": 15779,
+     "lost": 1360,
+     "gained": 387,
+     "forgetgenuse": 0.08118433619866285
+    },
+    "ID_not_in_src": {
+     "ref_occ": 79410,
+     "base_correct": 45509,
+     "ft_correct": 42206,
+     "lost": 7619,
+     "gained": 4316,
+     "forgetgenuse": 0.16741743391417083
+    },
+    "OOD_in_src": {
+     "ref_occ": 993,
+     "base_correct": 801,
+     "ft_correct": 186,
+     "lost": 621,
+     "gained": 6,
+     "forgetgenuse": 0.7752808988764045
+    },
+    "OOD_not_in_src": {
+     "ref_occ": 1014,
+     "base_correct": 307,
+     "ft_correct": 1,
+     "lost": 307,
+     "gained": 1,
+     "forgetgenuse": 1.0
+    },
+    "ref_occ_share_ID": 0.9799243788260713
+   },
+   "top_lost_OOD": [
+    {
+     "type": "▁Google",
+     "ref_occ": 26,
+     "base_correct": 26,
+     "ft_correct": 0,
+     "lost": 26,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁FA",
+     "ref_occ": 19,
+     "base_correct": 19,
+     "ft_correct": 0,
+     "lost": 19,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁chiens",
+     "ref_occ": 22,
+     "base_correct": 18,
+     "ft_correct": 0,
+     "lost": 18,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "MC",
+     "ref_occ": 16,
+     "base_correct": 15,
+     "ft_correct": 0,
+     "lost": 15,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Airbus",
+     "ref_occ": 12,
+     "base_correct": 12,
+     "ft_correct": 0,
+     "lost": 12,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁brevets",
+     "ref_occ": 13,
+     "base_correct": 11,
+     "ft_correct": 0,
+     "lost": 11,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁commandes",
+     "ref_occ": 13,
+     "base_correct": 11,
+     "ft_correct": 0,
+     "lost": 11,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Ford",
+     "ref_occ": 10,
+     "base_correct": 10,
+     "ft_correct": 0,
+     "lost": 10,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "athan",
+     "ref_occ": 9,
+     "base_correct": 9,
+     "ft_correct": 0,
+     "lost": 9,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁chien",
+     "ref_occ": 11,
+     "base_correct": 9,
+     "ft_correct": 0,
+     "lost": 9,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁queue",
+     "ref_occ": 16,
+     "base_correct": 9,
+     "ft_correct": 0,
+     "lost": 9,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Disney",
+     "ref_occ": 8,
+     "base_correct": 8,
+     "ft_correct": 0,
+     "lost": 8,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁GM",
+     "ref_occ": 8,
+     "base_correct": 8,
+     "ft_correct": 0,
+     "lost": 8,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁HS",
+     "ref_occ": 8,
+     "base_correct": 8,
+     "ft_correct": 0,
+     "lost": 8,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁News",
+     "ref_occ": 9,
+     "base_correct": 8,
+     "ft_correct": 0,
+     "lost": 8,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁bagages",
+     "ref_occ": 16,
+     "base_correct": 8,
+     "ft_correct": 0,
+     "lost": 8,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "&",
+     "ref_occ": 8,
+     "base_correct": 7,
+     "ft_correct": 0,
+     "lost": 7,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "anteur",
+     "ref_occ": 10,
+     "base_correct": 6,
+     "ft_correct": 0,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Beau",
+     "ref_occ": 6,
+     "base_correct": 6,
+     "ft_correct": 0,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Broad",
+     "ref_occ": 6,
+     "base_correct": 6,
+     "ft_correct": 0,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Delta",
+     "ref_occ": 6,
+     "base_correct": 6,
+     "ft_correct": 0,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Renault",
+     "ref_occ": 6,
+     "base_correct": 6,
+     "ft_correct": 0,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Roger",
+     "ref_occ": 6,
+     "base_correct": 6,
+     "ft_correct": 0,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁horm",
+     "ref_occ": 6,
+     "base_correct": 6,
+     "ft_correct": 0,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁pop",
+     "ref_occ": 6,
+     "base_correct": 6,
+     "ft_correct": 0,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    }
+   ],
+   "top_lost_ID": [
+    {
+     "type": "▁de",
+     "ref_occ": 3856,
+     "base_correct": 2970,
+     "ft_correct": 2920,
+     "lost": 311,
+     "gained": 261,
+     "ft_train_count": 390647
+    },
+    {
+     "type": "'",
+     "ref_occ": 3967,
+     "base_correct": 3006,
+     "ft_correct": 3022,
+     "lost": 255,
+     "gained": 271,
+     "ft_train_count": 337022
+    },
+    {
+     "type": "▁la",
+     "ref_occ": 1911,
+     "base_correct": 1338,
+     "ft_correct": 1284,
+     "lost": 170,
+     "gained": 116,
+     "ft_train_count": 256905
+    },
+    {
+     "type": "-",
+     "ref_occ": 812,
+     "base_correct": 611,
+     "ft_correct": 470,
+     "lost": 164,
+     "gained": 23,
+     "ft_train_count": 28885
+    },
+    {
+     "type": "▁a",
+     "ref_occ": 1222,
+     "base_correct": 1001,
+     "ft_correct": 890,
+     "lost": 153,
+     "gained": 42,
+     "ft_train_count": 45041
+    },
+    {
+     "type": "▁les",
+     "ref_occ": 1314,
+     "base_correct": 954,
+     "ft_correct": 867,
+     "lost": 152,
+     "gained": 65,
+     "ft_train_count": 163066
+    },
+    {
+     "type": "▁à",
+     "ref_occ": 1400,
+     "base_correct": 885,
+     "ft_correct": 856,
+     "lost": 137,
+     "gained": 108,
+     "ft_train_count": 144398
+    },
+    {
+     "type": "▁le",
+     "ref_occ": 1339,
+     "base_correct": 872,
+     "ft_correct": 849,
+     "lost": 121,
+     "gained": 98,
+     "ft_train_count": 130958
+    },
+    {
+     "type": "▁l",
+     "ref_occ": 1363,
+     "base_correct": 953,
+     "ft_correct": 918,
+     "lost": 119,
+     "gained": 84,
+     "ft_train_count": 174943
+    },
+    {
+     "type": ",",
+     "ref_occ": 3265,
+     "base_correct": 2640,
+     "ft_correct": 2652,
+     "lost": 108,
+     "gained": 120,
+     "ft_train_count": 242476
+    },
+    {
+     "type": "▁\"",
+     "ref_occ": 285,
+     "base_correct": 123,
+     "ft_correct": 44,
+     "lost": 100,
+     "gained": 21,
+     "ft_train_count": 264
+    },
+    {
+     "type": "▁d",
+     "ref_occ": 1185,
+     "base_correct": 720,
+     "ft_correct": 723,
+     "lost": 97,
+     "gained": 100,
+     "ft_train_count": 90651
+    },
+    {
+     "type": "▁des",
+     "ref_occ": 1262,
+     "base_correct": 825,
+     "ft_correct": 849,
+     "lost": 95,
+     "gained": 119,
+     "ft_train_count": 179795
+    },
+    {
+     "type": "▁»,",
+     "ref_occ": 144,
+     "base_correct": 100,
+     "ft_correct": 9,
+     "lost": 93,
+     "gained": 2,
+     "ft_train_count": 202
+    },
+    {
+     "type": "▁un",
+     "ref_occ": 723,
+     "base_correct": 483,
+     "ft_correct": 422,
+     "lost": 91,
+     "gained": 30,
+     "ft_train_count": 31665
+    },
+    {
+     "type": "▁pour",
+     "ref_occ": 527,
+     "base_correct": 345,
+     "ft_correct": 323,
+     "lost": 65,
+     "gained": 43,
+     "ft_train_count": 62172
+    },
+    {
+     "type": "▁une",
+     "ref_occ": 561,
+     "base_correct": 347,
+     "ft_correct": 309,
+     "lost": 65,
+     "gained": 27,
+     "ft_train_count": 32390
+    },
+    {
+     "type": "▁du",
+     "ref_occ": 736,
+     "base_correct": 406,
+     "ft_correct": 388,
+     "lost": 60,
+     "gained": 42,
+     "ft_train_count": 84176
+    },
+    {
+     "type": "▁dans",
+     "ref_occ": 561,
+     "base_correct": 361,
+     "ft_correct": 347,
+     "lost": 59,
+     "gained": 45,
+     "ft_train_count": 61120
+    },
+    {
+     "type": "▁en",
+     "ref_occ": 917,
+     "base_correct": 474,
+     "ft_correct": 495,
+     "lost": 58,
+     "gained": 79,
+     "ft_train_count": 101096
+    },
+    {
+     "type": "t",
+     "ref_occ": 102,
+     "base_correct": 70,
+     "ft_correct": 20,
+     "lost": 52,
+     "gained": 2,
+     "ft_train_count": 877
+    },
+    {
+     "type": "▁sur",
+     "ref_occ": 468,
+     "base_correct": 285,
+     "ft_correct": 253,
+     "lost": 51,
+     "gained": 19,
+     "ft_train_count": 34079
+    },
+    {
+     "type": "▁que",
+     "ref_occ": 765,
+     "base_correct": 563,
+     "ft_correct": 559,
+     "lost": 46,
+     "gained": 42,
+     "ft_train_count": 67558
+    },
+    {
+     "type": "il",
+     "ref_occ": 292,
+     "base_correct": 197,
+     "ft_correct": 172,
+     "lost": 41,
+     "gained": 16,
+     "ft_train_count": 10732
+    },
+    {
+     "type": "▁au",
+     "ref_occ": 420,
+     "base_correct": 208,
+     "ft_correct": 197,
+     "lost": 39,
+     "gained": 28,
+     "ft_train_count": 44798
+    }
+   ],
+   "top_gained": [
+    {
+     "type": "'",
+     "ref_occ": 3967,
+     "base_correct": 3006,
+     "ft_correct": 3022,
+     "lost": 255,
+     "gained": 271,
+     "ft_train_count": 337022
+    },
+    {
+     "type": "▁de",
+     "ref_occ": 3856,
+     "base_correct": 2970,
+     "ft_correct": 2920,
+     "lost": 311,
+     "gained": 261,
+     "ft_train_count": 390647
+    },
+    {
+     "type": ",",
+     "ref_occ": 3265,
+     "base_correct": 2640,
+     "ft_correct": 2652,
+     "lost": 108,
+     "gained": 120,
+     "ft_train_count": 242476
+    },
+    {
+     "type": "▁«",
+     "ref_occ": 331,
+     "base_correct": 163,
+     "ft_correct": 250,
+     "lost": 33,
+     "gained": 120,
+     "ft_train_count": 3453
+    },
+    {
+     "type": "▁des",
+     "ref_occ": 1262,
+     "base_correct": 825,
+     "ft_correct": 849,
+     "lost": 95,
+     "gained": 119,
+     "ft_train_count": 179795
+    },
+    {
+     "type": "▁la",
+     "ref_occ": 1911,
+     "base_correct": 1338,
+     "ft_correct": 1284,
+     "lost": 170,
+     "gained": 116,
+     "ft_train_count": 256905
+    },
+    {
+     "type": "▁à",
+     "ref_occ": 1400,
+     "base_correct": 885,
+     "ft_correct": 856,
+     "lost": 137,
+     "gained": 108,
+     "ft_train_count": 144398
+    },
+    {
+     "type": "▁d",
+     "ref_occ": 1185,
+     "base_correct": 720,
+     "ft_correct": 723,
+     "lost": 97,
+     "gained": 100,
+     "ft_train_count": 90651
+    },
+    {
+     "type": "▁le",
+     "ref_occ": 1339,
+     "base_correct": 872,
+     "ft_correct": 849,
+     "lost": 121,
+     "gained": 98,
+     "ft_train_count": 130958
+    },
+    {
+     "type": "▁l",
+     "ref_occ": 1363,
+     "base_correct": 953,
+     "ft_correct": 918,
+     "lost": 119,
+     "gained": 84,
+     "ft_train_count": 174943
+    },
+    {
+     "type": "▁en",
+     "ref_occ": 917,
+     "base_correct": 474,
+     "ft_correct": 495,
+     "lost": 58,
+     "gained": 79,
+     "ft_train_count": 101096
+    },
+    {
+     "type": "▁les",
+     "ref_occ": 1314,
+     "base_correct": 954,
+     "ft_correct": 867,
+     "lost": 152,
+     "gained": 65,
+     "ft_train_count": 163066
+    },
+    {
+     "type": "▁dans",
+     "ref_occ": 561,
+     "base_correct": 361,
+     "ft_correct": 347,
+     "lost": 59,
+     "gained": 45,
+     "ft_train_count": 61120
+    },
+    {
+     "type": "▁pour",
+     "ref_occ": 527,
+     "base_correct": 345,
+     "ft_correct": 323,
+     "lost": 65,
+     "gained": 43,
+     "ft_train_count": 62172
+    },
+    {
+     "type": "▁a",
+     "ref_occ": 1222,
+     "base_correct": 1001,
+     "ft_correct": 890,
+     "lost": 153,
+     "gained": 42,
+     "ft_train_count": 45041
+    },
+    {
+     "type": "▁du",
+     "ref_occ": 736,
+     "base_correct": 406,
+     "ft_correct": 388,
+     "lost": 60,
+     "gained": 42,
+     "ft_train_count": 84176
+    },
+    {
+     "type": "▁que",
+     "ref_occ": 765,
+     "base_correct": 563,
+     "ft_correct": 559,
+     "lost": 46,
+     "gained": 42,
+     "ft_train_count": 67558
+    },
+    {
+     "type": "▁»",
+     "ref_occ": 126,
+     "base_correct": 22,
+     "ft_correct": 57,
+     "lost": 6,
+     "gained": 41,
+     "ft_train_count": 903
+    },
+    {
+     "type": "▁:",
+     "ref_occ": 64,
+     "base_correct": 8,
+     "ft_correct": 43,
+     "lost": 0,
+     "gained": 35,
+     "ft_train_count": 6049
+    },
+    {
+     "type": "▁un",
+     "ref_occ": 723,
+     "base_correct": 483,
+     "ft_correct": 422,
+     "lost": 91,
+     "gained": 30,
+     "ft_train_count": 31665
+    },
+    {
+     "type": ".",
+     "ref_occ": 2691,
+     "base_correct": 2566,
+     "ft_correct": 2577,
+     "lost": 18,
+     "gained": 29,
+     "ft_train_count": 186701
+    },
+    {
+     "type": "▁au",
+     "ref_occ": 420,
+     "base_correct": 208,
+     "ft_correct": 197,
+     "lost": 39,
+     "gained": 28,
+     "ft_train_count": 44798
+    },
+    {
+     "type": "▁s",
+     "ref_occ": 265,
+     "base_correct": 104,
+     "ft_correct": 104,
+     "lost": 27,
+     "gained": 27,
+     "ft_train_count": 15936
+    },
+    {
+     "type": "▁une",
+     "ref_occ": 561,
+     "base_correct": 347,
+     "ft_correct": 309,
+     "lost": 65,
+     "gained": 27,
+     "ft_train_count": 32390
+    },
+    {
+     "type": "▁et",
+     "ref_occ": 1317,
+     "base_correct": 1171,
+     "ft_correct": 1173,
+     "lost": 24,
+     "gained": 26,
+     "ft_train_count": 234039
+    }
+   ]
+  },
+  {
+   "ft_hyp": "real_hyps/ft_un_rep_lr1_s4_st2.newstest2014.hyp",
+   "sha256": "00650d4a389f10e0376e6561999e3bb7fc1ec391810457cc705d3082f3dd7996",
+   "lines": 3003,
+   "results": {
+    "All": {
+     "ref_occ": 99972,
+     "base_correct": 63369,
+     "ft_correct": 58264,
+     "lost": 9788,
+     "gained": 4683,
+     "forgetgenuse": 0.1544603828370339,
+     "ref_types": 10701,
+     "types_base_correct": 7738,
+     "forgetgenuse_macro": 0.2583552547265387
+    },
+    "ID": {
+     "ref_occ": 97965,
+     "base_correct": 62261,
+     "ft_correct": 58085,
+     "lost": 8850,
+     "gained": 4674,
+     "forgetgenuse": 0.14214355696182202,
+     "ref_types": 9875,
+     "types_base_correct": 7230,
+     "forgetgenuse_macro": 0.21714207609380431
+    },
+    "OOD": {
+     "ref_occ": 2007,
+     "base_correct": 1108,
+     "ft_correct": 179,
+     "lost": 938,
+     "gained": 9,
+     "forgetgenuse": 0.8465703971119134,
+     "ref_types": 826,
+     "types_base_correct": 508,
+     "forgetgenuse_macro": 0.8449128955034466
+    },
+    "ID_in_src": {
+     "ref_occ": 18555,
+     "base_correct": 16752,
+     "ft_correct": 15908,
+     "lost": 1252,
+     "gained": 408,
+     "forgetgenuse": 0.07473734479465138
+    },
+    "ID_not_in_src": {
+     "ref_occ": 79410,
+     "base_correct": 45509,
+     "ft_correct": 42177,
+     "lost": 7598,
+     "gained": 4266,
+     "forgetgenuse": 0.16695598672789996
+    },
+    "OOD_in_src": {
+     "ref_occ": 993,
+     "base_correct": 801,
+     "ft_correct": 176,
+     "lost": 632,
+     "gained": 7,
+     "forgetgenuse": 0.7890137328339576
+    },
+    "OOD_not_in_src": {
+     "ref_occ": 1014,
+     "base_correct": 307,
+     "ft_correct": 3,
+     "lost": 306,
+     "gained": 2,
+     "forgetgenuse": 0.996742671009772
+    },
+    "ref_occ_share_ID": 0.9799243788260713
+   },
+   "top_lost_OOD": [
+    {
+     "type": "▁Google",
+     "ref_occ": 26,
+     "base_correct": 26,
+     "ft_correct": 0,
+     "lost": 26,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁FA",
+     "ref_occ": 19,
+     "base_correct": 19,
+     "ft_correct": 0,
+     "lost": 19,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁chiens",
+     "ref_occ": 22,
+     "base_correct": 18,
+     "ft_correct": 0,
+     "lost": 18,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "MC",
+     "ref_occ": 16,
+     "base_correct": 15,
+     "ft_correct": 0,
+     "lost": 15,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Airbus",
+     "ref_occ": 12,
+     "base_correct": 12,
+     "ft_correct": 0,
+     "lost": 12,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁brevets",
+     "ref_occ": 13,
+     "base_correct": 11,
+     "ft_correct": 0,
+     "lost": 11,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁commandes",
+     "ref_occ": 13,
+     "base_correct": 11,
+     "ft_correct": 0,
+     "lost": 11,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Ford",
+     "ref_occ": 10,
+     "base_correct": 10,
+     "ft_correct": 0,
+     "lost": 10,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "athan",
+     "ref_occ": 9,
+     "base_correct": 9,
+     "ft_correct": 0,
+     "lost": 9,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁chien",
+     "ref_occ": 11,
+     "base_correct": 9,
+     "ft_correct": 0,
+     "lost": 9,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁queue",
+     "ref_occ": 16,
+     "base_correct": 9,
+     "ft_correct": 0,
+     "lost": 9,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Disney",
+     "ref_occ": 8,
+     "base_correct": 8,
+     "ft_correct": 0,
+     "lost": 8,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁GM",
+     "ref_occ": 8,
+     "base_correct": 8,
+     "ft_correct": 0,
+     "lost": 8,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁HS",
+     "ref_occ": 8,
+     "base_correct": 8,
+     "ft_correct": 0,
+     "lost": 8,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁News",
+     "ref_occ": 9,
+     "base_correct": 8,
+     "ft_correct": 0,
+     "lost": 8,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁bagages",
+     "ref_occ": 16,
+     "base_correct": 8,
+     "ft_correct": 0,
+     "lost": 8,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "&",
+     "ref_occ": 8,
+     "base_correct": 7,
+     "ft_correct": 0,
+     "lost": 7,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "anteur",
+     "ref_occ": 10,
+     "base_correct": 6,
+     "ft_correct": 0,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Beau",
+     "ref_occ": 6,
+     "base_correct": 6,
+     "ft_correct": 0,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Broad",
+     "ref_occ": 6,
+     "base_correct": 6,
+     "ft_correct": 0,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Delta",
+     "ref_occ": 6,
+     "base_correct": 6,
+     "ft_correct": 0,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Express",
+     "ref_occ": 8,
+     "base_correct": 8,
+     "ft_correct": 2,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Renault",
+     "ref_occ": 6,
+     "base_correct": 6,
+     "ft_correct": 0,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁Roger",
+     "ref_occ": 6,
+     "base_correct": 6,
+     "ft_correct": 0,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    },
+    {
+     "type": "▁horm",
+     "ref_occ": 6,
+     "base_correct": 6,
+     "ft_correct": 0,
+     "lost": 6,
+     "gained": 0,
+     "ft_train_count": 0
+    }
+   ],
+   "top_lost_ID": [
+    {
+     "type": "▁de",
+     "ref_occ": 3856,
+     "base_correct": 2970,
+     "ft_correct": 2919,
+     "lost": 314,
+     "gained": 263,
+     "ft_train_count": 390647
+    },
+    {
+     "type": "'",
+     "ref_occ": 3967,
+     "base_correct": 3006,
+     "ft_correct": 3040,
+     "lost": 249,
+     "gained": 283,
+     "ft_train_count": 337022
+    },
+    {
+     "type": "▁a",
+     "ref_occ": 1222,
+     "base_correct": 1001,
+     "ft_correct": 868,
+     "lost": 168,
+     "gained": 35,
+     "ft_train_count": 45041
+    },
+    {
+     "type": "▁la",
+     "ref_occ": 1911,
+     "base_correct": 1338,
+     "ft_correct": 1294,
+     "lost": 168,
+     "gained": 124,
+     "ft_train_count": 256905
+    },
+    {
+     "type": "-",
+     "ref_occ": 812,
+     "base_correct": 611,
+     "ft_correct": 475,
+     "lost": 161,
+     "gained": 25,
+     "ft_train_count": 28885
+    },
+    {
+     "type": "▁à",
+     "ref_occ": 1400,
+     "base_correct": 885,
+     "ft_correct": 844,
+     "lost": 145,
+     "gained": 104,
+     "ft_train_count": 144398
+    },
+    {
+     "type": "▁les",
+     "ref_occ": 1314,
+     "base_correct": 954,
+     "ft_correct": 884,
+     "lost": 138,
+     "gained": 68,
+     "ft_train_count": 163066
+    },
+    {
+     "type": "▁d",
+     "ref_occ": 1185,
+     "base_correct": 720,
+     "ft_correct": 687,
+     "lost": 124,
+     "gained": 91,
+     "ft_train_count": 90651
+    },
+    {
+     "type": "▁le",
+     "ref_occ": 1339,
+     "base_correct": 872,
+     "ft_correct": 862,
+     "lost": 116,
+     "gained": 106,
+     "ft_train_count": 130958
+    },
+    {
+     "type": "▁des",
+     "ref_occ": 1262,
+     "base_correct": 825,
+     "ft_correct": 842,
+     "lost": 106,
+     "gained": 123,
+     "ft_train_count": 179795
+    },
+    {
+     "type": "▁l",
+     "ref_occ": 1363,
+     "base_correct": 953,
+     "ft_correct": 945,
+     "lost": 100,
+     "gained": 92,
+     "ft_train_count": 174943
+    },
+    {
+     "type": ",",
+     "ref_occ": 3265,
+     "base_correct": 2640,
+     "ft_correct": 2692,
+     "lost": 95,
+     "gained": 147,
+     "ft_train_count": 242476
+    },
+    {
+     "type": "▁»,",
+     "ref_occ": 144,
+     "base_correct": 100,
+     "ft_correct": 12,
+     "lost": 92,
+     "gained": 4,
+     "ft_train_count": 202
+    },
+    {
+     "type": "▁\"",
+     "ref_occ": 285,
+     "base_correct": 123,
+     "ft_correct": 63,
+     "lost": 85,
+     "gained": 25,
+     "ft_train_count": 264
+    },
+    {
+     "type": "▁un",
+     "ref_occ": 723,
+     "base_correct": 483,
+     "ft_correct": 426,
+     "lost": 81,
+     "gained": 24,
+     "ft_train_count": 31665
+    },
+    {
+     "type": "▁en",
+     "ref_occ": 917,
+     "base_correct": 474,
+     "ft_correct": 485,
+     "lost": 67,
+     "gained": 78,
+     "ft_train_count": 101096
+    },
+    {
+     "type": "▁du",
+     "ref_occ": 736,
+     "base_correct": 406,
+     "ft_correct": 398,
+     "lost": 60,
+     "gained": 52,
+     "ft_train_count": 84176
+    },
+    {
+     "type": "▁une",
+     "ref_occ": 561,
+     "base_correct": 347,
+     "ft_correct": 315,
+     "lost": 60,
+     "gained": 28,
+     "ft_train_count": 32390
+    },
+    {
+     "type": "▁pour",
+     "ref_occ": 527,
+     "base_correct": 345,
+     "ft_correct": 327,
+     "lost": 58,
+     "gained": 40,
+     "ft_train_count": 62172
+    },
+    {
+     "type": "t",
+     "ref_occ": 102,
+     "base_correct": 70,
+     "ft_correct": 15,
+     "lost": 55,
+     "gained": 0,
+     "ft_train_count": 877
+    },
+    {
+     "type": "▁que",
+     "ref_occ": 765,
+     "base_correct": 563,
+     "ft_correct": 562,
+     "lost": 54,
+     "gained": 53,
+     "ft_train_count": 67558
+    },
+    {
+     "type": "▁au",
+     "ref_occ": 420,
+     "base_correct": 208,
+     "ft_correct": 182,
+     "lost": 52,
+     "gained": 26,
+     "ft_train_count": 44798
+    },
+    {
+     "type": "▁déclaré",
+     "ref_occ": 185,
+     "base_correct": 115,
+     "ft_correct": 75,
+     "lost": 52,
+     "gained": 12,
+     "ft_train_count": 1025
+    },
+    {
+     "type": "▁dans",
+     "ref_occ": 561,
+     "base_correct": 361,
+     "ft_correct": 348,
+     "lost": 50,
+     "gained": 37,
+     "ft_train_count": 61120
+    },
+    {
+     "type": "▁gouvernement",
+     "ref_occ": 72,
+     "base_correct": 65,
+     "ft_correct": 18,
+     "lost": 47,
+     "gained": 0,
+     "ft_train_count": 4862
+    }
+   ],
+   "top_gained": [
+    {
+     "type": "'",
+     "ref_occ": 3967,
+     "base_correct": 3006,
+     "ft_correct": 3040,
+     "lost": 249,
+     "gained": 283,
+     "ft_train_count": 337022
+    },
+    {
+     "type": "▁de",
+     "ref_occ": 3856,
+     "base_correct": 2970,
+     "ft_correct": 2919,
+     "lost": 314,
+     "gained": 263,
+     "ft_train_count": 390647
+    },
+    {
+     "type": ",",
+     "ref_occ": 3265,
+     "base_correct": 2640,
+     "ft_correct": 2692,
+     "lost": 95,
+     "gained": 147,
+     "ft_train_count": 242476
+    },
+    {
+     "type": "▁la",
+     "ref_occ": 1911,
+     "base_correct": 1338,
+     "ft_correct": 1294,
+     "lost": 168,
+     "gained": 124,
+     "ft_train_count": 256905
+    },
+    {
+     "type": "▁des",
+     "ref_occ": 1262,
+     "base_correct": 825,
+     "ft_correct": 842,
+     "lost": 106,
+     "gained": 123,
+     "ft_train_count": 179795
+    },
+    {
+     "type": "▁«",
+     "ref_occ": 331,
+     "base_correct": 163,
+     "ft_correct": 242,
+     "lost": 36,
+     "gained": 115,
+     "ft_train_count": 3453
+    },
+    {
+     "type": "▁le",
+     "ref_occ": 1339,
+     "base_correct": 872,
+     "ft_correct": 862,
+     "lost": 116,
+     "gained": 106,
+     "ft_train_count": 130958
+    },
+    {
+     "type": "▁à",
+     "ref_occ": 1400,
+     "base_correct": 885,
+     "ft_correct": 844,
+     "lost": 145,
+     "gained": 104,
+     "ft_train_count": 144398
+    },
+    {
+     "type": "▁l",
+     "ref_occ": 1363,
+     "base_correct": 953,
+     "ft_correct": 945,
+     "lost": 100,
+     "gained": 92,
+     "ft_train_count": 174943
+    },
+    {
+     "type": "▁d",
+     "ref_occ": 1185,
+     "base_correct": 720,
+     "ft_correct": 687,
+     "lost": 124,
+     "gained": 91,
+     "ft_train_count": 90651
+    },
+    {
+     "type": "▁en",
+     "ref_occ": 917,
+     "base_correct": 474,
+     "ft_correct": 485,
+     "lost": 67,
+     "gained": 78,
+     "ft_train_count": 101096
+    },
+    {
+     "type": "▁les",
+     "ref_occ": 1314,
+     "base_correct": 954,
+     "ft_correct": 884,
+     "lost": 138,
+     "gained": 68,
+     "ft_train_count": 163066
+    },
+    {
+     "type": "▁que",
+     "ref_occ": 765,
+     "base_correct": 563,
+     "ft_correct": 562,
+     "lost": 54,
+     "gained": 53,
+     "ft_train_count": 67558
+    },
+    {
+     "type": "▁du",
+     "ref_occ": 736,
+     "base_correct": 406,
+     "ft_correct": 398,
+     "lost": 60,
+     "gained": 52,
+     "ft_train_count": 84176
+    },
+    {
+     "type": "▁pour",
+     "ref_occ": 527,
+     "base_correct": 345,
+     "ft_correct": 327,
+     "lost": 58,
+     "gained": 40,
+     "ft_train_count": 62172
+    },
+    {
+     "type": "▁dans",
+     "ref_occ": 561,
+     "base_correct": 361,
+     "ft_correct": 348,
+     "lost": 50,
+     "gained": 37,
+     "ft_train_count": 61120
+    },
+    {
+     "type": "▁a",
+     "ref_occ": 1222,
+     "base_correct": 1001,
+     "ft_correct": 868,
+     "lost": 168,
+     "gained": 35,
+     "ft_train_count": 45041
+    },
+    {
+     "type": "▁:",
+     "ref_occ": 64,
+     "base_correct": 8,
+     "ft_correct": 38,
+     "lost": 2,
+     "gained": 32,
+     "ft_train_count": 6049
+    },
+    {
+     "type": "▁qu",
+     "ref_occ": 411,
+     "base_correct": 261,
+     "ft_correct": 257,
+     "lost": 33,
+     "gained": 29,
+     "ft_train_count": 23144
+    },
+    {
+     "type": "▁une",
+     "ref_occ": 561,
+     "base_correct": 347,
+     "ft_correct": 315,
+     "lost": 60,
+     "gained": 28,
+     "ft_train_count": 32390
+    },
+    {
+     "type": "▁par",
+     "ref_occ": 408,
+     "base_correct": 272,
+     "ft_correct": 277,
+     "lost": 22,
+     "gained": 27,
+     "ft_train_count": 37654
+    },
+    {
+     "type": "▁au",
+     "ref_occ": 420,
+     "base_correct": 208,
+     "ft_correct": 182,
+     "lost": 52,
+     "gained": 26,
+     "ft_train_count": 44798
+    },
+    {
+     "type": "▁et",
+     "ref_occ": 1317,
+     "base_correct": 1171,
+     "ft_correct": 1173,
+     "lost": 24,
+     "gained": 26,
+     "ft_train_count": 234039
+    },
+    {
+     "type": "-",
+     "ref_occ": 812,
+     "base_correct": 611,
+     "ft_correct": 475,
+     "lost": 161,
+     "gained": 25,
+     "ft_train_count": 28885
+    },
+    {
+     "type": "▁\"",
+     "ref_occ": 285,
+     "base_correct": 123,
+     "ft_correct": 63,
+     "lost": 85,
+     "gained": 25,
+     "ft_train_count": 264
+    }
+   ]
+  }
+ ],
+ "summary_over_runs": {
+  "All.forgetgenuse": {
+   "n": 5,
+   "mean": 0.15549558932601115,
+   "sd": 0.0012048454710050223,
+   "min": 0.15441304107686724,
+   "max": 0.15714308257981033
+  },
+  "All.forgetgenuse_macro": {
+   "n": 5,
+   "mean": 0.26122690939846277,
+   "sd": 0.0036467617597884814,
+   "min": 0.2581130029810007,
+   "max": 0.2660446501022455
+  },
+  "ID.forgetgenuse": {
+   "n": 5,
+   "mean": 0.14321324745828046,
+   "sd": 0.0013035798222351103,
+   "min": 0.14204718844862754,
+   "max": 0.14495430526332695
+  },
+  "ID.forgetgenuse_macro": {
+   "n": 5,
+   "mean": 0.22034244568635714,
+   "sd": 0.004116586199055845,
+   "min": 0.2168009132308671,
+   "max": 0.22552535874979485
+  },
+  "OOD.forgetgenuse": {
+   "n": 5,
+   "mean": 0.845667870036101,
+   "sd": 0.00602060652713282,
+   "min": 0.8375451263537906,
+   "max": 0.8528880866425993
+  },
+  "OOD.forgetgenuse_macro": {
+   "n": 5,
+   "mean": 0.8431061862459501,
+   "sd": 0.004297172681163876,
+   "min": 0.8358102472767827,
+   "max": 0.8460783748185323
+  },
+  "ID_in_src.forgetgenuse": {
+   "n": 5,
+   "mean": 0.07823543457497613,
+   "sd": 0.0026304835124751832,
+   "min": 0.07473734479465138,
+   "max": 0.08118433619866285
+  },
+  "ID_not_in_src.forgetgenuse": {
+   "n": 5,
+   "mean": 0.16713177613219363,
+   "sd": 0.0010373111034671968,
+   "min": 0.1661209870575051,
+   "max": 0.16875782812190995
+  },
+  "OOD_in_src.forgetgenuse": {
+   "n": 5,
+   "mean": 0.7875156054931336,
+   "sd": 0.008756892842322178,
+   "min": 0.7752808988764045,
+   "max": 0.797752808988764
+  },
+  "OOD_not_in_src.forgetgenuse": {
+   "n": 5,
+   "mean": 0.9973941368078176,
+   "sd": 0.0014567218094461178,
+   "min": 0.996742671009772,
+   "max": 1.0
+  }
+ },
+ "seconds": {
+  "read_check": 0.014,
+  "ft_vocab": 4.307,
+  "score_all_runs": 0.842,
+  "total": 5.163
+ },
+ "python": "3.14.3"
+}

@@ -186,3 +186,30 @@ here.
    need no re-run. This is a code change.
 4. **Re-run and log three things** in this folder: the mutation check, the `run_real.sh` refusal
    runs and the timing.
+
+## Real run (2026-10-19)
+
+newstest2014 `test.en` / `test.fr` copied from the training box (`data_enfr_v1/`), sha256
+`967dca93…` / `82526d36…` = the src_sha / ref_sha in E0.5's BLEU cache; the 31 re-decoded
+hypotheses sha-checked against `redecode_report.json`. `run_real.sh real_refs real_hyps real` on the
+M5 Max, 5.2 s, exit 0. Outputs in `real/`. ForgetGenUse, `words` tokeniser, mean (sd) over the 5
+seeds, pooled as defined above (ΣL / ΣB; ID = types in the set's French side):
+
+| set | All | ID | OOD |
+| --- | --- | --- | --- |
+| ft_un_rep | 0.1503 (0.0012) | 0.1310 (0.0012) | 0.4077 (0.0014) |
+| ft_un_div | 0.1168 (0.0019) | 0.1079 (0.0017) | 0.2717 (0.0073) |
+| ft_un_random | 0.1067 (0.0013) | 0.1041 (0.0014) | 0.1743 (0.0012) |
+| ft_topk_rep | 0.1249 (0.0011) | 0.1106 (0.0009) | 0.3474 (0.0048) |
+| ft_topk_div | 0.0892 (0.0009) | 0.0844 (0.0010) | 0.1956 (0.0052) |
+| ft_random_small | 0.0730 (0.0005) | 0.0735 (0.0005) | 0.0503 (0.0033) |
+
+Cross-check: the independent checker's `fgu_check.py` (its own implementation), driven by
+`real/item6_crosscheck.py`, gives the same means and sds to four decimals for all six sets
+(`real/crosscheck_real_words.json`).
+
+Reading, descriptive only: within UN, forgetting orders rep > div > random, as BLEU does; the gap is
+mostly in tokens the fine-tuning set does not contain (OOD 0.41 / 0.27 / 0.17), while ID forgetting
+differs by 2–3 points. The counting rule is this folder's reading of the note (Eq 1 unchecked, see
+the caveats above), so compare sets with each other, not with the paper's values; `spm` OOD cells
+rest on very few tokens and are not used.

@@ -364,7 +364,9 @@ the pre-registration work are.
    config, test file, checkpoint and the eval script pinned by sha256): the 30 kept `final.pt` and
    the base on newstest2014 and heldout_un, and **62 of 62 reproduce the recorded BLEU exactly**.
    Hypotheses: `~/mt_local/phase0_final/e05_redecode/` (sha256 per file in
-   `phase0/next/e05_redecode/redecode_report.json`). This item is now CPU work. If [PR] E0.6 OD 11
+   `phase0/next/e05_redecode/redecode_report.json`). This item is now CPU work, **run 19 October 2026** on the M5 Max (`phase0/next/cpu_items/item6_forgetting/`,
+   cross-checked by an independent implementation): ForgetGenUse All / OOD 0.150 / 0.408 for `ft_un_rep`,
+   0.117 / 0.272 for `ft_un_div`, 0.107 / 0.174 for `ft_un_random` (descriptive). If [PR] E0.6 OD 11
    picks FLORES+ devtest as the second out-of-domain set, those 30 checkpoints are decoded on it
    the same way on the 5090 (the outline's N1; the checkpoints are on the box in `~/redecode/`); WMT24++
    is paragraph-level and is not used for this arm (OD 11). E0.6's own evaluation must write
