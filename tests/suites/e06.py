@@ -1675,11 +1675,11 @@ def reproduce_checks(ctx, S):
     rc, out = run6(ctx, "--reproduce-check", "--ref-r0", rdir / "R0.npy", "--ref-a-narrow", rdir / "A_42_58.npy", *base_args(fx))
     me = m.interpreter()
     if all(me[k] == v for k, v in m.REFERENCE_INTERPRETER.items()):
-        check("on the interpreter that wrote the scratch files (3.14.3, Unicode 16.0.0, x86_64), --reproduce-check needs "
+        check("on the reference interpreter (3.14.3, Unicode 16.0.0, arm64), --reproduce-check needs "
               "no interpreter override", rc == 0 and out.count("REPRODUCED") == 2, out[-300:])
     else:
         check("on another interpreter, --reproduce-check refuses unless the override is asked for",
-              rc == 1 and "scratch index files were written by Python 3.14.3" in out and "x86_64" in out, out[-300:])
+              rc == 1 and "reference interpreter for the scratch index files is Python 3.14.3" in out and "arm64" in out, out[-300:])
 
 
 def usage_checks(ctx, S):

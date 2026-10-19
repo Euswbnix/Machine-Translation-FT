@@ -140,9 +140,13 @@ PINNED_REFERENCE = {                       # phase0/next/SHA256SUMS, vocab/
 PINNED_LEX = "7570fcb81cfc1870be21a5cd6d04c088847ef9887e54604a8c938c248207e3ac"   # SHA256SUMS, vocab/lex.pkl
 PINNED_SPM = "d1c10ea80fb95984f3f240b3579c87a16313b77aa9bc103ca0d6a0e06672a561"   # spm_enfr_v1_fixed.model (spec 3.1)
 REFERENCE_CAPS = (42000, 58000)
-# wrote the scratch files: /usr/local/bin/python3, an x86_64 build that runs under Rosetta on
-# the M3 Max (platform.machine() == "x86_64", not arm64), numpy 2.4.5
-REFERENCE_INTERPRETER = {"python": "3.14.3", "unidata_version": "16.0.0", "machine": "x86_64"}
+# The scratch files were written by /usr/local/bin/python3, an x86_64 build under Rosetta on the M3
+# Max (numpy 2.4.5). That interpreter was retired with the Intel Homebrew on 2026-10-19. The
+# reference is now the arm64 build on the M5 Max (~/e06env/venv-arm64: python-build-standalone
+# 3.14.3, numpy 2.4.5, Unicode 16.0.0). On 2026-10-19 its --reproduce-check (then run with
+# --allow-other-interpreter) rebuilt R0.npy and A_narrow_42_58.npy row for row and the six E0.5
+# anchors byte for byte (log: ~/e06runs/reproduce_check_arm64.log on the M5 Max).
+REFERENCE_INTERPRETER = {"python": "3.14.3", "unidata_version": "16.0.0", "machine": "arm64"}
 
 # Counts the pinned inputs must give (spec sections 4-6). Checked only when every input is
 # the pinned one: a fixture or an unpinned input gives other counts by design.
@@ -2188,9 +2192,9 @@ def measure_mode(a) -> int:
 def reproduce_check(a) -> int:
     me = interpreter()
     if not a.allow_other_interpreter and any(me[k] != v for k, v in REFERENCE_INTERPRETER.items()):
-        raise Stop(f"the scratch index files were written by Python {REFERENCE_INTERPRETER['python']} with Unicode "
-                   f"{REFERENCE_INTERPRETER['unidata_version']} on {REFERENCE_INTERPRETER['machine']} "
-                   f"(/usr/local/bin/python3); this is Python {me['python']} with Unicode {me['unidata_version']} on "
+        raise Stop(f"the reference interpreter for the scratch index files is Python {REFERENCE_INTERPRETER['python']} "
+                   f"with Unicode {REFERENCE_INTERPRETER['unidata_version']} on {REFERENCE_INTERPRETER['machine']} "
+                   f"(the M5 Max's ~/e06env/venv-arm64); this is Python {me['python']} with Unicode {me['unidata_version']} on "
                    f"{me['machine']}, whose \\w+ tokens or floats can differ (spec 3.2, A31)")
     if tuple(a.ref_caps) != REFERENCE_CAPS and not a.allow_unpinned_src:
         raise Stop(f"--ref-caps other than {REFERENCE_CAPS} is for the test fixtures only (--allow-unpinned-src)")

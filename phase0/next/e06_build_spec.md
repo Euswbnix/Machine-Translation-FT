@@ -1,5 +1,11 @@
 # Build specification for `phase0/e06_build.py` (E0.6)
 
+> **Update 2026-10-19.** The reference interpreter is now the arm64 build on the M5 Max
+> (`~/e06env/venv-arm64`: Python 3.14.3, numpy 2.4.5, Unicode 16.0.0); the x86_64
+> `/usr/local/bin/python3` named below was retired with the Intel Homebrew. On the M5 Max,
+> `--reproduce-check` rebuilt `R0.npy` and `A_narrow_42_58.npy` row for row and the E0.5 anchors
+> byte for byte, so the scratch files written under x86_64 are reproduced there.
+
 **Status: SPECIFICATION ONLY, written 2026-10-18. No code is written here, and nothing here is
 registered.** It says exactly what `e06_build.py` must do so that the E0.6 sets are what
 `phase0/prereg_drafts.md` ("E0.6", lines 117-552, and its OPEN DECISIONS, lines 553-694) describes,
