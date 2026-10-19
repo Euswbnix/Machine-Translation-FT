@@ -359,10 +359,14 @@ the pre-registration work are.
    were not kept: `~/mt_local/phase0_final/e05_results/` (archive sha256 `b671180f…`) [R] holds
    only the BLEU cache (`.e03_collect_cache.json`, scores without hypotheses), and
    `e05_artifacts.tar.gz` holds data, logs, configs and the filtered held-out files (checked
-   2026-10-16), because `e03_collect.py` parses only the BLEU score. So this item needs a
-   re-decode of the 30 kept `final.pt` on newstest2014 on R1 first; after that it is CPU work.
-   If [PR] E0.6 OD 11 picks FLORES+ devtest as the second out-of-domain set, the same R1
-   re-decode also covers FLORES+ devtest for those 30 checkpoints (the outline's N1); WMT24++
+   2026-10-16), because `e03_collect.py` parses only the BLEU score. **Re-decoded 18 October 2026 on the
+   author's RTX 5090** (`phase0/e05_redecode.py`, at E0.5's Machine_translation revision, with every
+   config, test file, checkpoint and the eval script pinned by sha256): the 30 kept `final.pt` and
+   the base on newstest2014 and heldout_un, and **62 of 62 reproduce the recorded BLEU exactly**.
+   Hypotheses: `~/mt_local/phase0_final/e05_redecode/` (sha256 per file in
+   `phase0/next/e05_redecode/redecode_report.json`). This item is now CPU work. If [PR] E0.6 OD 11
+   picks FLORES+ devtest as the second out-of-domain set, those 30 checkpoints are decoded on it
+   the same way on the 5090 (the outline's N1; the checkpoints are on the box in `~/redecode/`); WMT24++
    is paragraph-level and is not used for this arm (OD 11). E0.6's own evaluation must write
    its outputs ([PR] E0.6 OD 11).
 7. **The base's replayed rows (§0.2). Done 18 October 2026** on the training box, with an
@@ -665,7 +669,7 @@ Rentals are R1 to R7. The author rents when told; each rental follows §6.5.
 | --- | --- | --- | --- |
 | Sat 17 - Fri 23 Oct | Done 17 Oct: sources and scripts in `phase0/next/`, bulk files in `~/mt_local/phase0_next/`, sha256 of all of them in `phase0/next/SHA256SUMS` (header). By Wed 21 Oct, §3.2 item 1: fetch the SentencePiece model from the HF release, check `d1c10ea8…`, and compute coverage on the E0.5 sets and on R0 and A_narrow (the other E0.6 sets once `e06_build.py` generates them); [PR] E0.6 OD 1 and risk 2's mitigation need this statistic. Prepare the Mac for [PR] E0.6 OD 16's checks: use `~/mt_local/venv` (pyarrow 25.0.1 present), install `sentencepiece` there, and fetch the newstest2014 test split from the pinned `wmt/wmt14@b199e406`. Turn the E0.6 pre-registration draft into PROTOCOL.md text with its OPEN DECISIONS still open; write fail-closed `e06_build.py` and dry-run it on the Mac (it must reproduce `R0.npy` and `A_narrow_42_58.npy` row for row); CPU items 2-5 of §3.2. | Nothing to decide yet; the E0.6 decisions (§7) wait for the reading week. | none |
 | Mon 26 Oct - Sun 1 Nov | Revise the existing drafts (the E0.6, E0.7 and E1.0 pre-registration drafts and the EAMT outline, all dated 2026-10-16) as the reading comes in. Prepare the inputs §7 lists for the E0.6 decisions: the piece-level and newstest2014 checks ([PR] E0.6 OD 16); Saunders & DeNeefe's coverage once the author has read them (OD 1); with `e06_build.py`, div_narrow's ±2% feasibility under each OD 1 option and each OD 2 rule, and whether div_narrow_dd's build passes (OD 5). | **Reading week**: the ten papers in §6.2, each with its first check; Erdmann & Gwinnup 2018 and Azpeitia et al. 2018 before the E0.6 decisions on Sunday 1 Nov (§6.2); then, as time allows, the other unopened pre-emption leads (§6.2). **Sun 1 Nov: answer [PR] E0.6 OD 1-18 (§7).** | none |
-| Mon 2 - Sun 8 Nov | Write the E0.6 decisions into PROTOCOL.md; re-run `e06_build.py`'s dry run with the chosen options (div_narrow within ±2% under the chosen measure; div_narrow_dd if OD 5(b)) and fill [PR] E0.6's "Measured on the sets before any run" table from it; then the second pre-flight audit; tag `e06-prereg-v1` (target Tue 3 Nov); monitor R1, pull and sha-check results and decoded outputs; E0.6 report. Finish the E0.7 pre-registration; by Thu 5 Nov, estimate the en-de base cost from the original runs' logs (to check), so it is ready for the E0.7 decisions on Fri 6 Nov. | Rent R1 once the tag is pushed. If [PR] E0.6 OD 11 picks FLORES+ devtest, accept its terms on your own Hugging Face account and place the token (or the files) on the box before R1. Decide E0.7 (§7) by Fri 6 Nov. | **R1**, 4x RTX 5090, about 5-6 h with setup without E0.6-LR: E0.6 (40 runs, about 3.5-4 h, derived in §3.1; 45 runs and about 0.5 h more with OD 5(b)); the cache warm-up (25 minutes on E0.5's box, §6.5); re-decode E0.5's 30 kept checkpoints on newstest2014, whose outputs were not kept, and also on FLORES+ devtest if [PR] E0.6 OD 11 picks it (§3.2 item 6; time to measure). With E0.6-LR (OD 17), if registered separately, about 1.5 h more (15 × 0.39 / 4, derived): about 6-7 h. If the tag slips: a session of its own at the start of the R2 window, before the en-de work. |
+| Mon 2 - Sun 8 Nov | Write the E0.6 decisions into PROTOCOL.md; re-run `e06_build.py`'s dry run with the chosen options (div_narrow within ±2% under the chosen measure; div_narrow_dd if OD 5(b)) and fill [PR] E0.6's "Measured on the sets before any run" table from it; then the second pre-flight audit; tag `e06-prereg-v1` (target Tue 3 Nov); monitor R1, pull and sha-check results and decoded outputs; E0.6 report. Finish the E0.7 pre-registration; by Thu 5 Nov, estimate the en-de base cost from the original runs' logs (to check), so it is ready for the E0.7 decisions on Fri 6 Nov. | Rent R1 once the tag is pushed. If [PR] E0.6 OD 11 picks FLORES+ devtest, accept its terms on your own Hugging Face account and place the token (or the files) on the box before R1. Decide E0.7 (§7) by Fri 6 Nov. | **R1**, 4x RTX 5090, about 5-6 h with setup without E0.6-LR: E0.6 (40 runs, about 3.5-4 h, derived in §3.1; 45 runs and about 0.5 h more with OD 5(b)); the cache warm-up (25 minutes on E0.5's box, §6.5); (E0.5's re-decode on newstest2014 is done on the author's 5090, §3.2 item 6; a FLORES+ devtest decode, if [PR] E0.6 OD 11 picks it, also goes on the 5090.) With E0.6-LR (OD 17), if registered separately, about 1.5 h more (15 × 0.39 / 4, derived): about 6-7 h. If the tag slips: a session of its own at the start of the R2 window, before the en-de work. |
 | Mon 9 - Sun 22 Nov | Tag `e07-prereg-v1` before the base is trained; finish the E1.0 pre-registration. | Rent R2. Read Shang et al. (Table 5 setup) and Pang et al. 2024 (§6.2), then decide E1.0 (§7) by Fri 20 Nov. | **R2**, 4x RTX 5090: en-de base training (duration to measure), then 15 (or 30) fine-tunes. A free card can carry the en->zh run, which is outside this plan (§6.5). |
 | Mon 23 Nov - Sun 6 Dec | Tag `e10-prereg-v1`; E0.7 report. | Rent R3. FLORES+ is gated: accept its terms on your own Hugging Face account and place the token on the box yourself, in every option; if Gemma, accept its licence too. | **R3**, 4x B200 (§6.5): E1.0 pilot and gate, then 30 runs (+5 or +10 optional, [PR] E1.0 OD 11; +3 optional, OD 1(d) / OD 14), about 14 h wall-clock as estimated for 4x RTX 5090, less on B200 (to measure in the pilot; about 2-4 h more with the OD 11 runs, about 2 h more with the OD 1(d) runs, on the same basis); extra metrics (chrF, MetricX-24, COMET-22) on E0.x outputs. |
 | Mon 7 Dec - Sun 3 Jan | Analysis; EAMT draft v1 by Fri 18 Dec. | Second-tier reading (§6.2). | none |
@@ -892,10 +896,13 @@ counts, and the report scripts.
   1.26.4 (pyarrow 19.0.1 was installed); the tokenisation pool is sized at `cpu_count() // 2`,
   192 processes on a 384-thread host, which made the cache warm-up take 25 minutes. Cap it.
 - RTX 5090 (Blackwell) needs CUDA 12.8 or later builds; E0.5 ran torch 2.14.1+cu132 [Gl] [R].
-- Hardware (the author's choice, 17 October 2026): every training and retraining job (the
-  fine-tune matrices, the en-de base) uses a standard 4-GPU rental, 4x RTX 5090; the LLM arm
-  (E1.0) uses 4x B200. The author's own RTX 5090 is also available when it is free; the zh->en run
-  (outside this plan) continues there, and its en->zh counterpart waits for a free rental card. The
+- Hardware (the author's choice, 17-18 October 2026): every training and retraining job (the
+  fine-tune matrices, the en-de base, en->zh) uses a standard 4-GPU rental, 4x RTX 5090; the LLM
+  arm (E1.0) uses 4x B200. The zh->en run (outside this plan) finished on the author's RTX 5090,
+  which from now on does GPU inference and evaluation only (decoding, metric scoring), not
+  training. CPU-only work goes on the author's Macs (M5 Max first, then M3 Max) or the training
+  box's CPU; Claude allocates these. Anything whose result depends on the training CPU itself
+  (the base-replay reconstruction, §0.2) stays on that box. The
   MT trainer (`Machine_translation/train.py`) is single-GPU (no DDP): a single model, such as the
   en-de base, trains on one card while the other cards take other jobs, as E0.5's runs did.
   Multi-GPU training for one model would be a separate change, tested before use.

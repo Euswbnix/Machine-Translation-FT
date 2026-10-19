@@ -811,9 +811,9 @@ and recommendation, answered by the dates in WMT2027_PLAN section 7. The slots d
 - **N1. NMT-arm additions without new training.** chrF and a neural metric on the E0.5 outputs,
   FLORES+ devtest decoding of the kept checkpoints (if prereg E0.6 OD 11 picks it; WMT24++ is
   paragraph-level and unsuited to this arm, OD 11), language-ID and length-ratio rates per half,
-  and the F3 depth sweep. E0.5's decoded outputs were not kept (only the BLEU cache), so the metric
-  items need a re-decode of the 30 kept `final.pt` first; when and at what cost: WMT2027_PLAN
-  section 3.2 (items 3, 5, 6) and section 4 (R1, R3).
+  and the F3 depth sweep. E0.5's decoded outputs were not kept, but were re-decoded on 18 Oct with
+  every recorded BLEU reproduced exactly (62 of 62), so the metric items can run on them; when and
+  at what cost: WMT2027_PLAN section 3.2 (items 3, 5, 6) and section 4 (R3).
 - **N2. Correct internal wording** that says E0.5 matched the random arm in QE (only the halves are
   equal, and that was measured, not built in; vocab memo question 1; WMT2027_PLAN section 6.2).
 
