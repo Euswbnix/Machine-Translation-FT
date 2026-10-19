@@ -1,0 +1,44 @@
+{
+ "kind": "default",
+ "disabled_features": "",
+ "numpy": "2.2.6",
+ "B1": 49174,
+ "same_composition_as_main_e1": true,
+ "replayed_rows": 4221799,
+ "replayed_rows_overlap_with_main": 4221799,
+ "jaccard_with_main": 1.0,
+ "B2": 49177,
+ "same_composition_as_main_e2": true,
+ "B3": 49180,
+ "same_composition_as_main_e3": true,
+ "logged": {
+  "B1": 49174,
+  "B1+B2": 98351
+ },
+ "matches_log": true,
+ "spike_groups_steps": [
+  [
+   10441,
+   10442,
+   10443,
+   10444
+  ],
+  [
+   12073,
+   12074,
+   12075,
+   12076
+  ]
+ ],
+ "spike_groups_rows": 1346,
+ "spike_10443_max_tgt_percentile": 99.742,
+ "spike_10443_max_src_percentile": 99.689,
+ "spike_12074_max_tgt_percentile": 99.439,
+ "spike_12074_max_src_percentile": 99.04,
+ "unstepped_tail_positions": [
+  22292,
+  22293
+ ],
+ "unstepped_tail_rows": 384,
+ "replayed_rows_check": 4221799
+}

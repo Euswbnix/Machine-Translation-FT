@@ -1,0 +1,51 @@
+hashes/raw counts 2.7 s
+tokenised 50.3 s
+{
+ "inputs": {
+  "train.clean.en": {
+   "sha256": "7230adc6c823d4df51407e445b1181ada450363dfe43507885c9f529d49b6b6e",
+   "bytes": 1440797904,
+   "newlines": 9312233,
+   "cr_bytes": 0
+  },
+  "train.clean.fr": {
+   "sha256": "b0a6ba91eeba2b4bdf28e8a73816a2bdd7ccbddd5f889fcc7d3f3f0a52dad7e2",
+   "bytes": 1663199551,
+   "newlines": 9312233,
+   "cr_bytes": 0
+  },
+  "spm_enfr_v1_fixed.model": {
+   "sha256": "d1c10ea80fb95984f3f240b3579c87a16313b77aa9bc103ca0d6a0e06672a561",
+   "bytes": 791029
+  },
+  "train.clean.en.cached_256.npz": {
+   "bytes": 1466205794
+  }
+ },
+ "lines": 9312233,
+ "empty_pairs_skipped": 0,
+ "dropped_over_256": 2261,
+ "kept": 9309972,
+ "cache_check": {
+  "cache_members": [
+   "src_offsets",
+   "src_tokens",
+   "tgt_offsets",
+   "tgt_tokens"
+  ],
+  "cache_dtypes": {
+   "src_offsets": "int64",
+   "src_tokens": "uint16",
+   "tgt_offsets": "int64",
+   "tgt_tokens": "uint16"
+  },
+  "cache_rows": 9309972,
+  "my_rows": 9309972,
+  "src_len_equal": true,
+  "tgt_len_equal": true,
+  "src_tokens_equal": true,
+  "tgt_tokens_equal": true
+ },
+ "index_to_line_sha256_rawbytes": "deef09030c490f04cad77664f49e556f908410f1a84c12b65b50c1295236ad0a",
+ "seconds": 51.7
+}

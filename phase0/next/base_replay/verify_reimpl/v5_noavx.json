@@ -1,0 +1,19 @@
+{
+ "kind": "default",
+ "disabled_features": "AVX512F AVX512CD AVX512_SKX AVX512_CLX AVX512_CNL AVX512_ICL AVX512_SPR AVX512_KNL AVX512_KNM AVX512FP16 AVX2 FMA3 F16C AVX",
+ "numpy": "2.2.6",
+ "B1": 49174,
+ "same_composition_as_main_e1": false,
+ "replayed_rows": 4221013,
+ "replayed_rows_overlap_with_main": 2470854,
+ "jaccard_with_main": 0.4137,
+ "B2": 49173,
+ "same_composition_as_main_e2": false,
+ "B3": 49176,
+ "same_composition_as_main_e3": false,
+ "logged": {
+  "B1": 49174,
+  "B1+B2": 98351
+ },
+ "matches_log": false
+}

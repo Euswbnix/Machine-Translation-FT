@@ -1,0 +1,62 @@
+row features 2.2 s
+scored 39.5 s
+{
+ "B": [
+  49174,
+  49177,
+  49180
+ ],
+ "log": {
+  "end_epoch1_step": 49174,
+  "end_epoch2_step": 98351,
+  "s1_steps": 100000,
+  "s2_steps": 22294,
+  "spike_steps": [
+   10443,
+   12074
+  ]
+ },
+ "P3_batches_used": 1649,
+ "K_pred": 208,
+ "T0": {
+  "r_s1P1_vs_s2": 0.08702317848951387,
+  "n": 212,
+  "r_s1P2_vs_s2_control": 0.004140986171426201,
+  "n_control": 212
+ },
+ "summary_K_pred": {
+  "T1_session1": {
+   "value": 0.2818847171125241,
+   "rank_among_2049_K": 1,
+   "others_mean": 0.0026815751937987412,
+   "others_sd": 0.05695125323004656,
+   "others_max": 0.2818847171125241,
+   "z_vs_others": 4.902493379573644
+  },
+  "T1_session2": {
+   "value": 0.25105382592749326,
+   "rank_among_2049_K": 2,
+   "others_mean": 0.012162459167592284,
+   "others_sd": 0.0789194512809291,
+   "others_max": 0.2639537378170412,
+   "z_vs_others": 3.027027721081344
+  },
+  "T2_min_spike_percentile": {
+   "value": 0.9993085636426494,
+   "rank_among_2049_K": 1,
+   "others_mean": 0.30923831739470853,
+   "others_sd": 0.22232199927713928,
+   "others_max": 0.9993085636426494,
+   "z_vs_others": 3.1039224570291943
+  },
+  "T2_spike_percentiles_at_K_pred": [
+   0.9993289000061009,
+   0.9993085636426494
+  ]
+ },
+ "best_K_session1": 207,
+ "best_K_session2": 1044,
+ "best_K_spike": 207,
+ "seconds": 39.5
+}
+wall 39.60 s maxrss 4530412 kB

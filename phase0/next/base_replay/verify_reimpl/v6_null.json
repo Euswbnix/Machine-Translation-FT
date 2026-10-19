@@ -1,0 +1,104 @@
+{
+ "R": 2000,
+ "observed_replayed_share_of_exposed": {
+  "ft_un_div": 0.45975,
+  "ft_un_rep": 0.48287,
+  "ft_un_random": 0.47136,
+  "ft_topk_div": 0.45553,
+  "ft_topk_rep": 0.47558,
+  "R0": 0.46698,
+  "A_narrow": 0.46569
+ },
+ "contrasts": [
+  {
+   "a": "ft_un_rep",
+   "b": "ft_un_div",
+   "rows": "all exposed rows",
+   "observed_diff": 0.02312,
+   "null_mean": 0.02068,
+   "null_sd": 0.00251,
+   "p_two_sided": 0.324
+  },
+  {
+   "a": "ft_un_rep",
+   "b": "ft_un_div",
+   "rows": "single-line rows",
+   "observed_diff": 0.00263,
+   "null_mean": 0.00012,
+   "null_sd": 0.00265,
+   "p_two_sided": 0.333
+  },
+  {
+   "a": "ft_un_div",
+   "b": "ft_un_random",
+   "rows": "all exposed rows",
+   "observed_diff": -0.01161,
+   "null_mean": -0.01005,
+   "null_sd": 0.00244,
+   "p_two_sided": 0.506
+  },
+  {
+   "a": "ft_un_div",
+   "b": "ft_un_random",
+   "rows": "single-line rows",
+   "observed_diff": -0.00185,
+   "null_mean": -3e-05,
+   "null_sd": 0.00253,
+   "p_two_sided": 0.466
+  },
+  {
+   "a": "ft_topk_rep",
+   "b": "ft_topk_div",
+   "rows": "all exposed rows",
+   "observed_diff": 0.02005,
+   "null_mean": 0.01913,
+   "null_sd": 0.00208,
+   "p_two_sided": 0.656
+  },
+  {
+   "a": "ft_topk_rep",
+   "b": "ft_topk_div",
+   "rows": "single-line rows",
+   "observed_diff": 0.00091,
+   "null_mean": 7e-05,
+   "null_sd": 0.00216,
+   "p_two_sided": 0.704
+  },
+  {
+   "a": "R0",
+   "b": "ft_un_div",
+   "rows": "all exposed rows",
+   "observed_diff": 0.00723,
+   "null_mean": 0.00467,
+   "null_sd": 0.00248,
+   "p_two_sided": 0.288
+  },
+  {
+   "a": "R0",
+   "b": "ft_un_div",
+   "rows": "single-line rows",
+   "observed_diff": 0.00272,
+   "null_mean": 0.00015,
+   "null_sd": 0.00255,
+   "p_two_sided": 0.302
+  },
+  {
+   "a": "A_narrow",
+   "b": "R0",
+   "rows": "all exposed rows",
+   "observed_diff": -0.00129,
+   "null_mean": 6e-05,
+   "null_sd": 0.00152,
+   "p_two_sided": 0.38
+  },
+  {
+   "a": "A_narrow",
+   "b": "R0",
+   "rows": "single-line rows",
+   "observed_diff": -0.00139,
+   "null_mean": -6e-05,
+   "null_sd": 0.00157,
+   "p_two_sided": 0.396
+  }
+ ]
+}

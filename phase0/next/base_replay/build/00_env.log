@@ -1,0 +1,23 @@
+date: 2026-10-18T20:23:41-04:00
+Linux euswbnix 6.14.0-37-generic #37~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Thu Nov 20 10:25:38 UTC 2 x86_64 x86_64 x86_64 GNU/Linux
+Model name:                              AMD Ryzen 9 9950X3D 16-Core Processor
+32
+python 3.10.18
+numpy 2.2.6
+sentencepiece 0.2.1
+--- sha256 of inputs
+7230adc6c823d4df51407e445b1181ada450363dfe43507885c9f529d49b6b6e  /home/jizheng_huang_sysmt/workspace/Machine_translation/data_enfr_v1/train.clean.en
+b0a6ba91eeba2b4bdf28e8a73816a2bdd7ccbddd5f889fcc7d3f3f0a52dad7e2  /home/jizheng_huang_sysmt/workspace/Machine_translation/data_enfr_v1/train.clean.fr
+d1c10ea80fb95984f3f240b3579c87a16313b77aa9bc103ca0d6a0e06672a561  /home/jizheng_huang_sysmt/workspace/Machine_translation/data_enfr_v1/spm_enfr_v1_fixed.model
+d87da8cf3397603402121832916d97c842c7c9b37ab359c553d540e017ad2aa7  /home/jizheng_huang_sysmt/workspace/Machine_translation/data_enfr_v1/train.clean.en.cached_256.npz
+/home/jizheng_huang_sysmt/workspace/Machine_translation/data_enfr_v1/train.clean.en 1440797904 2026-04-23 23:57:53.112607768 -0400
+/home/jizheng_huang_sysmt/workspace/Machine_translation/data_enfr_v1/train.clean.fr 1663199551 2026-04-23 23:57:52.949605812 -0400
+/home/jizheng_huang_sysmt/workspace/Machine_translation/data_enfr_v1/spm_enfr_v1_fixed.model 791029 2026-04-24 00:00:47.738713625 -0400
+/home/jizheng_huang_sysmt/workspace/Machine_translation/data_enfr_v1/train.clean.en.cached_256.npz 1466205794 2026-04-24 00:02:26.463912235 -0400
+--- April code on box vs bde629a (sha256 prefixes recorded on the Mac: dataset 593d4550c323c71c, trainer 7cf423eec974462c)
+593d4550c323c71c94eb4bf37521680f8d2fd07fd6dfdf40f86ceee3fda2cb83  /home/jizheng_huang_sysmt/workspace/Machine_translation/src/data/dataset.py
+7cf423eec974462c0e33728decb31bfb84c15621bd33529b0fe56a23d87f923d  /home/jizheng_huang_sysmt/workspace/Machine_translation/src/training/trainer.py
+--- line counts and CR counts
+/home/jizheng_huang_sysmt/workspace/Machine_translation/data_enfr_v1/train.clean.en lines=9312233 CR=0
+/home/jizheng_huang_sysmt/workspace/Machine_translation/data_enfr_v1/train.clean.fr lines=9312233 CR=0
+staged in 4s

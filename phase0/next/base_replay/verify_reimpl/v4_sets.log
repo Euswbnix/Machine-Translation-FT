@@ -1,0 +1,163 @@
+{
+ "e06_index_files": {
+  "R0": {
+   "rows": 214489,
+   "all_un": true
+  },
+  "A_narrow": {
+   "rows": 214489,
+   "all_un": true
+  }
+ },
+ "rows_pkl_order_check": {
+  "rows": 926999,
+  "file_rows": 926999,
+  "len_en_equal": true,
+  "len_fr_equal": true,
+  "un_equal": true,
+  "in_ft_un_random_equal": true,
+  "in_ft_random_small_equal": true
+ },
+ "per_set": {
+  "ft_un_div": {
+   "rows": 214489,
+   "distinct_pairs": 214489,
+   "exposed_rows": 78778,
+   "exposed_share": 0.36728,
+   "exposed_only_via_dropped_lines": 0,
+   "exposed_and_replayed_any_copy": 36218,
+   "exposed_and_replayed_all_copies": 34683,
+   "replayed_share_of_exposed": 0.45975,
+   "replayed_share_of_all_rows": 0.16886,
+   "mean_exposure_count_of_exposed": 2.5894,
+   "exposed_rows_on_more_than_one_line": 2859,
+   "single_line_rows": 75919,
+   "single_line_replayed_share": 0.45002
+  },
+  "ft_un_rep": {
+   "rows": 214489,
+   "distinct_pairs": 214489,
+   "exposed_rows": 78732,
+   "exposed_share": 0.36707,
+   "exposed_only_via_dropped_lines": 0,
+   "exposed_and_replayed_any_copy": 38017,
+   "exposed_and_replayed_all_copies": 33346,
+   "replayed_share_of_exposed": 0.48287,
+   "replayed_share_of_all_rows": 0.17724,
+   "mean_exposure_count_of_exposed": 2.878,
+   "exposed_rows_on_more_than_one_line": 8174,
+   "single_line_rows": 70558,
+   "single_line_replayed_share": 0.45265
+  },
+  "ft_un_random": {
+   "rows": 214489,
+   "distinct_pairs": 214489,
+   "exposed_rows": 81333,
+   "exposed_share": 0.37919,
+   "exposed_only_via_dropped_lines": 0,
+   "exposed_and_replayed_any_copy": 38337,
+   "exposed_and_replayed_all_copies": 35181,
+   "replayed_share_of_exposed": 0.47136,
+   "replayed_share_of_all_rows": 0.17874,
+   "mean_exposure_count_of_exposed": 2.7423,
+   "exposed_rows_on_more_than_one_line": 5484,
+   "single_line_rows": 75849,
+   "single_line_replayed_share": 0.45187
+  },
+  "ft_topk_div": {
+   "rows": 242022,
+   "distinct_pairs": 242022,
+   "exposed_rows": 128139,
+   "exposed_share": 0.52945,
+   "exposed_only_via_dropped_lines": 0,
+   "exposed_and_replayed_any_copy": 58371,
+   "exposed_and_replayed_all_copies": 57126,
+   "replayed_share_of_exposed": 0.45553,
+   "replayed_share_of_all_rows": 0.24118,
+   "mean_exposure_count_of_exposed": 2.5381,
+   "exposed_rows_on_more_than_one_line": 2371,
+   "single_line_rows": 125768,
+   "single_line_replayed_share": 0.45079
+  },
+  "ft_topk_rep": {
+   "rows": 242022,
+   "distinct_pairs": 242022,
+   "exposed_rows": 102692,
+   "exposed_share": 0.42431,
+   "exposed_only_via_dropped_lines": 0,
+   "exposed_and_replayed_any_copy": 48838,
+   "exposed_and_replayed_all_copies": 44004,
+   "replayed_share_of_exposed": 0.47558,
+   "replayed_share_of_all_rows": 0.20179,
+   "mean_exposure_count_of_exposed": 2.7958,
+   "exposed_rows_on_more_than_one_line": 8467,
+   "single_line_rows": 94225,
+   "single_line_replayed_share": 0.4517
+  },
+  "ft_random_small": {
+   "rows": 242022,
+   "distinct_pairs": 242022,
+   "exposed_rows": 141555,
+   "exposed_share": 0.58488,
+   "exposed_only_via_dropped_lines": 0,
+   "exposed_and_replayed_any_copy": 65343,
+   "exposed_and_replayed_all_copies": 63019,
+   "replayed_share_of_exposed": 0.46161,
+   "replayed_share_of_all_rows": 0.26999,
+   "mean_exposure_count_of_exposed": 2.5978,
+   "exposed_rows_on_more_than_one_line": 4049,
+   "single_line_rows": 137506,
+   "single_line_replayed_share": 0.45312
+  },
+  "R0": {
+   "rows": 214489,
+   "distinct_pairs": 214489,
+   "exposed_rows": 80762,
+   "exposed_share": 0.37653,
+   "exposed_only_via_dropped_lines": 0,
+   "exposed_and_replayed_any_copy": 37714,
+   "exposed_and_replayed_all_copies": 35466,
+   "replayed_share_of_exposed": 0.46698,
+   "replayed_share_of_all_rows": 0.17583,
+   "mean_exposure_count_of_exposed": 2.6569,
+   "exposed_rows_on_more_than_one_line": 4055,
+   "single_line_rows": 76707,
+   "single_line_replayed_share": 0.45274
+  },
+  "A_narrow": {
+   "rows": 214489,
+   "distinct_pairs": 214489,
+   "exposed_rows": 80981,
+   "exposed_share": 0.37755,
+   "exposed_only_via_dropped_lines": 0,
+   "exposed_and_replayed_any_copy": 37712,
+   "exposed_and_replayed_all_copies": 35461,
+   "replayed_share_of_exposed": 0.46569,
+   "replayed_share_of_all_rows": 0.17582,
+   "mean_exposure_count_of_exposed": 2.6559,
+   "exposed_rows_on_more_than_one_line": 4098,
+   "single_line_rows": 76883,
+   "single_line_replayed_share": 0.45135
+  }
+ },
+ "builder_comparison": {
+  "index_to_line_equal": true,
+  "replayed_row_mask": {
+   "shape_equal": true,
+   "builder_true": 4221799,
+   "mine_true": 4221799,
+   "disagreeing_rows": 0
+  },
+  "replayed_line_mask_disagreeing_lines": 0,
+  "exposure_count_by_line_disagreeing": 0,
+  "p1_position_by_line": {
+   "builder_dtype": "int32",
+   "builder_shape": [
+    9312233
+   ],
+   "disagreeing_lines": 0
+  },
+  "p3prefix_line_mask_disagreeing": 0,
+  "per_set_vs_builder": "could not read builder results.json: KeyError('per_set')"
+ }
+}

@@ -1,0 +1,19 @@
+{
+ "kind": "stable",
+ "disabled_features": "",
+ "numpy": "2.2.6",
+ "B1": 49175,
+ "same_composition_as_main_e1": false,
+ "replayed_rows": 4220679,
+ "replayed_rows_overlap_with_main": 2477693,
+ "jaccard_with_main": 0.4154,
+ "B2": 49174,
+ "same_composition_as_main_e2": false,
+ "B3": 49181,
+ "same_composition_as_main_e3": false,
+ "logged": {
+  "B1": 49174,
+  "B1+B2": 98351
+ },
+ "matches_log": false
+}

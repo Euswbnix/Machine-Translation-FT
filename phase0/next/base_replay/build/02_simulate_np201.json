@@ -1,0 +1,44 @@
+{
+ "numpy": "2.0.1",
+ "numpy_file": "/home/jizheng_huang_sysmt/replay_check/build/np201/numpy/__init__.py",
+ "rows": 9309972,
+ "trainer_len_sampler": 48490,
+ "epochs": [
+  {
+   "epoch": 1,
+   "B": 49174,
+   "seconds": 4.7,
+   "presort_shuffle_sha256": "f4321d1c324cac648fd118051c7e712bcce797414ae86bb394389b96675dc41d",
+   "sorted_order_sha256": "9e65931a24c0fe00d06b18edd50883ef0220ab78121b62804c32481dc27d73ff",
+   "rows_per_batch_min_max": [
+    27,
+    192
+   ],
+   "batches_lt_192_rows": 3096
+  },
+  {
+   "epoch": 2,
+   "B": 49177,
+   "seconds": 4.5,
+   "presort_shuffle_sha256": "32fb09f9a14db787056d27a01a8e9aa5f9914fa4840d04a126790ee4fe7ace27",
+   "sorted_order_sha256": "2cbacad63eb6425e7f443d5eb66a5dc6e99f2e90166ede01a0edefecad208da0",
+   "rows_per_batch_min_max": [
+    63,
+    192
+   ],
+   "batches_lt_192_rows": 3079
+  },
+  {
+   "epoch": 3,
+   "B": 49180,
+   "seconds": 4.6,
+   "presort_shuffle_sha256": "900ab67e9aa66694d45b163176200a641151bee088129c3667756e49ee998b78",
+   "sorted_order_sha256": "8219864b356a40217fa086b52492a26d85adac4711f5838e47160324290105e9",
+   "rows_per_batch_min_max": [
+    76,
+    192
+   ],
+   "batches_lt_192_rows": 3126
+  }
+ ]
+}

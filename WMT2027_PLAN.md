@@ -69,16 +69,20 @@ All results are on the CR-safe corpus. All fine-tuning starts from the same rele
 pretrained v1.1 Transformer-base (step 105,000, averaged; newstest2014 35.31 BLEU, heldout_un
 46.83) [R]. It is not called converged: README E0.2 finds every original cell under-trained
 (Base capped 12.4 tokens per parameter against a reference of about 36-41), and the question
-waits on re-measurement on the real cache [R]. How the base was trained (found 17 October 2026,
-from the code and the training records; to be written into README): steps 0-100,000 ran in one
-session (about 2.06 epochs of about 48,500 batches), then it was resumed from step 100,000 to
-122,294. The trainer reseeds on every start and does not skip consumed batches, so that second
-session re-trained the first 22,294 batches of the first epoch's order, about 46% of the rows, a
-content-random subset. The released average ("step 105,000") is the mean of steps 105,000 to
-122,294, all from that second session. No row went unseen; about 46% were seen three times and
-most recently, the rest twice. Every E0.3-E0.5 fine-tune ran in one session from that checkpoint
-(one resume line per log) and is not affected by the replay itself; §3.2 item 7 checks that the
-replayed rows are balanced across the E0.x sets.
+waits on re-measurement on the real cache [R]. How the base was trained (found 17 October 2026 from the code and the training records,
+reconstructed exactly on 18 October; to be written into README): steps 0-100,000 ran in one
+session (about 2.03 epochs; 49,174 / 49,177 / 49,180 batches in the first three epochs, matching the
+logged epoch ends at 49,174 and 98,351), then it was resumed from step 100,000 to 122,294. The
+trainer reseeds on every start and does not skip consumed batches, so the second session re-trained
+the first 22,294 batches of the first epoch's order: 4,221,799 of the 9,309,972 kept rows (45.35%).
+Over both sessions every row was seen at least twice (2: 4,917,868 rows; 3: 4,250,249; 4: 141,855).
+The released average ("step 105,000") is the mean of the checkpoints at 105,000, 110,000, 115,000,
+120,000 and 122,294, so a replayed batch enters it with a weight of 1.0 down to 0.2 by its position.
+Every E0.3-E0.5 fine-tune ran in one session from that checkpoint (one resume line per log). The
+replay was content-random with respect to every E0.5 and E0.6 set: per corpus line the replay rate
+is 44.97-45.37% in each set, and every between-set gap equals what the sets' duplicate pairs predict
+under a random replay (p >= 0.2 against re-draws); §3.2 item 7. The reconstruction depends on the
+training CPU's AVX-512 sort order and holds only on that machine; its masks are pinned by sha256.
 
 | date | experiment | result | source |
 | --- | --- | --- | --- |
@@ -105,7 +109,7 @@ replayed rows are balanced across the E0.x sets.
 2. **The repetitive half costs more with the source held fixed.** Inside UN text alone,
    matched on source, size and length histogram [B5], and with exact-pair pretraining exposure
    (36.7 / 36.7 / 37.9%) [P] and mean QE score (0.8990 against 0.8993 for the two halves) [Gv]
-   measured nearly equal, not matched by design, the half whose sentences share 8-grams with
+   measured nearly equal, not matched by design (exposure as a share of rows; how often the base saw those pairs is not equal: the repetitive half's exposed pairs sit on more corpus lines (1.158 against 1.043), so per row the base presented its pairs 1.056 times against 0.951 (base-replay check, 18 October 2026)), the half whose sentences share 8-grams with
    other rows costs 2.63 BLEU more on news [R]. That half is a bundle: shared 8-grams, a
    narrower vocabulary (25,134 against 33,874 source word types) and 8.45% duplicate sources
    [P]. E0.5 did not separate these strands.
@@ -361,7 +365,9 @@ the pre-registration work are.
    re-decode also covers FLORES+ devtest for those 30 checkpoints (the outline's N1); WMT24++
    is paragraph-level and is not used for this arm (OD 11). E0.6's own evaluation must write
    its outputs ([PR] E0.6 OD 11).
-7. **The base's replayed rows (§0.2):** rebuild the first-epoch batch order of the v1.1 base
+7. **The base's replayed rows (§0.2). Done 18 October 2026** on the training box, with an
+   independent re-implementation and a method audit; results in `phase0/next/base_replay/`. As planned:
+   rebuild the first-epoch batch order of the v1.1 base
    (`np.random.seed(42)`, one shuffle of the 9.31M row indices, the sampler's chunk sort and
    batching on the base's token lengths, `spm_enfr_v1_fixed`), mark the rows in its first 22,294
    batches, and report that share for every E0.5 and E0.6 set and for their pretraining-exposed
@@ -756,7 +762,8 @@ asserted things about papers nobody had read [P] [PA]. Therefore:
   (`how_to_position`) say the random comparison is matched on QE score. Fix them.
 - E0.5's UN sets are matched by construction on source, size and length histogram only [B5].
   Write "exact-pair pretraining exposure (36.7 / 36.7%) and mean QE (0.8990 / 0.8993) measured
-  nearly equal, not matched by design"; README's "matched pretraining exposure" [R] is not
+  nearly equal, not matched by design", and add that exposure frequency is not equal (1.056 against
+  0.951 presentations per row, from the repetitive half's duplicates; §0.2); README's "matched pretraining exposure" [R] is not
   carried over.
 - The [Gn:chimoto2024] draft sentence saying repetitiveness "accounts for most of the
   out-of-domain loss" overstates. No share is claimed (§1.4, item 8).

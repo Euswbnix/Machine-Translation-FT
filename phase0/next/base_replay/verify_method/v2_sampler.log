@@ -1,0 +1,137 @@
+Exception ignored in: <function GpuCollector.__del__ at 0x7d4483548430>
+Traceback (most recent call last):
+  File "/home/jizheng_huang_sysmt/miniconda/envs/DL/lib/python3.10/site-packages/swanlab/data/run/metadata/hardware/gpu/nvidia.py", line 267, in __del__
+    pynvml.nvmlShutdown()
+  File "/home/jizheng_huang_sysmt/miniconda/envs/DL/lib/python3.10/site-packages/pynvml.py", line 2970, in nvmlShutdown
+    _nvmlCheckReturn(ret)
+  File "/home/jizheng_huang_sysmt/miniconda/envs/DL/lib/python3.10/site-packages/pynvml.py", line 1083, in _nvmlCheckReturn
+    raise NVMLError(ret)
+pynvml.NVMLError_Uninitialized: Uninitialized
+{
+ "numpy": "2.2.6",
+ "swanlab_monitor": 6,
+ "mt_index_after_swanlab": 208,
+ "state_equals_208_words": true,
+ "B": [
+  49174,
+  49177,
+  49180
+ ],
+ "log_epoch_ends_match": true,
+ "P3_used": 1649,
+ "replayed_rows": 4221799,
+ "p3_rows": 312160,
+ "rows_by_exposure": {
+  "2": 4917868,
+  "3": 4250249,
+  "4": 141855
+ },
+ "replayed_mask_equal_builder": true,
+ "p3_mask_equal_builder": true,
+ "exposure_equal_builder": true,
+ "t_main_s": 4.2,
+ "toks_lines": [
+  998,
+  222
+ ],
+ "evals": [
+  [
+   10000,
+   19000,
+   23000,
+   26000,
+   29000,
+   31000,
+   33000,
+   35000,
+   37000,
+   39000,
+   41000,
+   43000,
+   45000,
+   47000,
+   49000,
+   51000,
+   53000,
+   55000,
+   57000,
+   59000,
+   61000,
+   63000,
+   65000,
+   67000,
+   69000,
+   71000,
+   73000,
+   75000,
+   77000,
+   79000,
+   81000,
+   83000,
+   85000,
+   87000,
+   89000,
+   91000,
+   93000,
+   95000,
+   97000,
+   99000
+  ],
+  [
+   110000,
+   112000,
+   114000,
+   116000,
+   118000,
+   120000,
+   122000
+  ]
+ ],
+ "toks_tests": {
+  "s1P1_vs_s2_all_w2_222": {
+   "pearson": 0.8879333051894827,
+   "spearman": 0.8585096345284882,
+   "n": 177
+  },
+  "s1P1_vs_s2_w2_199_(steps<20k)": {
+   "pearson": 0.8788725905501237,
+   "spearman": 0.8355385717697635,
+   "n": 159
+  },
+  "control_s1P2_vs_s2": {
+   "pearson": -0.09491606155124356,
+   "spearman": -0.06591580569646373,
+   "n": 118
+  },
+  "s2_logtoks_vs_my_efficiency": {
+   "pearson": 0.833722667045544,
+   "spearman": 0.8029487889752602,
+   "n": 177
+  },
+  "s1P1_logtoks_vs_my_efficiency_excl_20k_30k": {
+   "pearson": 0.9582670438044691,
+   "spearman": 0.9469619809320263,
+   "n": 272
+  },
+  "s1P1_logtoks_vs_my_efficiency_all_w50+": {
+   "pearson": 0.00565805569379452,
+   "spearman": 0.9384600191185394,
+   "n": 353
+  }
+ },
+ "B_stable_sort": [
+  49175,
+  49174,
+  49181
+ ],
+ "stable_sort_replayed_rows": 4220679,
+ "stable_sort_overlap_with_real": 2477693,
+ "seconds": 8.2
+}
+Exception ignored in: <function GpuCollector.__del__ at 0x7d4483548430>
+Traceback (most recent call last):
+  File "/home/jizheng_huang_sysmt/miniconda/envs/DL/lib/python3.10/site-packages/swanlab/data/run/metadata/hardware/gpu/nvidia.py", line 267, in __del__
+  File "/home/jizheng_huang_sysmt/miniconda/envs/DL/lib/python3.10/site-packages/pynvml.py", line 2970, in nvmlShutdown
+  File "/home/jizheng_huang_sysmt/miniconda/envs/DL/lib/python3.10/site-packages/pynvml.py", line 1083, in _nvmlCheckReturn
+pynvml.NVMLError_Uninitialized: Uninitialized
+wall 8.32 s maxrss 1038884 kB

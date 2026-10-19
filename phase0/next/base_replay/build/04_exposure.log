@@ -1,0 +1,73 @@
+verbatim [True, True, True] 13.4 s
+{
+ "K_words": 208,
+ "B": [
+  49174,
+  49177,
+  49180
+ ],
+ "perm_K207_equals_K208": true,
+ "verbatim_equal_per_epoch": [
+  true,
+  true,
+  true
+ ],
+ "session1_spike_groups_steps": [
+  [
+   10441,
+   10444
+  ],
+  [
+   12073,
+   12076
+  ]
+ ],
+ "session1_rows_grad_dropped": 1346,
+ "session2_unstepped_positions": [
+  22292,
+  22293
+ ],
+ "session2_rows_unstepped_at_interrupt": 384,
+ "rows": 9309972,
+ "corpus_lines": 9312233,
+ "dropped_lines": 2261,
+ "replayed_rows": 4221799,
+ "replayed_share_of_rows": 0.45347064416520266,
+ "p3_prefix_rows": 312160,
+ "rows_by_exposure": {
+  "2": 4917868,
+  "3": 4250249,
+  "4": 141855
+ },
+ "replayed_and_p3_prefix_rows": 141855,
+ "files_sha256": {
+  "replayed_line_mask.npy": "3188d808a2d9a515bda54804f9fbb5c6ccd34d336a41dd6807cb9fda517694bc",
+  "exposure_count_by_line.npy": "f03851729426e36fbae462aae10dd9b72d120dbae1fc6c5237d136e9fc8bc3bd",
+  "p3prefix_line_mask.npy": "99d660154f0e51231f879733492431ba5e63b9b9cf9845bc7bda305c3ed8d6a9",
+  "p1_position_by_line.npy": "23a0268a66302ff6fea089d80bc22c118c9f6c0aeef8cdeb4c27113c6e2ca279"
+ },
+ "window_corr_at_K": {
+  "session1_all": [
+   0.2818847171125241,
+   945
+  ],
+  "session1_P1_windows": [
+   0.3771175830138716,
+   441
+  ],
+  "session1_P2_windows": [
+   0.15228919978770872,
+   491
+  ],
+  "session1_P3_windows": [
+   0.6068252207270407,
+   11
+  ],
+  "session2_P1_prefix": [
+   0.25105382592749326,
+   212
+  ]
+ },
+ "seconds": 16.5
+}
+wall 16.81 s maxrss 5477792 kB

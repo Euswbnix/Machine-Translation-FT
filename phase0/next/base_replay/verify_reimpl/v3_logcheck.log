@@ -1,0 +1,141 @@
+{
+ "session1": {
+  "console_step_lines": 995,
+  "scalar_tokps": 994,
+  "epoch_lines": [
+   "End of epoch 1 | Step 49,174 | Elapsed 0h58m",
+   "End of epoch 2 | Step 98,351 | Elapsed 2h03m",
+   "End of epoch 3 | Step 100,000 | Elapsed 2h05m"
+  ],
+  "spike_steps": [
+   10443,
+   12074
+  ],
+  "save_lines": [
+   "48,490 batches/epoch, resuming at epoch 1 (step 0/48490)"
+  ],
+  "console_vs_scalar_tokps_agree": "989/989"
+ },
+ "session2": {
+  "console_step_lines": 221,
+  "scalar_tokps": 221,
+  "epoch_lines": [],
+  "spike_steps": [],
+  "save_lines": [
+   "Resumed from step 100000 (best BLEU: 29.83, next eval at 110000)",
+   "48,490 batches/epoch, resuming at epoch 3 (step 3020/48490)",
+   "Saving checkpoint at step 122294..."
+  ],
+  "console_vs_scalar_tokps_agree": "220/220"
+ },
+ "eligible_windows": {
+  "s1_P1": 392,
+  "s1_P2": 393,
+  "s1_P3": 13,
+  "s2_P1": 177
+ },
+ "v2_perm_equals_K208": true,
+ "K_scan": {
+  "K_range": [
+   0,
+   2000
+  ],
+  "K_giving_identical_epoch1_order": [
+   207,
+   208
+  ],
+  "s1_P1_r_at_208": 0.9600425666991262,
+  "s2_P1_r_at_208": 0.8303133016055126,
+  "s1_P1_rank_of_208": 1,
+  "s2_P1_rank_of_208": 1,
+  "s1_P1_other_K_max": 0.7331746052491511,
+  "s1_P1_other_K_argmax": 209,
+  "s1_P1_other_K_mean_sd": [
+   0.060278393447897316,
+   0.10671989264141249
+  ],
+  "s2_P1_other_K_max": 0.6352917640784796,
+  "s2_P1_other_K_argmax": 209,
+  "s2_P1_other_K_mean_sd": [
+   0.020119926469281773,
+   0.08220262742576255
+  ],
+  "top5_s1": [
+   [
+    208,
+    0.96
+   ],
+   [
+    207,
+    0.96
+   ],
+   [
+    210,
+    0.7332
+   ],
+   [
+    209,
+    0.7332
+   ],
+   [
+    205,
+    0.619
+   ]
+  ],
+  "top5_s2": [
+   [
+    207,
+    0.8303
+   ],
+   [
+    208,
+    0.8303
+   ],
+   [
+    210,
+    0.6353
+   ],
+   [
+    209,
+    0.6353
+   ],
+   [
+    205,
+    0.4792
+   ]
+  ]
+ },
+ "D_scan": {
+  "D_range": [
+   0,
+   500
+  ],
+  "P2_r_at_D0": 0.9592263078394833,
+  "P2_rank_D0": 1,
+  "P2_others_max": 0.6746802075229008,
+  "P3_r_at_D0": 0.9682173935968814,
+  "P3_rank_D0": 1,
+  "P3_others_max": 0.9682173935968814,
+  "P3_windows": 13
+ },
+ "spike_batches": [
+  {
+   "step": 10443,
+   "epoch": 1,
+   "position": 10442,
+   "batch": 45939,
+   "rows": 96,
+   "max_src": 241,
+   "max_tgt": 254
+  },
+  {
+   "step": 12074,
+   "epoch": 1,
+   "position": 12073,
+   "batch": 5475,
+   "rows": 98,
+   "max_src": 209,
+   "max_tgt": 249
+  }
+ ]
+}

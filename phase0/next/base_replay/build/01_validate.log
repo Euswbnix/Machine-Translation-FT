@@ -1,0 +1,123 @@
+{
+ "code": "TranslationDataset._build_from_text @ bde629a (box copy sha256 593d4550c323c71c...)",
+ "locale_encoding_now": "UTF-8",
+ "corpus_lines_binary": {
+  "train.clean.en": 9312233,
+  "train.clean.fr": 9312233
+ },
+ "corpus_lines_text_mode": {
+  "train.clean.en": 9312233,
+  "train.clean.fr": 9312233
+ },
+ "kept_rows": 9309972,
+ "cache_rows": 9309972,
+ "skipped_empty_after_strip": 0,
+ "dropped_over_max_tokens": 2261,
+ "dropped_src_only": 117,
+ "dropped_tgt_only": 731,
+ "dropped_both": 1413,
+ "cache_dtypes": {
+  "src_tokens": "uint16",
+  "src_offsets": "int64",
+  "tgt_tokens": "uint16",
+  "tgt_offsets": "int64"
+ },
+ "cache_keys": [
+  "src_tokens",
+  "src_offsets",
+  "tgt_tokens",
+  "tgt_offsets"
+ ],
+ "index_to_line_increasing": true,
+ "src_lengths_equal_all_rows": true,
+ "tgt_lengths_equal_all_rows": true,
+ "src_len_mismatch_rows": 0,
+ "tgt_len_mismatch_rows": 0,
+ "src_tokens_equal": true,
+ "tgt_tokens_equal": true,
+ "offsets_start_at_zero": true,
+ "validated": true,
+ "dropped_examples_line_srclen_tgtlen": [
+  [
+   40853,
+   292,
+   311
+  ],
+  [
+   45791,
+   331,
+   340
+  ],
+  [
+   309210,
+   190,
+   257
+  ],
+  [
+   332562,
+   271,
+   273
+  ],
+  [
+   634016,
+   234,
+   263
+  ],
+  [
+   729308,
+   197,
+   271
+  ],
+  [
+   770930,
+   323,
+   272
+  ],
+  [
+   1247229,
+   363,
+   363
+  ],
+  [
+   1258392,
+   384,
+   386
+  ],
+  [
+   1329050,
+   299,
+   328
+  ]
+ ],
+ "length_stats": {
+  "src_mean": 32.67406862233313,
+  "tgt_mean": 38.06970976926676,
+  "maxlen_gt_128_rows": 58890
+ },
+ "index_to_line_sha256": "deef09030c490f04cad77664f49e556f908410f1a84c12b65b50c1295236ad0a",
+ "seconds_tokenise": 34.9,
+ "seconds_total": 37.1
+}
+	Command being timed: "/home/jizheng_huang_sysmt/miniconda/envs/DL/bin/python -B 01_validate.py"
+	User time (seconds): 933.82
+	System time (seconds): 12.71
+	Percent of CPU this job got: 2542%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:37.23
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 4324496
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 1
+	Minor (reclaiming a frame) page faults: 6269655
+	Voluntary context switches: 173167
+	Involuntary context switches: 312909
+	Swaps: 0
+	File system inputs: 1752240
+	File system outputs: 309152
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

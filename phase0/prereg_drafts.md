@@ -120,7 +120,8 @@ E0.5 showed, inside UN text and at matched size and length histogram, that the r
 the QE top band costs 2.63 BLEU more on newstest2014 than the diverse half, and that the diverse
 half is still 0.58 BLEU worse than matched random UN text. `e05_build.py` matches only source, size
 and length; exact-pair pretraining exposure (36.7 / 36.7%, PROTOCOL's dry run) and mean QE
-(0.8990 / 0.8993, vocab memo) were measured nearly equal, not matched by design. Three things it
+(0.8990 / 0.8993, vocab memo) were measured nearly equal, not matched by design. Exposure is near-equal
+as a share of rows; how often the base saw those pairs is not equal: the repetitive half's exposed pairs sit on more corpus lines (1.158 against 1.043), so per row the base presented its pairs 1.056 times against 0.951 (base-replay check, 18 October 2026); this belongs to the duplicate strand of the bundle. Three things it
 left open are each a reviewer's first question:
 
 1. **"Repetitive" is a bundle.** The two UN halves also differ in vocabulary (25,134 against 33,874

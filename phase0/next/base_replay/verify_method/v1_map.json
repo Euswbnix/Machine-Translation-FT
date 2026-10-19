@@ -1,0 +1,14 @@
+{
+ "n_cache_rows": 9309972,
+ "n_i2l": 9309972,
+ "n_lines": 9312233,
+ "i2l_strictly_increasing": true,
+ "kept_lines_equal_i2l": true,
+ "dropped": 2261,
+ "empty": 0,
+ "text_mode_line_count": 9312233,
+ "sampled_rows": 100004,
+ "sampled_token_mismatches": 0,
+ "dropped_lines_not_over_256": 0,
+ "seconds": 14.7
+}

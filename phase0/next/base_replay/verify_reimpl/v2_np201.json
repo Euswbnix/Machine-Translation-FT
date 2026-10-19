@@ -1,0 +1,40 @@
+{
+ "tag": "np201",
+ "numpy": "2.0.1",
+ "numpy_file": "/home/jizheng_huang_sysmt/.conda/pkgs/numpy-base-2.0.1-py310hb5e798b_1/lib/python3.10/site-packages/numpy/__init__.py",
+ "n_rows": 9309972,
+ "python_rng": "emulated swanlab draws (asserted)",
+ "mt_position_before_first_shuffle": 208,
+ "epochs": {
+  "1": {
+   "batches": 49174,
+   "comp_sha": "985ccafde78567a19f07a52a7355859cf978a1500f1a4122fb720e1ec5f9874a",
+   "order_sha": "50f632d5aa024aa665197277a773c395f97f934bb46323dabe3d4c643a0f002f"
+  },
+  "2": {
+   "batches": 49177,
+   "comp_sha": "acd538d75a371b64055abe3b41682fa786316ca016cb23cbb0a735b3ab0679e3",
+   "order_sha": "500b3b13ee29ead44aaad6ddd263b550e2a8fd4d1425ad1a9b43775ddf972b3c"
+  },
+  "3": {
+   "batches": 49180,
+   "comp_sha": "932ca4dea781b23c73be7936fe9ceb8de3229dfab060d24c89405ea3305010fa",
+   "order_sha": "af51c97c40765c3544a7362f6bed53cbf12c1774be3d5778d0c18f2da3aaae21"
+  }
+ },
+ "logged_epoch_ends_predicted": [
+  49174,
+  98351
+ ],
+ "p3_batches_in_session1": 1649,
+ "replayed_rows": 4221799,
+ "replayed_share": 0.45347064416520266,
+ "p3_prefix_rows": 312160,
+ "exposure_hist": {
+  "2": 4917868,
+  "3": 4250249,
+  "4": 141855
+ },
+ "replayed_mask_sha": "6b03ab7f7288c929de73e2895f481b0a6bcd85fc2613ca48f5dfcd2dcf646620",
+ "seconds": 3.2
+}

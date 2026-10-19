@@ -1,0 +1,39 @@
+ft_un_div {'rows': 214489, 'exposed_rows': 78778, 'exposed_share': 0.3672822382499802, 'replayed_share_of_exposed': 0.4597476452816776, 'mean_exposure_count_of_exposed': 2.589415826753662}
+ft_un_rep {'rows': 214489, 'exposed_rows': 78732, 'exposed_share': 0.3670677750374145, 'replayed_share_of_exposed': 0.48286592490982067, 'mean_exposure_count_of_exposed': 2.8779657572524515}
+ft_un_random {'rows': 214489, 'exposed_rows': 81333, 'exposed_share': 0.37919427103487824, 'replayed_share_of_exposed': 0.471358489174136, 'mean_exposure_count_of_exposed': 2.7422940257951876}
+ft_topk_div {'rows': 242022, 'exposed_rows': 128139, 'exposed_share': 0.529451868011999, 'replayed_share_of_exposed': 0.45552876173530304, 'mean_exposure_count_of_exposed': 2.5380875455559977}
+ft_topk_rep {'rows': 242022, 'exposed_rows': 102692, 'exposed_share': 0.4243085339349315, 'replayed_share_of_exposed': 0.4755774549137226, 'mean_exposure_count_of_exposed': 2.7957776652514315}
+ft_random_small {'rows': 242022, 'exposed_rows': 141555, 'exposed_share': 0.5848848451793639, 'replayed_share_of_exposed': 0.46160856204302214, 'mean_exposure_count_of_exposed': 2.5978171028928685}
+R0 {'rows': 214489, 'exposed_rows': 80762, 'exposed_share': 0.376532129852813, 'replayed_share_of_exposed': 0.4669770436591466, 'mean_exposure_count_of_exposed': 2.656930239469057}
+A_narrow {'rows': 214489, 'exposed_rows': 80981, 'exposed_share': 0.37755316123437566, 'replayed_share_of_exposed': 0.46568948271816846, 'mean_exposure_count_of_exposed': 2.6558945925587483}
+{
+ "rows_pkl_check": {
+  "rows_pkl_rows": 926999,
+  "ft_random_lines": 926999,
+  "len_equal": true,
+  "len_fr_equal": true,
+  "un_equal": true,
+  "in_ft_un_random_equal": true,
+  "in_ft_random_small_equal": true,
+  "row_order_is_line_order": true,
+  "R0_all_un": true,
+  "A_narrow_all_un": true
+ },
+ "set_overlaps_pairs": {
+  "R0&A_narrow": 136916,
+  "R0&ft_un_random": 101629,
+  "A_narrow&ft_un_random": 101312,
+  "ft_un_div&ft_un_rep": 0,
+  "ft_un_div&ft_un_random": 6137,
+  "ft_un_rep&ft_un_random": 6347,
+  "ft_topk_div&ft_topk_rep": 0,
+  "R0&ft_un_div": 8029
+ },
+ "timings_s": {
+  "corpus_keys_s": 15.3,
+  "sets_s": 23.9,
+  "match_s": 34.2,
+  "redraws_s": 89.9
+ }
+}
+wall 90.36 s maxrss 3026364 kB
