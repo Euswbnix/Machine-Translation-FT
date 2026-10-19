@@ -377,7 +377,8 @@ table): source word types 38,783 (non-repetitive half) / 27,524 (repetitive half
 Before matching, recurring rows average 19.0 tokens against 28.6 for non-recurring rows.
 Gap: the type/token ratios are not length-controlled (PRIOR_ART risk 10); report the identical-word-
 count figures in the body and the ratios in the appendix. A descriptive depth sweep (at the depths
-listed in WMT2027_PLAN section 3.2 item 5) is not computed (section 7, objection 3).
+listed in WMT2027_PLAN section 3.2 item 5) was computed on 19 Oct (descriptive, independent check;
+`phase0/next/cpu_items/item5_depth/`; section 7, objection 3).
 
 **4.3 Within the top-ranked set, all sources.**
 In hand: E0.4 (3 seeds): non-repetitive 32.77 (0.20), repetitive 30.05 (0.28), gap 2.73, floor 0.28,
@@ -461,10 +462,11 @@ In hand: source word types at identical word counts, UN triple: 25,134 (repetiti
 balanced, not matched by design; vocabulary was not matched.
 E0.6 contrast: `ft_un_rep` vs `div_narrow` (prereg: C1-beyond-coverage). `div_narrow` is drawn from
 the 486,475 non-recurring UN candidates at `ft_un_rep`'s exact length histogram and narrowed to
-`ft_un_rep`'s coverage by the rule fixed in prereg E0.6 OD 2. The measured range at that histogram
-runs from 20,284 source word types (in every length bucket, the rows whose rarest word is most
-frequent) to 34,070 (a random draw), and 25,134 lies inside it (feasibility memo, Mac scratch;
-whether the chosen rule reaches ±2% is not measured; rebuild with a fail-closed script). It holds
+`ft_un_rep`'s coverage by the rule fixed in prereg E0.6 OD 2. In `e06_build.py`'s feasibility run
+(19 October, every option, not for training), only OD 2 = c2 with OD 1 = (b) brings source and
+French word types within ±2% of `ft_un_rep`'s (−0.3% / +0.3%); the other rules miss (prereg E0.6,
+"Measured feasibility"). Every option keeps `ft_un_div`'s mean QE (0.8990) and shares about
+127,000 of its 214,489 rows with `ft_un_div`, all rows of 36 or more tokens among them. It holds
 size and length fixed and matches coverage on the OD 1 measure within ±2%; what it leaves free is listed in prereg E0.6, "What follows from
 the table" (exact duplicates, French-side features, whatever rarest-word selection shifts), and the
 paper names all of it beside the result. Its coverage measure is prereg E0.6 OD 1; the ninth set
@@ -489,8 +491,9 @@ Recurring-8-gram share (`ft_un_rep`: 0.433) and source types: the feasibility me
 rebuild to the pre-registration draft's definition (`ft_topk` file order, first copy kept,
 stratified matching with `random.Random(42)`; Mac, Python 3.14.3) gives 198,333 rows, 0.378 and
 25,256 types for `rep_dedup` and 33,098 types for `div_dd` (deduplicating the diverse side too drops
-252 rows and changes nothing). Quote the rebuilt values, marked scratch, until `e06_build.py`
-replaces them. So `div_dd` has about 7,800 more source types than `rep_dedup`: this contrast is not
+252 rows and changes nothing). `e06_build.py`'s feasibility run (19 October, not for training)
+reproduces these numbers; quote them from the dry run of the chosen decisions. So `div_dd` has
+about 7,800 more source types than `rep_dedup`: this contrast is not
 vocabulary-matched. If prereg E0.6 OD 5(b) adds the ninth set, `div_narrow_dd` vs `rep_dedup`
 (prereg: C1-beyond-both) holds exact duplicates and the OD 1 coverage measure fixed together;
 what it still leaves free (French-side features and whatever rarest-word selection shifts) is
@@ -502,7 +505,8 @@ Slot: "[rep_dedup vs div_dd: gap {g}, verdict]" (and "[div_narrow_dd vs rep_dedu
 worded as prereg states (E0.6, Outcomes, C1-beyond-duplicates; C1-beyond-both).
 
 **5.3 What else does selection change? (the vocabulary-capped random set N vs the rest S)**
-In hand (vocab memo, scratch): R0 (random UN, no recurring 8-gram, `ft_un_div`'s length histogram)
+In hand (vocab memo; reproduced by `e06_build.py`'s feasibility run, 19 October, which rebuilds R0
+and A_narrow with the scratch files' sha256): R0 (random UN, no recurring 8-gram, `ft_un_div`'s length histogram)
 62,000 source types; A_narrow (not a subset of R0: drawn from the same random-UN rep = 0 pool, 450,709
 rows, restricted to rows whose source words are all among the pool's 42,000 most frequent and French
 words among its 58,000 most frequent, leaving 402,010; each `ft_un_div` row is matched within its
@@ -518,7 +522,9 @@ lumping of QE level, literal or formulaic French and genre) is in prereg E0.6, "
 the table". At E0.5's UN seed sds (0.11-0.14) the rule called gaps down to 0.18-0.19 BLEU with
 5 seeds; at a seed sd of about 0.13, about 0.26 BLEU has 80% power (vocab memo; prereg E0.6, "Why
 five seeds").
-Target-side descriptives for the discussion (vocab memo, scratch; rebuild before citing): French
+Target-side descriptives for the discussion (vocab memo; the French types and literalness are
+reproduced by the feasibility run, the French 8-gram shares are still scratch, rebuild before
+citing them): French
 types at 6.5M tokens 43,021 (non-repetitive) / 32,684 (repetitive) / 69,320 (random UN) / 72,574
 (R0); rows containing a recurring French 8-gram 23.0% / 79.7% / 29.0% / 15.0%; word-for-word
 literalness 0.783 / 0.810 / 0.714 / 0.693. So the non-repetitive half has no recurrence on the
@@ -541,7 +547,8 @@ of domain) and its repetitive part adds an out-of-domain cost" fits every number
 (README). E0.6 secondary readout: all sets on held-out UN, deciding nothing; the one reading stated
 in advance, and why the vocab memo's "genre or style, not vocabulary" is not used, are in prereg
 E0.6, "Reported and deciding nothing" (held-out UN). Facts to quote with it: A_narrow 98.55% of
-held-out UN tokens seen at least 5 times, R0 98.85%, `ft_un_div` 97.75% (vocab memo, scratch).
+held-out UN tokens seen at least 5 times, R0 98.85%, `ft_un_div` 97.75% (vocab memo; reproduced by
+the feasibility run).
 Slot: "[held-out UN for R0, A_narrow, div_narrow, rep_dedup, div_dd]".
 
 **5.5 Accounting and replication.**
@@ -649,7 +656,7 @@ remedy against NRC re-ranking, selection-depth sweep, second QE metric. No new c
 | **T4** | E0.6 contrasts, with verdict and smallest detectable gap: precondition P (R0 vs `ft_un_div`), N, S, repetitive half vs coverage-matched (`ft_un_rep` vs `div_narrow`), duplicate-free repetitive vs non-repetitive (`rep_dedup` vs `div_dd`), [V, `ft_un_div` vs `div_narrow`, only if prereg E0.6 OD 18 registers it], [`div_narrow_dd` vs `rep_dedup`, only if OD 5(b) adds it], and the bridges Q1′ and Q2′ to E0.5 | E0.6 report file (name fixed at pre-registration, **to check**) | pending E0.6 |
 | **T5** | en-de Europarl triple, both test sets | E0.7 report and build manifest; scratch descriptives in `phase0/next/ende/s2_report_*.json`, `s3_report.json` until rebuilt | pending E0.7 |
 | **T6** | LLM arm: MetricX, chrF, BLEU on WMT24++, FLORES+, held-out UN; LoRA, full fine-tuning, second model (prereg E1.0 OD 1) | E1.0 outputs (names fixed at pre-registration) | pending E1.0 |
-| **F3** (optional, appendix) | How the top of the ranking changes with depth: recurring share, types, duplicate rate, UN share at the depths listed in WMT2027_PLAN section 3.2 item 5 | `v2_scored.tsv` plus the `e04_split.py` statistic (CPU, not computed); en-de bands from `s2_report_*.json` (scratch) | not computed |
+| **F3** (optional, appendix) | How the top of the ranking changes with depth: recurring share, types, duplicate rate, UN share at the depths listed in WMT2027_PLAN section 3.2 item 5 | `v2_scored.tsv` plus the `e04_split.py` statistic (CPU; `phase0/next/cpu_items/item5_depth/`); en-de bands from `s2_report_*.json` (scratch) | en-fr computed 19 Oct (descriptive, WMT2027_PLAN section 3.2 item 5) |
 | A-tables | E0.4 per seed; applied tokens per run; stage-1 traces; deviations | E0.4: `e04_probe.tsv` on the author's box (not in `~/mt_local`; location **to check**); tokens: `e05_probe.meta.json` (`budget`); traces: README table; per-run logs `e05_results/logs/phase0_e05/*.log` | E0.4 file to locate |
 
 ---
@@ -720,7 +727,7 @@ toward the 10 pages (**to check**), take the space from slack and Related Work (
 | --- | --- | --- | --- | --- |
 | 1 | Saunders & DeNeefe 2024: forgetting tracks vocabulary coverage, so "repetitive" may stand in for low coverage | 5.1 (experiment), 2(c) (positioning), 6 item 7 | E0.6 `ft_un_rep` vs `div_narrow` at matched size and length, coverage-matched on prereg E0.6 OD 1's measure; their coverage statistic on every set (CPU) | which coverage measure to match (prereg E0.6 OD 1); how each outcome of `ft_un_rep` vs `div_narrow`, and of V if OD 18 registers it, is read: prereg E0.6, Outcomes and OD 18 (5.1) |
 | 2 | "Just deduplicate" (Koehn 2018; Waldendorf 2025) | 5.2 (experiment), 2(a)/(b) | E0.6 `rep_dedup` vs `div_dd` (198,333 rows each; `rep_dedup` has 0.00% duplicate sources and keeps a recurring-8-gram share of 0.378 in a scratch rebuild, 0.379 in the feasibility memo's unrecorded draw; 5.2); the repetitive half's duplicates are only 8.45% of its rows | near-duplicate removal is WMT 2027 work (W4 arm 5; prereg E0.6 OD 4); vocabulary not matched unless prereg E0.6 OD 5(b) adds the ninth set |
-| 3 | Peter et al. 2023: QE filtering beats random at 50% kept, trained to convergence | 1 (scope sentence), 3.3 (band share, regime), 6 items 3-4, 2(a) | scoping; E0.3 at 0.15 reported openly; [E0.7's top 1,000,000 rows are 23.6% of its pool, 23.5% after exact-pair dedup (scratch): a wider band on another pair, differing in pool, source (Europarl), exposure regime (100% seen) and passes, so not a second depth on one ranking] | a depth sweep: descriptive version is CPU-only and not computed (F3); a trained sweep is WMT 2027 work |
+| 3 | Peter et al. 2023: QE filtering beats random at 50% kept, trained to convergence | 1 (scope sentence), 3.3 (band share, regime), 6 items 3-4, 2(a) | scoping; E0.3 at 0.15 reported openly; [E0.7's top 1,000,000 rows are 23.6% of its pool, 23.5% after exact-pair dedup (scratch): a wider band on another pair, differing in pool, source (Europarl), exposure regime (100% seen) and passes, so not a second depth on one ranking] | a depth sweep: descriptive version computed 19 Oct (F3; WMT2027_PLAN section 3.2 item 5); a trained sweep is WMT 2027 work |
 | 4 | NRC re-ranking (Lo 2018; Bernier-Colborne & Lo 2019) is the baseline for any remedy | 5.5 last paragraph, 7, ledger 24 | no remedy is claimed; `ft_un_div` (a length-matched sample of the top-ranked UN rows that contain no recurring 8-gram) still trails random by 0.58 | none for this paper: an actual bicov arm is WMT 2027 work (WMT2027_PLAN 3.9, W4 arms 3-4; prereg E0.6 OD 13) |
 
 **Further objections the paper must also meet** (not in the four, all from the sources):

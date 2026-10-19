@@ -1,0 +1,132 @@
+{
+ "ft_un_rep": {
+  "blank_only": {
+   "rows_split_differs_en": 8632,
+   "rows_split_differs_fr": 54924,
+   "blank_1.3": 29772,
+   "blank_1.5": 4244,
+   "blank_2.0": 4
+  },
+  "str_split": {
+   "1.3": 31519,
+   "1.5": 4595,
+   "2.0": 0
+  },
+  "whitespace_chars_behind_differences": {
+   "fr:U+00A0": 54924,
+   "en:U+00A0": 8632
+  }
+ },
+ "ft_un_div": {
+  "blank_only": {
+   "rows_split_differs_fr": 47759,
+   "blank_1.3": 37393,
+   "rows_split_differs_en": 7915,
+   "blank_1.5": 6240,
+   "blank_2.0": 6
+  },
+  "str_split": {
+   "1.3": 39420,
+   "1.5": 6723,
+   "2.0": 0
+  },
+  "whitespace_chars_behind_differences": {
+   "fr:U+00A0": 47759,
+   "en:U+00A0": 7913,
+   "en:U+3000": 2
+  }
+ },
+ "ft_un_random": {
+  "blank_only": {
+   "rows_split_differs_fr": 53772,
+   "blank_1.3": 46364,
+   "blank_1.5": 11989,
+   "rows_split_differs_en": 8775,
+   "blank_2.0": 83
+  },
+  "str_split": {
+   "1.3": 48540,
+   "1.5": 12785,
+   "2.0": 0
+  },
+  "whitespace_chars_behind_differences": {
+   "fr:U+00A0": 53772,
+   "en:U+00A0": 8773,
+   "en:U+3000": 2
+  }
+ },
+ "ft_topk_rep": {
+  "blank_only": {
+   "rows_split_differs_en": 9101,
+   "rows_split_differs_fr": 56943,
+   "blank_1.3": 32419,
+   "blank_1.5": 4591,
+   "blank_2.0": 4
+  },
+  "str_split": {
+   "1.3": 34190,
+   "1.5": 4941,
+   "2.0": 0
+  },
+  "whitespace_chars_behind_differences": {
+   "fr:U+00A0": 56943,
+   "en:U+00A0": 9101
+  }
+ },
+ "ft_topk_div": {
+  "blank_only": {
+   "rows_split_differs_fr": 41990,
+   "blank_1.3": 37712,
+   "rows_split_differs_en": 7503,
+   "blank_1.5": 6048,
+   "blank_2.0": 6
+  },
+  "str_split": {
+   "1.3": 39335,
+   "1.5": 6414,
+   "2.0": 0
+  },
+  "whitespace_chars_behind_differences": {
+   "fr:U+00A0": 41990,
+   "en:U+00A0": 7502,
+   "en:U+3000": 1
+  }
+ },
+ "ft_random_small": {
+  "blank_only": {
+   "rows_split_differs_fr": 42028,
+   "blank_1.3": 51563,
+   "blank_1.5": 14945,
+   "rows_split_differs_en": 7135,
+   "blank_2.0": 54
+  },
+  "str_split": {
+   "1.3": 53118,
+   "1.5": 15527,
+   "2.0": 0
+  },
+  "whitespace_chars_behind_differences": {
+   "fr:U+00A0": 42028,
+   "en:U+00A0": 7133,
+   "en:U+3000": 2
+  }
+ },
+ "heldout_un": {
+  "blank_only": {
+   "blank_1.3": 474,
+   "blank_1.5": 136,
+   "rows_split_differs_fr": 511,
+   "rows_split_differs_en": 92,
+   "blank_2.0": 1
+  },
+  "str_split": {
+   "1.3": 490,
+   "1.5": 145,
+   "2.0": 0
+  },
+  "whitespace_chars_behind_differences": {
+   "fr:U+00A0": 511,
+   "en:U+00A0": 92
+  }
+ }
+}

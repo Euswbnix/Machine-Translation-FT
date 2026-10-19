@@ -1,0 +1,1746 @@
+{
+ "compared": 159,
+ "agree": 159,
+ "disagreements": [],
+ "per_file_differences": [],
+ "rows": [
+  {
+   "section": "inputs",
+   "claim": "sha256 e06data/e05_src/ft_topk.en",
+   "builder": "787339d08e0c47d9960cb263757edafd844ec80a45875ac083845a02a20ff2b2",
+   "checker": "787339d08e0c47d9960cb263757edafd844ec80a45875ac083845a02a20ff2b2",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "inputs",
+   "claim": "sha256 e06data/e05_src/ft_topk.fr",
+   "builder": "22263da18eaf62cb7deea7438068ce0cb00ce3849c1a83f7e0c55008c3d78797",
+   "checker": "22263da18eaf62cb7deea7438068ce0cb00ce3849c1a83f7e0c55008c3d78797",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "inputs",
+   "claim": "sha256 e06data/e05_src/ft_topk.source",
+   "builder": "a4ad45860c92eae6b512c4a7178fe78fc92f00d4b9551d00a6637c80079244ca",
+   "checker": "a4ad45860c92eae6b512c4a7178fe78fc92f00d4b9551d00a6637c80079244ca",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "inputs",
+   "claim": "sha256 e06data/e05_src/ft_random.en",
+   "builder": "937d4d4ab2683b585942107d4d260badef54a5a136e3caf97ef6da48d93552a0",
+   "checker": "937d4d4ab2683b585942107d4d260badef54a5a136e3caf97ef6da48d93552a0",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "inputs",
+   "claim": "sha256 e06data/e05_src/ft_random.fr",
+   "builder": "382e0de574feaaa323939d73a24736b762c76a8b55a0ffd258d64b15e5303e29",
+   "checker": "382e0de574feaaa323939d73a24736b762c76a8b55a0ffd258d64b15e5303e29",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "inputs",
+   "claim": "sha256 e06data/e05_src/ft_random.source",
+   "builder": "fd675a1948ab4e30dce05aae4c85d2432aec99549c05fb794903a49e9b0b6923",
+   "checker": "fd675a1948ab4e30dce05aae4c85d2432aec99549c05fb794903a49e9b0b6923",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "inputs",
+   "claim": "sha256 e06data/e05_src/heldout_un.en",
+   "builder": "f70e725eae9972899b6129f6acf123ed5421021b2f5ba81bb165a6928e858bbc",
+   "checker": "f70e725eae9972899b6129f6acf123ed5421021b2f5ba81bb165a6928e858bbc",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "inputs",
+   "claim": "sha256 e06data/e05_src/heldout_un.fr",
+   "builder": "7daf654fa37cca653cbc9724c77ee721384a406e3ca3e6469a2a847b66b729ab",
+   "checker": "7daf654fa37cca653cbc9724c77ee721384a406e3ca3e6469a2a847b66b729ab",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "inputs",
+   "claim": "sha256 e06data/phase0_e05/ft_topk_div.en",
+   "builder": "321474497238a74704fd29653878814e1742d419e740e0148fca4191742c47fa",
+   "checker": "321474497238a74704fd29653878814e1742d419e740e0148fca4191742c47fa",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "inputs",
+   "claim": "sha256 e06data/phase0_e05/ft_topk_div.fr",
+   "builder": "2fdc192521c64f966bcbb1a321fd99ff55d0dce7a661fd60837b01e723d0357f",
+   "checker": "2fdc192521c64f966bcbb1a321fd99ff55d0dce7a661fd60837b01e723d0357f",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "inputs",
+   "claim": "sha256 e06data/phase0_e05/ft_topk_rep.en",
+   "builder": "6db2a842ee9fbb21d9806738861ac0e94734310121d4ff5f5d3d684a442fa386",
+   "checker": "6db2a842ee9fbb21d9806738861ac0e94734310121d4ff5f5d3d684a442fa386",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "inputs",
+   "claim": "sha256 e06data/phase0_e05/ft_topk_rep.fr",
+   "builder": "0598ddfdeba978bbdbc354594889630dc175bb7ea0ab401bdce51a48c122ec75",
+   "checker": "0598ddfdeba978bbdbc354594889630dc175bb7ea0ab401bdce51a48c122ec75",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "inputs",
+   "claim": "sha256 e06data/phase0_e05/ft_random_small.en",
+   "builder": "d75365502e1db21ad7975150c1a7a6b6f680e2432e9473dc5d3041a152881f84",
+   "checker": "d75365502e1db21ad7975150c1a7a6b6f680e2432e9473dc5d3041a152881f84",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "inputs",
+   "claim": "sha256 e06data/phase0_e05/ft_random_small.fr",
+   "builder": "7072a04327a56ddd399ca48d885b6d2cdde737bca4db8b7fd3d01672ea8bb0f9",
+   "checker": "7072a04327a56ddd399ca48d885b6d2cdde737bca4db8b7fd3d01672ea8bb0f9",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "inputs",
+   "claim": "sha256 e06data/phase0_e05/ft_un_div.en",
+   "builder": "51d9ec1157c58591a7b25b2a1bde52e9dc93342a34c55e55547f0e3857ba94da",
+   "checker": "51d9ec1157c58591a7b25b2a1bde52e9dc93342a34c55e55547f0e3857ba94da",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "inputs",
+   "claim": "sha256 e06data/phase0_e05/ft_un_div.fr",
+   "builder": "1957872adf3f96b8e7fe551eeeae42bbd38f03811511e013f9017b65b954a7e1",
+   "checker": "1957872adf3f96b8e7fe551eeeae42bbd38f03811511e013f9017b65b954a7e1",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "inputs",
+   "claim": "sha256 e06data/phase0_e05/ft_un_rep.en",
+   "builder": "940cde0f051d6b473c55a6771af64900a20c9c52d66e1a4772e18a5bf9cafe68",
+   "checker": "940cde0f051d6b473c55a6771af64900a20c9c52d66e1a4772e18a5bf9cafe68",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "inputs",
+   "claim": "sha256 e06data/phase0_e05/ft_un_rep.fr",
+   "builder": "9373be1fc7afb86a1b5ebf76d7cb567bde0ef349443ca9c3c6a87c175185edbd",
+   "checker": "9373be1fc7afb86a1b5ebf76d7cb567bde0ef349443ca9c3c6a87c175185edbd",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "inputs",
+   "claim": "sha256 e06data/phase0_e05/ft_un_random.en",
+   "builder": "80fa6aea32f342cc43adec8e66063f8f08c20b6e3b66a60b0bfd7baf3e35c59c",
+   "checker": "80fa6aea32f342cc43adec8e66063f8f08c20b6e3b66a60b0bfd7baf3e35c59c",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "inputs",
+   "claim": "sha256 e06data/phase0_e05/ft_un_random.fr",
+   "builder": "1b54a882d989153697417b1f4b2300b81500acac258e29c542776d39a32094c0",
+   "checker": "1b54a882d989153697417b1f4b2300b81500acac258e29c542776d39a32094c0",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "inputs",
+   "claim": "sha256 e06data/phase0_e05/heldout_un.en",
+   "builder": "f70e725eae9972899b6129f6acf123ed5421021b2f5ba81bb165a6928e858bbc",
+   "checker": "f70e725eae9972899b6129f6acf123ed5421021b2f5ba81bb165a6928e858bbc",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "inputs",
+   "claim": "sha256 e06data/phase0_e05/heldout_un.fr",
+   "builder": "7daf654fa37cca653cbc9724c77ee721384a406e3ca3e6469a2a847b66b729ab",
+   "checker": "7daf654fa37cca653cbc9724c77ee721384a406e3ca3e6469a2a847b66b729ab",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "inputs",
+   "claim": "sha256 e06data/phase0_e05/manifest.json",
+   "builder": "979dafd76344444c56cad9afc52e0ec7ba7ebb74c73115cbeb237583419b8eb2",
+   "checker": "979dafd76344444c56cad9afc52e0ec7ba7ebb74c73115cbeb237583419b8eb2",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "inputs",
+   "claim": "sha256 e06data/vocab/R0.npy",
+   "builder": "22eeb53dd3cb621831939cb41a5b9280045dbc5f6b1ce48686234479ac354dc9",
+   "checker": "22eeb53dd3cb621831939cb41a5b9280045dbc5f6b1ce48686234479ac354dc9",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "inputs",
+   "claim": "sha256 e06data/vocab/A_narrow_42_58.npy",
+   "builder": "e9fac76975bb83e2a4b12ed913c333212cc4a70c440346278c12ad7c0bd7cfa8",
+   "checker": "e9fac76975bb83e2a4b12ed913c333212cc4a70c440346278c12ad7c0bd7cfa8",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "inputs",
+   "claim": "sha256 e06data/v2_scored.tsv",
+   "builder": "64874c218125a2dabfbbbcb95e35a2956f40689b43498d24a60dc4e191db3ed6",
+   "checker": "64874c218125a2dabfbbbcb95e35a2956f40689b43498d24a60dc4e191db3ed6",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "inputs",
+   "claim": "sha256 e06data/v1_fixed/train.clean.en",
+   "builder": "7230adc6c823d4df51407e445b1181ada450363dfe43507885c9f529d49b6b6e",
+   "checker": "7230adc6c823d4df51407e445b1181ada450363dfe43507885c9f529d49b6b6e",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "inputs",
+   "claim": "sha256 e06data/v1_fixed/train.clean.fr",
+   "builder": "b0a6ba91eeba2b4bdf28e8a73816a2bdd7ccbddd5f889fcc7d3f3f0a52dad7e2",
+   "checker": "b0a6ba91eeba2b4bdf28e8a73816a2bdd7ccbddd5f889fcc7d3f3f0a52dad7e2",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "inputs",
+   "claim": "E0.3 fingerprint matches: qe_scores",
+   "builder": true,
+   "checker": true,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "inputs",
+   "claim": "E0.3 fingerprint matches: pretrain_src",
+   "builder": true,
+   "checker": true,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "inputs",
+   "claim": "E0.3 fingerprint matches: pretrain_tgt",
+   "builder": true,
+   "checker": true,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "inputs",
+   "claim": "E0.3 fingerprint matches: provenance",
+   "builder": true,
+   "checker": true,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "inputs",
+   "claim": "E0.3 fingerprint matches: pool_mask",
+   "builder": true,
+   "checker": true,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "inputs",
+   "claim": "sha256 inputs/provenance_labels.npy",
+   "builder": "c9174045438cee37eaa1e5f46fc56ad75e9a9e2d7131cbbcdeb7ba89cf148218",
+   "checker": "c9174045438cee37eaa1e5f46fc56ad75e9a9e2d7131cbbcdeb7ba89cf148218",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "inputs",
+   "claim": "sha256 inputs/provenance_report.json",
+   "builder": "046a52fe343082a6422ed78083af15c1fc9124fa8d797c7e3941cf158c6299c4",
+   "checker": "046a52fe343082a6422ed78083af15c1fc9124fa8d797c7e3941cf158c6299c4",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "inputs",
+   "claim": "sha256 inputs/pool_mask_reused.npy",
+   "builder": "dbb55f9b0812c2fe757f8e4340f7642e5d4c5a0d9e9cabf7c6af4d3fbae99d96",
+   "checker": "dbb55f9b0812c2fe757f8e4340f7642e5d4c5a0d9e9cabf7c6af4d3fbae99d96",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "heldout_un",
+   "claim": "rows",
+   "builder": 2000,
+   "checker": 2000,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "heldout_un",
+   "claim": "distinct_sources",
+   "builder": 1999,
+   "checker": 1999,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "heldout_un",
+   "claim": "distinct_targets",
+   "builder": 1999,
+   "checker": 1999,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "heldout_un",
+   "claim": "distinct_pairs",
+   "builder": 1999,
+   "checker": 1999,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "heldout_un",
+   "claim": "distinct_norm_sources",
+   "builder": 1999,
+   "checker": 1999,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "heldout_un",
+   "claim": "distinct_norm_targets",
+   "builder": 1999,
+   "checker": 1999,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "heldout_un",
+   "claim": "lines_with_tab",
+   "builder": 0,
+   "checker": 0,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "heldout_un",
+   "claim": "empty_lines",
+   "builder": 0,
+   "checker": 0,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "feasibility_report.json sha256",
+   "builder": "9c73852f8f7ac801d0e9e74bcdf8b8011748cdd5efdc9fbbe69e8af48c05202b",
+   "checker": "9c73852f8f7ac801d0e9e74bcdf8b8011748cdd5efdc9fbbe69e8af48c05202b",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "report input sha256 ft_topk.en",
+   "builder": "787339d08e0c47d9960cb263757edafd844ec80a45875ac083845a02a20ff2b2",
+   "checker": "787339d08e0c47d9960cb263757edafd844ec80a45875ac083845a02a20ff2b2",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "report input sha256 ft_topk.fr",
+   "builder": "22263da18eaf62cb7deea7438068ce0cb00ce3849c1a83f7e0c55008c3d78797",
+   "checker": "22263da18eaf62cb7deea7438068ce0cb00ce3849c1a83f7e0c55008c3d78797",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "report input sha256 ft_topk.source",
+   "builder": "a4ad45860c92eae6b512c4a7178fe78fc92f00d4b9551d00a6637c80079244ca",
+   "checker": "a4ad45860c92eae6b512c4a7178fe78fc92f00d4b9551d00a6637c80079244ca",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "report input sha256 ft_random.en",
+   "builder": "937d4d4ab2683b585942107d4d260badef54a5a136e3caf97ef6da48d93552a0",
+   "checker": "937d4d4ab2683b585942107d4d260badef54a5a136e3caf97ef6da48d93552a0",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "report input sha256 ft_random.fr",
+   "builder": "382e0de574feaaa323939d73a24736b762c76a8b55a0ffd258d64b15e5303e29",
+   "checker": "382e0de574feaaa323939d73a24736b762c76a8b55a0ffd258d64b15e5303e29",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "report input sha256 ft_random.source",
+   "builder": "fd675a1948ab4e30dce05aae4c85d2432aec99549c05fb794903a49e9b0b6923",
+   "checker": "fd675a1948ab4e30dce05aae4c85d2432aec99549c05fb794903a49e9b0b6923",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "report input sha256 heldout_un.en",
+   "builder": "f70e725eae9972899b6129f6acf123ed5421021b2f5ba81bb165a6928e858bbc",
+   "checker": "f70e725eae9972899b6129f6acf123ed5421021b2f5ba81bb165a6928e858bbc",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "report input sha256 heldout_un.fr",
+   "builder": "7daf654fa37cca653cbc9724c77ee721384a406e3ca3e6469a2a847b66b729ab",
+   "checker": "7daf654fa37cca653cbc9724c77ee721384a406e3ca3e6469a2a847b66b729ab",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "failed options without a file",
+   "builder": [
+    "ft_un_a_narrow__od6-remove__seed1",
+    "ft_un_a_narrow__od6-remove__seed2",
+    "ft_un_a_narrow__od6-remove__seed3",
+    "ft_un_a_narrow__od6-remove__seed4",
+    "ft_un_a_narrow__od6-remove__seed42"
+   ],
+   "checker": [
+    "ft_un_a_narrow__od6-remove__seed1",
+    "ft_un_a_narrow__od6-remove__seed2",
+    "ft_un_a_narrow__od6-remove__seed3",
+    "ft_un_a_narrow__od6-remove__seed4",
+    "ft_un_a_narrow__od6-remove__seed42"
+   ],
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "file names (46)",
+   "builder": [
+    "FEASIBILITY_ft_un_a_narrow__od6-keep__seed1.npy",
+    "FEASIBILITY_ft_un_a_narrow__od6-keep__seed2.npy",
+    "FEASIBILITY_ft_un_a_narrow__od6-keep__seed3.npy",
+    "FEASIBILITY_ft_un_a_narrow__od6-keep__seed4.npy",
+    "FEASIBILITY_ft_un_a_narrow__od6-keep__seed42.npy",
+    "FEASIBILITY_ft_un_div__anchor.npy",
+    "FEASIBILITY_ft_un_div_dd__od4-a.npy",
+    "FEASIBILITY_ft_un_div_dd__od4-b.npy",
+    "FEASIBILITY_ft_un_div_narrow__od2-a__od1-a.npy",
+    "FEASIBILITY_ft_un_div_narrow__od2-a__od1-b.npy",
+    "FEASIBILITY_ft_un_div_narrow__od2-a__od1-d.npy",
+    "FEASIBILITY_ft_un_div_narrow__od2-b__od1-a.npy",
+    "FEASIBILITY_ft_un_div_narrow__od2-b__od1-b.npy",
+    "FEASIBILITY_ft_un_div_narrow__od2-b__od1-d.npy",
+    "FEASIBILITY_ft_un_div_narrow__od2-c2__od1-a.npy",
+    "FEASIBILITY_ft_un_div_narrow__od2-c2__od1-b.npy",
+    "FEASIBILITY_ft_un_div_narrow__od2-c2__od1-d.npy",
+    "FEASIBILITY_ft_un_div_narrow__od2-c__od1-a.npy",
+    "FEASIBILITY_ft_un_div_narrow__od2-c__od1-b.npy",
+    "FEASIBILITY_ft_un_div_narrow__od2-c__od1-d.npy",
+    "FEASIBILITY_ft_un_div_narrow_dd__od2-a__od1-a.npy",
+    "FEASIBILITY_ft_un_div_narrow_dd__od2-a__od1-b.npy",
+    "FEASIBILITY_ft_un_div_narrow_dd__od2-a__od1-d.npy",
+    "FEASIBILITY_ft_un_div_narrow_dd__od2-b__od1-a.npy",
+    "FEASIBILITY_ft_un_div_narrow_dd__od2-b__od1-b.npy",
+    "FEASIBILITY_ft_un_div_narrow_dd__od2-b__od1-d.npy",
+    "FEASIBILITY_ft_un_div_narrow_dd__od2-c2__od1-a.npy",
+    "FEASIBILITY_ft_un_div_narrow_dd__od2-c2__od1-b.npy",
+    "FEASIBILITY_ft_un_div_narrow_dd__od2-c2__od1-d.npy",
+    "FEASIBILITY_ft_un_div_narrow_dd__od2-c__od1-a.npy",
+    "FEASIBILITY_ft_un_div_narrow_dd__od2-c__od1-b.npy",
+    "FEASIBILITY_ft_un_div_narrow_dd__od2-c__od1-d.npy",
+    "FEASIBILITY_ft_un_r0__od6-keep__seed1.npy",
+    "FEASIBILITY_ft_un_r0__od6-keep__seed2.npy",
+    "FEASIBILITY_ft_un_r0__od6-keep__seed3.npy",
+    "FEASIBILITY_ft_un_r0__od6-keep__seed4.npy",
+    "FEASIBILITY_ft_un_r0__od6-keep__seed42.npy",
+    "FEASIBILITY_ft_un_r0__od6-remove__seed1.npy",
+    "FEASIBILITY_ft_un_r0__od6-remove__seed2.npy",
+    "FEASIBILITY_ft_un_r0__od6-remove__seed3.npy",
+    "FEASIBILITY_ft_un_r0__od6-remove__seed4.npy",
+    "FEASIBILITY_ft_un_r0__od6-remove__seed42.npy",
+    "FEASIBILITY_ft_un_random__anchor.npy",
+    "FEASIBILITY_ft_un_rep__anchor.npy",
+    "FEASIBILITY_ft_un_rep_dedup__od4-a.npy",
+    "FEASIBILITY_ft_un_rep_dedup__od4-b.npy"
+   ],
+   "checker": [
+    "FEASIBILITY_ft_un_a_narrow__od6-keep__seed1.npy",
+    "FEASIBILITY_ft_un_a_narrow__od6-keep__seed2.npy",
+    "FEASIBILITY_ft_un_a_narrow__od6-keep__seed3.npy",
+    "FEASIBILITY_ft_un_a_narrow__od6-keep__seed4.npy",
+    "FEASIBILITY_ft_un_a_narrow__od6-keep__seed42.npy",
+    "FEASIBILITY_ft_un_div__anchor.npy",
+    "FEASIBILITY_ft_un_div_dd__od4-a.npy",
+    "FEASIBILITY_ft_un_div_dd__od4-b.npy",
+    "FEASIBILITY_ft_un_div_narrow__od2-a__od1-a.npy",
+    "FEASIBILITY_ft_un_div_narrow__od2-a__od1-b.npy",
+    "FEASIBILITY_ft_un_div_narrow__od2-a__od1-d.npy",
+    "FEASIBILITY_ft_un_div_narrow__od2-b__od1-a.npy",
+    "FEASIBILITY_ft_un_div_narrow__od2-b__od1-b.npy",
+    "FEASIBILITY_ft_un_div_narrow__od2-b__od1-d.npy",
+    "FEASIBILITY_ft_un_div_narrow__od2-c2__od1-a.npy",
+    "FEASIBILITY_ft_un_div_narrow__od2-c2__od1-b.npy",
+    "FEASIBILITY_ft_un_div_narrow__od2-c2__od1-d.npy",
+    "FEASIBILITY_ft_un_div_narrow__od2-c__od1-a.npy",
+    "FEASIBILITY_ft_un_div_narrow__od2-c__od1-b.npy",
+    "FEASIBILITY_ft_un_div_narrow__od2-c__od1-d.npy",
+    "FEASIBILITY_ft_un_div_narrow_dd__od2-a__od1-a.npy",
+    "FEASIBILITY_ft_un_div_narrow_dd__od2-a__od1-b.npy",
+    "FEASIBILITY_ft_un_div_narrow_dd__od2-a__od1-d.npy",
+    "FEASIBILITY_ft_un_div_narrow_dd__od2-b__od1-a.npy",
+    "FEASIBILITY_ft_un_div_narrow_dd__od2-b__od1-b.npy",
+    "FEASIBILITY_ft_un_div_narrow_dd__od2-b__od1-d.npy",
+    "FEASIBILITY_ft_un_div_narrow_dd__od2-c2__od1-a.npy",
+    "FEASIBILITY_ft_un_div_narrow_dd__od2-c2__od1-b.npy",
+    "FEASIBILITY_ft_un_div_narrow_dd__od2-c2__od1-d.npy",
+    "FEASIBILITY_ft_un_div_narrow_dd__od2-c__od1-a.npy",
+    "FEASIBILITY_ft_un_div_narrow_dd__od2-c__od1-b.npy",
+    "FEASIBILITY_ft_un_div_narrow_dd__od2-c__od1-d.npy",
+    "FEASIBILITY_ft_un_r0__od6-keep__seed1.npy",
+    "FEASIBILITY_ft_un_r0__od6-keep__seed2.npy",
+    "FEASIBILITY_ft_un_r0__od6-keep__seed3.npy",
+    "FEASIBILITY_ft_un_r0__od6-keep__seed4.npy",
+    "FEASIBILITY_ft_un_r0__od6-keep__seed42.npy",
+    "FEASIBILITY_ft_un_r0__od6-remove__seed1.npy",
+    "FEASIBILITY_ft_un_r0__od6-remove__seed2.npy",
+    "FEASIBILITY_ft_un_r0__od6-remove__seed3.npy",
+    "FEASIBILITY_ft_un_r0__od6-remove__seed4.npy",
+    "FEASIBILITY_ft_un_r0__od6-remove__seed42.npy",
+    "FEASIBILITY_ft_un_random__anchor.npy",
+    "FEASIBILITY_ft_un_rep__anchor.npy",
+    "FEASIBILITY_ft_un_rep_dedup__od4-a.npy",
+    "FEASIBILITY_ft_un_rep_dedup__od4-b.npy"
+   ],
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "per-file values (874 = 46 files x 19 values) that agree",
+   "builder": 874,
+   "checker": 874,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "files",
+   "builder": 46,
+   "checker": 46,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "files sharing nothing with heldout_un",
+   "builder": 46,
+   "checker": 46,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "files whose report field equals the recount",
+   "builder": 46,
+   "checker": 46,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "files by parent",
+   "builder": {
+    "ft_random": 16,
+    "ft_topk": 30
+   },
+   "checker": {
+    "ft_random": 16,
+    "ft_topk": 30
+   },
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "distinct index contents",
+   "builder": 36,
+   "checker": 36,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "repo SHA256SUMS: entries matching (46 .npy + report)",
+   "builder": 47,
+   "checker": 47,
+   "how": "checker: sha256_ok_repo + report sha256 equal to the repo's",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "supplementary vocab/R0.npy: rows",
+   "builder": 214489,
+   "checker": 214489,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "supplementary vocab/R0.npy: all zero",
+   "builder": true,
+   "checker": true,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "supplementary vocab/R0.npy: set rows (5 counts)",
+   "builder": {
+    "source": 0,
+    "target": 0,
+    "pair": 0,
+    "norm_source": 0,
+    "norm_target": 0
+   },
+   "checker": {
+    "source": 0,
+    "target": 0,
+    "pair": 0,
+    "norm_source": 0,
+    "norm_target": 0
+   },
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "supplementary vocab/R0.npy: identical to",
+   "builder": "FEASIBILITY_ft_un_r0__od6-keep__seed42.npy",
+   "checker": "FEASIBILITY_ft_un_r0__od6-keep__seed42.npy",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "supplementary vocab/A_narrow_42_58.npy: rows",
+   "builder": 214489,
+   "checker": 214489,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "supplementary vocab/A_narrow_42_58.npy: all zero",
+   "builder": true,
+   "checker": true,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "supplementary vocab/A_narrow_42_58.npy: set rows (5 counts)",
+   "builder": {
+    "source": 0,
+    "target": 0,
+    "pair": 0,
+    "norm_source": 0,
+    "norm_target": 0
+   },
+   "checker": {
+    "source": 0,
+    "target": 0,
+    "pair": 0,
+    "norm_source": 0,
+    "norm_target": 0
+   },
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "supplementary vocab/A_narrow_42_58.npy: identical to",
+   "builder": "FEASIBILITY_ft_un_a_narrow__od6-keep__seed42.npy",
+   "checker": "FEASIBILITY_ft_un_a_narrow__od6-keep__seed42.npy",
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "supplementary ft_topk (all rows): rows",
+   "builder": 926999,
+   "checker": 926999,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "supplementary ft_topk (all rows): all zero",
+   "builder": true,
+   "checker": true,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "supplementary ft_topk (all rows): set rows (5 counts)",
+   "builder": {
+    "source": 0,
+    "target": 0,
+    "pair": 0,
+    "norm_source": 0,
+    "norm_target": 0
+   },
+   "checker": {
+    "source": 0,
+    "target": 0,
+    "pair": 0,
+    "norm_source": 0,
+    "norm_target": 0
+   },
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "supplementary ft_random (all rows): rows",
+   "builder": 926999,
+   "checker": 926999,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "supplementary ft_random (all rows): all zero",
+   "builder": true,
+   "checker": true,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "supplementary ft_random (all rows): set rows (5 counts)",
+   "builder": {
+    "source": 0,
+    "target": 0,
+    "pair": 0,
+    "norm_source": 0,
+    "norm_target": 0
+   },
+   "checker": {
+    "source": 0,
+    "target": 0,
+    "pair": 0,
+    "norm_source": 0,
+    "norm_target": 0
+   },
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "supplementary phase0_e05/ft_topk_div: rows",
+   "builder": 242022,
+   "checker": 242022,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "supplementary phase0_e05/ft_topk_div: all zero",
+   "builder": true,
+   "checker": true,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "supplementary phase0_e05/ft_topk_div: set rows (5 counts)",
+   "builder": {
+    "source": 0,
+    "target": 0,
+    "pair": 0,
+    "norm_source": 0,
+    "norm_target": 0
+   },
+   "checker": {
+    "source": 0,
+    "target": 0,
+    "pair": 0,
+    "norm_source": 0,
+    "norm_target": 0
+   },
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "supplementary phase0_e05/ft_topk_rep: rows",
+   "builder": 242022,
+   "checker": 242022,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "supplementary phase0_e05/ft_topk_rep: all zero",
+   "builder": true,
+   "checker": true,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "supplementary phase0_e05/ft_topk_rep: set rows (5 counts)",
+   "builder": {
+    "source": 0,
+    "target": 0,
+    "pair": 0,
+    "norm_source": 0,
+    "norm_target": 0
+   },
+   "checker": {
+    "source": 0,
+    "target": 0,
+    "pair": 0,
+    "norm_source": 0,
+    "norm_target": 0
+   },
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "supplementary phase0_e05/ft_random_small: rows",
+   "builder": 242022,
+   "checker": 242022,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "supplementary phase0_e05/ft_random_small: all zero",
+   "builder": true,
+   "checker": true,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "supplementary phase0_e05/ft_random_small: set rows (5 counts)",
+   "builder": {
+    "source": 0,
+    "target": 0,
+    "pair": 0,
+    "norm_source": 0,
+    "norm_target": 0
+   },
+   "checker": {
+    "source": 0,
+    "target": 0,
+    "pair": 0,
+    "norm_source": 0,
+    "norm_target": 0
+   },
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "supplementary phase0_e05/ft_un_div: rows",
+   "builder": 214489,
+   "checker": 214489,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "supplementary phase0_e05/ft_un_div: all zero",
+   "builder": true,
+   "checker": true,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "supplementary phase0_e05/ft_un_div: set rows (5 counts)",
+   "builder": {
+    "source": 0,
+    "target": 0,
+    "pair": 0,
+    "norm_source": 0,
+    "norm_target": 0
+   },
+   "checker": {
+    "source": 0,
+    "target": 0,
+    "pair": 0,
+    "norm_source": 0,
+    "norm_target": 0
+   },
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "supplementary phase0_e05/ft_un_rep: rows",
+   "builder": 214489,
+   "checker": 214489,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "supplementary phase0_e05/ft_un_rep: all zero",
+   "builder": true,
+   "checker": true,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "supplementary phase0_e05/ft_un_rep: set rows (5 counts)",
+   "builder": {
+    "source": 0,
+    "target": 0,
+    "pair": 0,
+    "norm_source": 0,
+    "norm_target": 0
+   },
+   "checker": {
+    "source": 0,
+    "target": 0,
+    "pair": 0,
+    "norm_source": 0,
+    "norm_target": 0
+   },
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "supplementary phase0_e05/ft_un_random: rows",
+   "builder": 214489,
+   "checker": 214489,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "supplementary phase0_e05/ft_un_random: all zero",
+   "builder": true,
+   "checker": true,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "supplementary phase0_e05/ft_un_random: set rows (5 counts)",
+   "builder": {
+    "source": 0,
+    "target": 0,
+    "pair": 0,
+    "norm_source": 0,
+    "norm_target": 0
+   },
+   "checker": {
+    "source": 0,
+    "target": 0,
+    "pair": 0,
+    "norm_source": 0,
+    "norm_target": 0
+   },
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "sets",
+   "claim": "parent rows ft_topk / ft_random",
+   "builder": [
+    926999,
+    926999
+   ],
+   "checker": [
+    926999,
+    926999
+   ],
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "pool rows",
+   "builder": 38275284,
+   "checker": 38275284,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "rows with other than 3 fields",
+   "builder": 0,
+   "checker": 0,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "pool rows: exact_pair",
+   "builder": 3290,
+   "checker": 3290,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "pool rows: exact_source",
+   "builder": 4139,
+   "checker": 4139,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "pool rows: exact_target",
+   "builder": 3605,
+   "checker": 3605,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "pool rows: exact_source_not_pair",
+   "builder": 849,
+   "checker": 849,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "pool rows: exact_target_not_pair",
+   "builder": 315,
+   "checker": 315,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "pool rows: exact_any",
+   "builder": 4449,
+   "checker": 4449,
+   "how": "checker exact_source_or_target (a pair hit is a source hit, so the same set)",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "pool rows: norm_source",
+   "builder": 4368,
+   "checker": 4368,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "pool rows: norm_target",
+   "builder": 3848,
+   "checker": 3848,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "pool rows: norm_source_not_exact_source",
+   "builder": 229,
+   "checker": 229,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "pool rows: norm_target_not_exact_target",
+   "builder": 243,
+   "checker": 243,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "E0.3 category exact_pair",
+   "builder": 3290,
+   "checker": 3290,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "E0.3 category exact_pair vs E0.3's manifest",
+   "builder": 3290,
+   "checker": 3290,
+   "how": "E0.3 manifest (via checker)",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "E0.3 category extra_by_source",
+   "builder": 1078,
+   "checker": 1078,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "E0.3 category extra_by_source vs E0.3's manifest",
+   "builder": 1078,
+   "checker": 1078,
+   "how": "E0.3 manifest (via checker)",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "E0.3 category extra_by_target",
+   "builder": 284,
+   "checker": 284,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "E0.3 category extra_by_target vs E0.3's manifest",
+   "builder": 284,
+   "checker": 284,
+   "how": "E0.3 manifest (via checker)",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "E0.3 category rows_reserved_total",
+   "builder": 4652,
+   "checker": 4652,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "E0.3 category rows_reserved_total vs E0.3's manifest",
+   "builder": 4652,
+   "checker": 4652,
+   "how": "E0.3 manifest (via checker)",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "heldout rows with exact source in pool",
+   "builder": 2000,
+   "checker": 2000,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "heldout rows with exact target in pool",
+   "builder": 2000,
+   "checker": 2000,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "heldout rows with exact pair in pool",
+   "builder": 2000,
+   "checker": 2000,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "heldout rows with norm source in pool",
+   "builder": 2000,
+   "checker": 2000,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "heldout rows with norm target in pool",
+   "builder": 2000,
+   "checker": 2000,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "distinct heldout sources found in pool",
+   "builder": 1999,
+   "checker": 1999,
+   "how": "derived: checker found all 2,000 rows, so every distinct string",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "distinct heldout targets found in pool",
+   "builder": 1999,
+   "checker": 1999,
+   "how": "derived: checker found all 2,000 rows, so every distinct string",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "distinct heldout pairs found in pool",
+   "builder": 1999,
+   "checker": 1999,
+   "how": "derived: checker found all 2,000 rows, so every distinct string",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "heldout rows by pool copies of their pair",
+   "builder": {
+    "1": 1627,
+    "2": 208,
+    "3": 61,
+    "4": 28,
+    "5": 18,
+    "6": 10,
+    "7": 7,
+    "8": 3,
+    "9": 2,
+    "10": 2,
+    "11": 4,
+    "12": 4,
+    "13": 2,
+    "14": 2,
+    "15": 2,
+    "16": 1,
+    "17": 1,
+    "18": 4,
+    "20": 1,
+    "23": 1,
+    "24": 4,
+    "25": 1,
+    "32": 1,
+    "34": 1,
+    "37": 1,
+    "40": 1,
+    "41": 1,
+    "42": 1,
+    "44": 1
+   },
+   "checker": {
+    "1": 1627,
+    "2": 208,
+    "3": 61,
+    "4": 28,
+    "5": 18,
+    "6": 10,
+    "7": 7,
+    "8": 3,
+    "9": 2,
+    "10": 2,
+    "11": 4,
+    "12": 4,
+    "13": 2,
+    "14": 2,
+    "15": 2,
+    "16": 1,
+    "17": 1,
+    "18": 4,
+    "20": 1,
+    "23": 1,
+    "24": 4,
+    "25": 1,
+    "32": 1,
+    "34": 1,
+    "37": 1,
+    "40": 1,
+    "41": 1,
+    "42": 1,
+    "44": 1
+   },
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "pool copies per distinct heldout pair, max",
+   "builder": 44,
+   "checker": 44,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "pool copies per distinct heldout pair, min",
+   "builder": 1,
+   "checker": 1,
+   "how": "derived: smallest key of the checker's distribution",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "heldout rows with no pool row (pair)",
+   "builder": 0,
+   "checker": 0,
+   "how": "derived: 2,000 - checker's rows found",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "heldout rows with no pool row (source)",
+   "builder": 0,
+   "checker": 0,
+   "how": "derived: 2,000 - checker's rows found",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "heldout rows with no pool row (target)",
+   "builder": 0,
+   "checker": 0,
+   "how": "derived: 2,000 - checker's rows found",
+   "agree": true
+  },
+  {
+   "section": "evaluated copy",
+   "claim": "rows",
+   "builder": 1999,
+   "checker": 1999,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "evaluated copy",
+   "claim": "sha256",
+   "builder": {
+    "heldout_un.en": "c014363fa198620453966f58391d55f31695d91279e4f8a224bf171b45688669",
+    "heldout_un.fr": "4222f10baa218c02a76bb1a8b8f5274535e669eae0f6a32a86a527db264a67a6"
+   },
+   "checker": {
+    "heldout_un.en": "c014363fa198620453966f58391d55f31695d91279e4f8a224bf171b45688669",
+    "heldout_un.fr": "4222f10baa218c02a76bb1a8b8f5274535e669eae0f6a32a86a527db264a67a6"
+   },
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "evaluated copy",
+   "claim": "dropped rows (0-based)",
+   "builder": [
+    1764
+   ],
+   "checker": [
+    1764
+   ],
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "evaluated copy",
+   "claim": "kept rows with exact pair in pool",
+   "builder": 1999,
+   "checker": 1999,
+   "how": "derived: all rows found",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "exact_pair: rows / inside reused mask / sources",
+   "builder": [
+    3290,
+    3290,
+    {
+     "un": 3290
+    }
+   ],
+   "checker": [
+    3290,
+    3290,
+    {
+     "un": 3290
+    }
+   ],
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "extra_by_source: rows / inside reused mask / sources",
+   "builder": [
+    1078,
+    1072,
+    {
+     "giga-fren": 6,
+     "un": 1072
+    }
+   ],
+   "checker": [
+    1078,
+    1072,
+    {
+     "giga-fren": 6,
+     "un": 1072
+    }
+   ],
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "extra_by_target: rows / inside reused mask / sources",
+   "builder": [
+    284,
+    283,
+    {
+     "giga-fren": 1,
+     "un": 283
+    }
+   ],
+   "checker": [
+    284,
+    283,
+    {
+     "giga-fren": 1,
+     "un": 283
+    }
+   ],
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "rows_reserved_total: rows / inside reused mask / sources",
+   "builder": [
+    4652,
+    4645,
+    {
+     "giga-fren": 7,
+     "un": 4645
+    }
+   ],
+   "checker": [
+    4652,
+    4645,
+    {
+     "giga-fren": 7,
+     "un": 4645
+    }
+   ],
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "exact_source_not_pair: rows / inside reused mask / sources",
+   "builder": [
+    849,
+    843,
+    {
+     "giga-fren": 6,
+     "un": 843
+    }
+   ],
+   "checker": [
+    849,
+    843,
+    {
+     "giga-fren": 6,
+     "un": 843
+    }
+   ],
+   "how": "derived: checker exact_source minus exact_pair (pair rows are source and target rows)",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "exact_target_not_pair: rows / inside reused mask / sources",
+   "builder": [
+    315,
+    315,
+    {
+     "un": 315
+    }
+   ],
+   "checker": [
+    315,
+    315,
+    {
+     "un": 315
+    }
+   ],
+   "how": "derived: checker exact_target minus exact_pair (pair rows are source and target rows)",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "pool copies of the duplicated heldout pair (heldout rows [1054, 1903])",
+   "builder": [
+    24,
+    24
+   ],
+   "checker": [
+    24,
+    24
+   ],
+   "how": "builder: pool_per_heldout_row.json",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "max pool rows sharing one heldout source",
+   "builder": 95,
+   "checker": 95,
+   "how": "builder: pool_per_heldout_row.json",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "max pool rows sharing one heldout target",
+   "builder": 48,
+   "checker": 48,
+   "how": "builder: pool_per_heldout_row.json",
+   "agree": true
+  },
+  {
+   "section": "pool",
+   "claim": "heldout rows whose pair has more than one pool copy",
+   "builder": 373,
+   "checker": 373,
+   "how": "builder: pool_per_heldout_row.json",
+   "agree": true
+  },
+  {
+   "section": "pretrain",
+   "claim": "pretraining rows",
+   "builder": 9312233,
+   "checker": 9312233,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pretrain",
+   "claim": "pretraining rows: exact_pair",
+   "builder": 0,
+   "checker": 0,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pretrain",
+   "claim": "pretraining rows: exact_source",
+   "builder": 0,
+   "checker": 0,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pretrain",
+   "claim": "pretraining rows: exact_target",
+   "builder": 0,
+   "checker": 0,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pretrain",
+   "claim": "pretraining rows: norm_source",
+   "builder": 0,
+   "checker": 0,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pretrain",
+   "claim": "pretraining rows: norm_target",
+   "builder": 0,
+   "checker": 0,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pretrain",
+   "claim": "heldout rows with exact source in pretraining",
+   "builder": 0,
+   "checker": 0,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pretrain",
+   "claim": "heldout rows with exact target in pretraining",
+   "builder": 0,
+   "checker": 0,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pretrain",
+   "claim": "heldout rows with exact pair in pretraining",
+   "builder": 0,
+   "checker": 0,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pretrain",
+   "claim": "heldout rows with norm source in pretraining",
+   "builder": 0,
+   "checker": 0,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "pretrain",
+   "claim": "heldout rows with norm target in pretraining",
+   "builder": 0,
+   "checker": 0,
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "awk",
+   "claim": "v2_scored.tsv: rows, src, tgt, pair rows | heldout of N, src, tgt, pair",
+   "builder": [
+    38275284,
+    4139,
+    3605,
+    3290,
+    2000,
+    2000,
+    2000,
+    2000
+   ],
+   "checker": [
+    38275284,
+    4139,
+    3605,
+    3290,
+    2000,
+    2000,
+    2000,
+    2000
+   ],
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "awk",
+   "claim": "train.clean: rows, src, tgt, pair rows | heldout of N, src, tgt, pair",
+   "builder": [
+    9312233,
+    0,
+    0,
+    0,
+    2000,
+    0,
+    0,
+    0
+   ],
+   "checker": [
+    9312233,
+    0,
+    0,
+    0,
+    2000,
+    0,
+    0,
+    0
+   ],
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "awk",
+   "claim": "ft_topk: rows, src, tgt, pair rows | heldout of N, src, tgt, pair",
+   "builder": [
+    926999,
+    0,
+    0,
+    0,
+    2000,
+    0,
+    0,
+    0
+   ],
+   "checker": [
+    926999,
+    0,
+    0,
+    0,
+    2000,
+    0,
+    0,
+    0
+   ],
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "awk",
+   "claim": "ft_random: rows, src, tgt, pair rows | heldout of N, src, tgt, pair",
+   "builder": [
+    926999,
+    0,
+    0,
+    0,
+    2000,
+    0,
+    0,
+    0
+   ],
+   "checker": [
+    926999,
+    0,
+    0,
+    0,
+    2000,
+    0,
+    0,
+    0
+   ],
+   "how": "direct",
+   "agree": true
+  },
+  {
+   "section": "awk",
+   "claim": "v2_scored.tsv rows with other than 3 fields",
+   "builder": 0,
+   "checker": 0,
+   "how": "direct",
+   "agree": true
+  }
+ ]
+}

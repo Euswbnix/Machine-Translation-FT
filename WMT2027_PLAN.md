@@ -45,9 +45,10 @@ the Mac (2026-10-16) to the pre-registration draft's definition (ft_topk file or
 kept, stratified length matching with `random.Random(42)`) gives 198,333 rows per side, a
 repeated-8-gram share of 0.378, 25,256 source types for rep_dedup and 33,098 for div_dd; [F]'s
 0.379 and 25,296 are the unrecorded feasibility draw. div_narrow's rule is not fixed yet ([PR]
-E0.6 OD 2). The fail-closed `e06_build.py` must generate all three, and every figure (including
-[F]'s 20,284 and 34,070 types for div_narrow) must be re-measured on the generated sets before it
-goes into the pre-registration (§3.3).
+E0.6 OD 2). The fail-closed `e06_build.py` must generate all three, and every figure must be
+re-measured on the generated sets before it goes into the pre-registration. On 19 October its
+feasibility run built all three for measurement only, and [F]'s 20,284 and 34,070 types for
+div_narrow are not reproduced (§3.3, the note under the set table).
 
 ---
 
@@ -334,13 +335,22 @@ the pre-registration work are.
 
 1. **Coverage, Saunders & DeNeefe's way:** the share of the base model's subword vocabulary
    that appears in each E0.5 and E0.6 set, source and target separately [Gn:saunders2024].
-   No SentencePiece model is on the Mac [Gv], but the HF release
+   The vocab memo had no SentencePiece model [Gv], but the HF release
    `euswbnix/transformer-wmt14-enfr-base` ships it, byte-identical to the original machine's
-   `spm_enfr_v1_fixed.model` (`d1c10ea80fb95984…`) [R]. Fetch it from there and install the
-   `sentencepiece` package into `~/mt_local/venv` (absent there; pyarrow 25.0.1 is present,
-   checked 2026-10-16), so coverage can be computed on CPU now.
+   `spm_enfr_v1_fixed.model` (`d1c10ea80fb95984…`) [R]. **Run 19 October 2026** on the M5 Max with
+   that model (sha256 checked) and sentencepiece 0.2.2, for the six E0.5 sets, R0 and A_narrow
+   (`phase0/next/cpu_items/item1_coverage/`; an independent re-derivation agrees, and the folder's
+   `REVIEW_NOTES.md` overrides the README where they differ; descriptive): in piece types
+   ft_un_rep is 6.8% (source) and 6.5% (target) below ft_un_div, against 25.8% and 24.0% in word
+   types, and A_narrow, matched to ft_un_div on word types, covers 4.5% / 9.7% more pieces
+   (outside ±2%). div_narrow, rep_dedup and div_dd are measured once built ([PR] E0.6 OD 1, OD 16).
 2. **Templated numerals:** rep recomputed with numbers, dates and UN document symbols masked,
-   and the numeric-token share of each half [Gn:lo2018].
+   and the numeric-token share of each half [Gn:lo2018]. **Run 19 October 2026**
+   (`phase0/next/cpu_items/item2_numerals/`; independent check; descriptive): when 8-grams that
+   touch a masked token stop counting, 95% of ft_un_rep's rows stay repetitive and 88% of the
+   ft_un_rep − ft_un_div gap in mean rep remains (0.4332 to 0.3817); with placeholders instead,
+   mean rep rises. The repetitive half is not more numeric than the diverse half (about 3.2%
+   against 3.5% of source tokens masked).
 3. **Chimoto et al.'s rival explanation:** language-ID and length-ratio contamination in each
    half [Gn:chimoto2024].
 4. **heldout_un hygiene:** its disjointness from the six E0.5 training sets is already checked
@@ -353,7 +363,12 @@ the pre-registration work are.
    ranking (the retention levels of Tan, Finkelstein, Waldendorf, Chimoto and Peter, plus this
    band and W2's depths) [Gn:peter2023, tan2024, finkelstein2024, chimoto2024,
    waldendorf2025]. This is the one depth list; `reading_list.md` §3.2 item 10(d) and the
-   outline's F3 use it. Descriptive only; no paper claim before W2 runs.
+   outline's F3 use it. Descriptive only; no paper claim before W2 runs. **Run 19 October 2026**
+   (`phase0/next/cpu_items/item5_depth/`; independent check): the band is reproduced exactly
+   (926,999 rows; 227,406 / 486,475 UN candidates); the rise of rep > 0 with depth within each
+   depth's own subset (13.8% at 0.13% to 41.4% at 50%) is mostly subset size, and at a fixed
+   sample size it is U-shaped; duplicate sources fall with depth at a fixed size (n = 926,999:
+   2.28% in the band, 0.74% at 50%); the UN share is flat (76.3-77.7%).
 6. **Token-level forgetting:** ForgetGenUse, split into tokens inside and outside the
    fine-tuning vocabulary, on the E0.5 newstest2014 outputs [Gn:saunders2024]. Those outputs
    were not kept: `~/mt_local/phase0_final/e05_results/` (archive sha256 `b671180f…`) [R] holds
@@ -365,8 +380,14 @@ the pre-registration work are.
    the base on newstest2014 and heldout_un, and **62 of 62 reproduce the recorded BLEU exactly**.
    Hypotheses: `~/mt_local/phase0_final/e05_redecode/` (sha256 per file in
    `phase0/next/e05_redecode/redecode_report.json`). This item is now CPU work, **run 19 October 2026** on the M5 Max (`phase0/next/cpu_items/item6_forgetting/`,
-   cross-checked by an independent implementation): ForgetGenUse All / OOD 0.150 / 0.408 for `ft_un_rep`,
-   0.117 / 0.272 for `ft_un_div`, 0.107 / 0.174 for `ft_un_random` (descriptive). If [PR] E0.6 OD 11
+   cross-checked by an independent implementation): ForgetGenUse All / ID / OOD 0.150 / 0.131 / 0.408 for `ft_un_rep`,
+   0.117 / 0.108 / 0.272 for `ft_un_div`, 0.107 / 0.104 / 0.174 for `ft_un_random`: rep > div > random, as in
+   BLEU. The OOD rate differs most (0.408 / 0.272 / 0.174, against ID 0.131 / 0.108 / 0.104), but
+   about 59% of `ft_un_rep`'s extra lost uses over `ft_un_div` are on ID tokens, the div − random
+   gap is about 82% OOD, and the OOD classes differ in size by set (base-correct OOD uses 3,306 /
+   2,560 / 1,771 of 47,332; means of `real/*_words.json`); the folder README's "mostly OOD"
+   reading is to be corrected. The counting rule is the
+   folder's reading of the pre-reading note, Eq 1 unchecked (descriptive). If [PR] E0.6 OD 11
    picks FLORES+ devtest as the second out-of-domain set, those 30 checkpoints are decoded on it
    the same way on the 5090 (the outline's N1; the checkpoints are on the box in `~/redecode/`); WMT24++
    is paragraph-level and is not used for this arm (OD 11). E0.6's own evaluation must write
@@ -396,17 +417,19 @@ E0.5, it is an explanatory probe, not a gate.
 | --- | --- | --- | --- | --- |
 | anchors | ft_un_div, ft_un_rep, ft_un_random | 214,489 each | identical files to E0.5 | They bridge to E0.5: a new box and batch may shift BLEU levels [Gv]. |
 | vocabulary cap (N, S) | R0 | 214,489 | random UN rows with rep = 0 (rep computed against ft_random, not the band [Gv]), ft_un_div's length histogram | 62,000 source word types; QE 0.861; literalness 0.693 |
-| vocabulary cap (N, S) | A_narrow | 214,489 | R0's pool restricted to the 42,000 most frequent source and 58,000 most frequent French words; per-row rarity matched to ft_un_div | 33,562 types (ft_un_div 33,874); QE 0.866; literalness 0.698 (ft_un_div 0.899 and 0.783) |
-| coverage | div_narrow | 214,489 (ft_un_rep's exact length histogram) | diverse UN candidates narrowed to the repetitive half's coverage on [PR] E0.6 OD 1's measure (within ±2%), by OD 2's rule | Measured low end (one heuristic: in each length bucket, the rows whose rarest word is most frequent; not a proven minimum): 20,284 source types; a random draw at that histogram: 34,070; ft_un_rep's 25,134 lies between |
-| duplicates | rep_dedup | 198,333 | repetitive UN candidates with repeated sources removed (227,406 to 207,561), then length-matched | scratch rebuild (header): repeated-8-gram share 0.378, 25,256 source types; [F]'s unrecorded feasibility draw: 0.379, 25,296 (ft_un_rep 0.433); 0.00% duplicate sources |
-| duplicates | div_dd | 198,333 | diverse candidates, length-matched to rep_dedup | the same 198,333-row histogram; 33,098 source types (scratch rebuild) |
+| vocabulary cap (N, S) | A_narrow | 214,489 | R0's pool restricted to the 42,000 most frequent source and 58,000 most frequent French words; per-row rarity matched to ft_un_div | 33,562 types (ft_un_div 33,874); QE 0.866; literalness 0.698 (ft_un_div 0.899 and 0.783); not buildable at these caps if top-band rows are removed ([PR] E0.6 OD 3, OD 6) |
+| coverage | div_narrow | 214,489 (ft_un_rep's exact length histogram) | diverse UN candidates narrowed to the repetitive half's coverage on [PR] E0.6 OD 1's measure (within ±2%), by OD 2's rule | feasibility run, 19 Oct: within ±2% on source and French types only with [PR] E0.6 OD 2 = c2 and OD 1 = (b), 25,068 / 32,773 (−0.3% / +0.3%); the draft's earlier path, (a) then (c), gives +23.1% / +23.0% and −5.7% / +5.8%, so under OD 1(b) the build would stop; QE 0.8990; about 127,000 rows shared with ft_un_div |
+| duplicates | rep_dedup | 198,333 | repetitive UN candidates with repeated sources removed (227,406 to 207,561), then length-matched | repeated-8-gram share 0.378, 25,256 source types (scratch rebuild, reproduced by the feasibility run; [F]'s unrecorded 0.379 and 25,296 are not used; ft_un_rep 0.433); 0.00% duplicate sources |
+| duplicates | div_dd | 198,333 | diverse candidates, length-matched to rep_dedup | the same 198,333-row histogram; 33,098 source types (scratch rebuild, reproduced by the feasibility run) |
 
-div_narrow, rep_dedup and div_dd are not built sets. No index file or script for them survives
-(header): div_narrow's figures come from a feasibility run [F] whose code and index files are
-not in `phase0/next/`, and rep_dedup's and div_dd's from that run and from a scratch rebuild to
-the pre-registration draft's definition (header). `e06_build.py` must generate them, and every
-figure in their rows must be re-measured on the generated sets before the pre-registration
-quotes it. R0 and A_narrow have index files (`R0.npy`, `A_narrow_42_58.npy`) [Gv].
+div_narrow, rep_dedup and div_dd are so far built only by `e06_build.py --feasibility`
+(19 October, every option, for measurement only; report in `phase0/next/e06_feasibility/`, index
+files in `~/mt_local/phase0_next/e06_feasibility/`, not for training). The earlier figures
+without a script (20,284; 34,070; 25,296; 0.379) are not reproduced or not used. The sets of
+record come from the dry run with the chosen decisions, and every figure in their rows must be
+re-measured on those sets before the pre-registration quotes it. R0 and A_narrow have index
+files (`R0.npy`, `A_narrow_42_58.npy`) [Gv], which the feasibility run rebuilds with the same
+sha256.
 
 **Contrasts, outcomes and limits: [PR] E0.6, not restated here.** The contrasts are N, S, the two
 C1 contrasts (C1-beyond-coverage, ft_un_rep against div_narrow; C1-beyond-duplicates, rep_dedup
@@ -669,8 +692,8 @@ Rentals are R1 to R7. The author rents when told; each rental follows §6.5.
 
 | dates | Claude (CPU) | author | rental |
 | --- | --- | --- | --- |
-| Sat 17 - Fri 23 Oct | Done 17 Oct: sources and scripts in `phase0/next/`, bulk files in `~/mt_local/phase0_next/`, sha256 of all of them in `phase0/next/SHA256SUMS` (header). By Wed 21 Oct, §3.2 item 1: fetch the SentencePiece model from the HF release, check `d1c10ea8…`, and compute coverage on the E0.5 sets and on R0 and A_narrow (the other E0.6 sets once `e06_build.py` generates them); [PR] E0.6 OD 1 and risk 2's mitigation need this statistic. Prepare the Mac for [PR] E0.6 OD 16's checks: use `~/mt_local/venv` (pyarrow 25.0.1 present), install `sentencepiece` there, and fetch the newstest2014 test split from the pinned `wmt/wmt14@b199e406`. Turn the E0.6 pre-registration draft into PROTOCOL.md text with its OPEN DECISIONS still open; write fail-closed `e06_build.py` and dry-run it on the Mac (it must reproduce `R0.npy` and `A_narrow_42_58.npy` row for row); CPU items 2-5 of §3.2. | Nothing to decide yet; the E0.6 decisions (§7) wait for the reading week. | none |
-| Mon 26 Oct - Sun 1 Nov | Revise the existing drafts (the E0.6, E0.7 and E1.0 pre-registration drafts and the EAMT outline, all dated 2026-10-16) as the reading comes in. Prepare the inputs §7 lists for the E0.6 decisions: the piece-level and newstest2014 checks ([PR] E0.6 OD 16); Saunders & DeNeefe's coverage once the author has read them (OD 1); with `e06_build.py`, div_narrow's ±2% feasibility under each OD 1 option and each OD 2 rule, and whether div_narrow_dd's build passes (OD 5). | **Reading week**: the ten papers in §6.2, each with its first check; Erdmann & Gwinnup 2018 and Azpeitia et al. 2018 before the E0.6 decisions on Sunday 1 Nov (§6.2); then, as time allows, the other unopened pre-emption leads (§6.2). **Sun 1 Nov: answer [PR] E0.6 OD 1-18 (§7).** | none |
+| Sat 17 - Fri 23 Oct | Done 17 Oct: sources and scripts in `phase0/next/`, bulk files in `~/mt_local/phase0_next/`, sha256 of all of them in `phase0/next/SHA256SUMS` (header). By Wed 21 Oct, §3.2 item 1: fetch the SentencePiece model from the HF release, check `d1c10ea8…`, and compute coverage on the E0.5 sets and on R0 and A_narrow (the other E0.6 sets once `e06_build.py` generates them); [PR] E0.6 OD 1 and risk 2's mitigation need this statistic. Prepare the Mac for [PR] E0.6 OD 16's checks: use `~/mt_local/venv` (pyarrow 25.0.1 present), install `sentencepiece` there, and fetch the newstest2014 test split from the pinned `wmt/wmt14@b199e406` (fetch replaced: the training box's `data_enfr_v1/test.{en,fr}`, sha256 `967dca93…` / `82526d36…` = E0.5's BLEU cache, were copied to the M5 Max for §3.2 item 6's 19 Oct run). Turn the E0.6 pre-registration draft into PROTOCOL.md text with its OPEN DECISIONS still open; write fail-closed `e06_build.py` and dry-run it on the Mac (it must reproduce `R0.npy` and `A_narrow_42_58.npy` row for row); CPU items 2-5 of §3.2. | Nothing to decide yet; the E0.6 decisions (§7) wait for the reading week. | none |
+| Mon 26 Oct - Sun 1 Nov | Revise the existing drafts (the E0.6, E0.7 and E1.0 pre-registration drafts and the EAMT outline, all dated 2026-10-16) as the reading comes in. Prepare the inputs §7 lists for the E0.6 decisions: the piece-level and newstest2014 checks ([PR] E0.6 OD 16); Saunders & DeNeefe's coverage once the author has read them (OD 1); with `e06_build.py`, div_narrow's ±2% feasibility under each OD 1 option and each OD 2 rule, and whether div_narrow_dd's build passes (OD 5) (both prepared 19 Oct by the feasibility run, `phase0/next/e06_feasibility/`, for OD 1 (a), (b) and (d); OD 1(c) is not built by the script; only the dry run with the chosen decisions is still to come, Mon 2 Nov). | **Reading week**: the ten papers in §6.2, each with its first check; Erdmann & Gwinnup 2018 and Azpeitia et al. 2018 before the E0.6 decisions on Sunday 1 Nov (§6.2); then, as time allows, the other unopened pre-emption leads (§6.2). **Sun 1 Nov: answer [PR] E0.6 OD 1-18 (§7).** | none |
 | Mon 2 - Sun 8 Nov | Write the E0.6 decisions into PROTOCOL.md; re-run `e06_build.py`'s dry run with the chosen options (div_narrow within ±2% under the chosen measure; div_narrow_dd if OD 5(b)) and fill [PR] E0.6's "Measured on the sets before any run" table from it; then the second pre-flight audit; tag `e06-prereg-v1` (target Tue 3 Nov); monitor R1, pull and sha-check results and decoded outputs; E0.6 report. Finish the E0.7 pre-registration; by Thu 5 Nov, estimate the en-de base cost from the original runs' logs (to check), so it is ready for the E0.7 decisions on Fri 6 Nov. | Rent R1 once the tag is pushed. If [PR] E0.6 OD 11 picks FLORES+ devtest, accept its terms on your own Hugging Face account and place the token (or the files) on the box before R1. Decide E0.7 (§7) by Fri 6 Nov. | **R1**, 4x RTX 5090, about 5-6 h with setup without E0.6-LR: E0.6 (40 runs, about 3.5-4 h, derived in §3.1; 45 runs and about 0.5 h more with OD 5(b)); the cache warm-up (25 minutes on E0.5's box, §6.5); (E0.5's re-decode on newstest2014 is done on the author's 5090, §3.2 item 6; a FLORES+ devtest decode, if [PR] E0.6 OD 11 picks it, also goes on the 5090.) With E0.6-LR (OD 17), if registered separately, about 1.5 h more (15 × 0.39 / 4, derived): about 6-7 h. If the tag slips: a session of its own at the start of the R2 window, before the en-de work. |
 | Mon 9 - Sun 22 Nov | Tag `e07-prereg-v1` before the base is trained; finish the E1.0 pre-registration. | Rent R2. Read Shang et al. (Table 5 setup) and Pang et al. 2024 (§6.2), then decide E1.0 (§7) by Fri 20 Nov. | **R2**, 4x RTX 5090: en-de base training (duration to measure), then 15 (or 30) fine-tunes. A free card can carry the en->zh run, which is outside this plan (§6.5). |
 | Mon 23 Nov - Sun 6 Dec | Tag `e10-prereg-v1`; E0.7 report. | Rent R3. FLORES+ is gated: accept its terms on your own Hugging Face account and place the token on the box yourself, in every option; if Gemma, accept its licence too. | **R3**, 4x B200 (§6.5): E1.0 pilot and gate, then 30 runs (+5 or +10 optional, [PR] E1.0 OD 11; +3 optional, OD 1(d) / OD 14), about 14 h wall-clock as estimated for 4x RTX 5090, less on B200 (to measure in the pilot; about 2-4 h more with the OD 11 runs, about 2 h more with the OD 1(d) runs, on the same basis); extra metrics (chrF, MetricX-24, COMET-22) on E0.x outputs. |
@@ -927,9 +950,12 @@ Azpeitia et al. 2018 have been read (§6.2); the post-decision dry run and the t
 Tue 3 Nov (§4). Inputs Claude prepares beforehand (§4, rows of 17 Oct and 26 Oct), so that each
 answer is made with numbers in hand:
 - OD 1 and OD 15: Saunders & DeNeefe's subword coverage on every set (§3.2 item 1);
-- OD 1 and OD 2: div_narrow's ±2% feasibility under each coverage measure and narrowing rule;
-- OD 4: the duplicate rates under the normalised definition, descriptively;
-- OD 5: whether div_narrow_dd's build passes;
+- OD 1 and OD 2: div_narrow's ±2% feasibility under each coverage measure and narrowing rule
+  (prepared 19 Oct by the feasibility run, `phase0/next/e06_feasibility/`, for OD 1 (a), (b) and
+  (d); (c) is not built by the script);
+- OD 4: the duplicate rates under the normalised definition, descriptively (prepared 19 Oct,
+  feasibility run);
+- OD 5: whether div_narrow_dd's build passes (prepared 19 Oct, feasibility run);
 - OD 16: the piece-level and newstest2014 checks, both on the Mac (no rental);
 - OD 11: if FLORES+ devtest is chosen, the author handles its gate before R1 (§6.5);
 - OD 17 (E0.6-LR, risk 1): if yes, its own section and tag before R1.

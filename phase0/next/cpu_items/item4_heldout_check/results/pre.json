@@ -1,0 +1,56 @@
+{
+ "rows": 9312233,
+ "distinct": {
+  "pairs": 8765742,
+  "sources_exact": 8463798,
+  "sources_norm": 8433921,
+  "targets_norm": 8596933
+ },
+ "pretrain_rows_with_heldout": {
+  "exact_source": 0,
+  "exact_target": 0,
+  "exact_pair": 0,
+  "norm_source": 0,
+  "norm_target": 0,
+  "any": 0
+ },
+ "heldout_rows_found_in_pretrain": {
+  "exact_source": 0,
+  "exact_target": 0,
+  "exact_pair": 0,
+  "norm_source": 0,
+  "norm_target": 0
+ },
+ "first_hits": [],
+ "heldout_keys_in_pretrain_keys": {
+  "pair": 0,
+  "norm_source": 0,
+  "norm_target": 0
+ },
+ "positive_control_e05_pairs_in_pretraining_pct": {
+  "measured": {
+   "ft_topk_div": 52.9,
+   "ft_topk_rep": 42.4,
+   "ft_random_small": 58.5,
+   "ft_un_div": 36.7,
+   "ft_un_rep": 36.7,
+   "ft_un_random": 37.9
+  },
+  "protocol_table": {
+   "ft_topk_div": 52.9,
+   "ft_topk_rep": 42.4,
+   "ft_random_small": 58.5,
+   "ft_un_div": 36.7,
+   "ft_un_rep": 36.7,
+   "ft_un_random": 37.9
+  }
+ },
+ "seconds": 91.9,
+ "env": {
+  "python": "3.14.3",
+  "unidata_version": "16.0.0",
+  "numpy": "2.4.5",
+  "machine": "arm64",
+  "node": "Workstation.local"
+ }
+}

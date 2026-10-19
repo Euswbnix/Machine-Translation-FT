@@ -58,7 +58,8 @@ Sources:
   1. Saunders & DeNeefe 2024: forgetting is predicted by the vocabulary coverage of the
      fine-tuning set, so "repetitive" may only stand in for low coverage. E0.6 tests this for the
      coverage measure chosen in its OPEN DECISION 1, provided `div_narrow` can be built within ±2%
-     (not yet measured).
+     (feasibility run, 2026-10-19, descriptive: it can under OD 1(a), (b) and (d), under (b) only
+     with OPEN DECISION 2 = c2; (c) is not built by the script).
   2. "Just deduplicate" (Koehn et al. 2018; Waldendorf et al. 2025). E0.6 tests the
      exact-duplicate form. Near-duplicate removal (Waldendorf et al.'s BiCleaner
      `--aggressive_dedup`) is not in E0.6: the plan places it in W4 (WMT 2027), beside the NRC
@@ -197,7 +198,8 @@ change it (see the build rule below); the dry run records the final size.
   B French tokens stops the build. For the 214,489-row sets B = 6,500,000; the smallest anchor,
   `ft_un_rep`, has 6,576,020 French tokens (counted on E0.5's file), a margin of about 1.2%. For
   the 198,333-row histogram (`rep_dedup`, `div_dd` and OPEN DECISION 5's `div_narrow_dd`) 6.5M is
-  out of reach: about 6.08M is expected (*derived*, `ft_un_rep`'s count scaled by rows). A lower
+  out of reach: the feasibility run counts 6,131,873 (`rep_dedup`) and 6,219,966 (`div_dd`) French
+  tokens (descriptive; the earlier *derived* "about 6.08M" underestimated them, build spec A23). A lower
   B, proposed 6,000,000, is fixed before the dry run and applied to both sides of that pair. Both
   budgets are **to check in the dry run**, which records every set's French token count.
 - *Duplicate sources:* `1 − (distinct source strings / rows)`, on the raw source line
@@ -227,8 +229,10 @@ change it (see the build rule below); the dry run records the final size.
      before any run, to the diverse half's 33,874 source and 43,021 French types.
 - **`div_narrow`.** The candidates are the diverse UN candidates (486,475 rows). The target is
   `ft_un_rep`'s exact length histogram and its coverage: 25,134 source word types and 32,684 French
-  types at 6.5M French tokens, under the measure in OPEN DECISION 1. The proposed rule is OPEN
-  DECISION 2, recommended as A_narrow's rule applied the other way round:
+  types at 6.5M French tokens, under the measure in OPEN DECISION 1. The rule is OPEN DECISION 2.
+  Its recommendation was updated on 2026-10-19 to its rule c2, after the feasibility run showed
+  that the rule first recommended, A_narrow's rule applied the other way round, cannot narrow at
+  this histogram. That first rule:
   1. cap the candidates at the Ke most frequent source words and Kf most frequent French words of
      the candidate pool;
   2. nearest-neighbour match each `ft_un_rep` row on `log(1 + maxrank)` within its length (seed 42);
@@ -236,10 +240,24 @@ change it (see the build rule below); the dry run records the final size.
      The pair chosen is the one that minimises the larger of the two relative type differences from
      the target. If no pair brings both within ±2%, the build stops.
 
-  Measured feasibility: at `ft_un_rep`'s histogram, taking in every length bucket the rows whose
-  rarest word is most frequent gives 20,284 source word types with no bucket short, and a random
-  draw gives 34,070. The target, 25,134, lies inside that range. Whether the capped
-  nearest-neighbour rule reaches it within ±2% on both sides is **not measured (to check)**.
+  Measured feasibility (`e06_build.py --feasibility`, 2026-10-19, on the M5 Max reference
+  interpreter from the pinned inputs; every option built for measurement only, not for training;
+  `phase0/next/e06_feasibility/`): at `ft_un_rep`'s histogram, every bucket of 36 or more tokens
+  holds no more diverse candidates than it needs, so any rule must take all 30,197 of those rows,
+  and caps that keep them are no caps. Differences from the target (source / French types):
+  - OD 2(a): +23.1% / +23.0% under any OD 1 measure; OD 2(b): +34.7% / +31.8%;
+  - OD 2(c): with OD 1(b), −5.7% / +5.8% at its best point, so the build stops; with OD 1(a),
+    +0.1% / +9.5% (French left free); with OD 1(d), −15.8% / −2.7%;
+  - OD 2 c2: with OD 1(b), −0.3% / +0.3% (25,068 / 32,773; q = 0.725, λ = 0.55), the only rule
+    within ±2% on both sides; with OD 1(a), +0.0% / −7.8%; with OD 1(d), −15.7% / −4.9%.
+
+  Under OD 1(d) every rule passes its own test, because `ft_un_div` itself is within +1.9% of
+  `ft_un_rep` on news-commentary coverage. The (c) family runs from 21,158 source types (q = 0) to
+  33,858 (q = 1, equal to a random draw at the histogram); the earlier 20,284 and 34,070 had no
+  script and are not reproduced. Every option keeps mean QE at 0.8990 (`ft_un_div`'s) and shares
+  about 127,000 of its 214,489 rows with `ft_un_div` (126,844-128,334, the 30,197 forced rows
+  among them). OD 1(c) is not built by the script (see OPEN DECISION 1). The dry run with the
+  chosen decisions replaces these numbers.
   `div_narrow` has no repeated source 8-gram by construction, since every candidate has `rep = 0`
   over the whole band.
 - **`rep_dedup` and `div_dd`.**
@@ -266,7 +284,8 @@ change it (see the build rule below); the dry run records the final size.
 - **`div_narrow_dd` (only if OPEN DECISION 5(b)).** `div_narrow`'s rule (OPEN DECISION 2), with
   `rep_dedup` in place of `ft_un_rep`: the diverse UN candidates, matched to `rep_dedup`'s exact
   length histogram and to its coverage under OPEN DECISION 1's measure (French at the lower
-  budget B), within ±2%, or the build stops. Feasibility is **not measured**.
+  budget B), within ±2%, or the build stops. Measured in the feasibility run: as for `div_narrow`,
+  only OD 2 = c2 with OD 1(b) is within ±2% on both sides (OPEN DECISION 5).
 - **Random draws keep top-band rows** at their base rate (E0.5's rule). The share of rows at or
   above the top-band threshold (QE ≥ 0.8959) is 9.1% in R0 and 11.7% in A_narrow. The manifest
   counts the exact overlap of every set with `ft_topk` and with each anchor. For example,
@@ -280,7 +299,9 @@ change it (see the build rule below); the dry run records the final size.
 - `heldout_un.{en,fr}`: `f70e725e…`, `7daf654f…`;
 - the three anchor files: the sha256 recorded in E0.5's manifest
   (`~/mt_local/phase0_final/e05_results/data/phase0_e05/manifest.json`);
-- the v1.1 pretraining corpus `train.clean.en`, used only for `maxrank` (sha256 to record).
+- the v1.1 pretraining corpus `train.clean.en`, used only for `maxrank` (`7230adc6…`, as the
+  feasibility run records it), and its French side `train.clean.fr` (`b0a6ba91…`), set-defining
+  if OPEN DECISION 2 = c2.
 
 **As a fail-closed check, the build recomputes E0.5's UN split from the pinned inputs and must
 reproduce `ft_un_div` and `ft_un_rep` byte for byte.** It uses the stratified matching defined
@@ -313,18 +334,21 @@ BLEU have less than 80% power. Seeds may not be added after results exist.
 **Measured on the sets before any run** (Mac, real data; the run of record is built where it
 trains). The feasibility file is headed "measured 2026-10-17", but the file was written on
 2026-10-16 (**to check** the date). "n.m." means not measured yet: the registered version must fill
-those cells from a dry run of the fail-closed build.
+those cells from a dry run of the fail-closed build. Cells marked "feasibility run" come from
+`e06_build.py --feasibility` (2026-10-19, `phase0/next/e06_feasibility/`), which built every option
+for measurement only and also rebuilt R0 and A_narrow at seed 42 with the sha256 of the scratch
+index files; the dry run with the chosen decisions replaces them.
 
 | set | rows | source word types | French types @6.5M | source repeated-8-gram share | duplicate sources | QE mean | literalness | source in pretraining | pair in pretraining |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `ft_un_div` | 214,489 | 33,874 | 43,021 | 0.000 | 0.00% | 0.8990 | 0.783 | 36.8% | 36.7% |
 | `ft_un_rep` | 214,489 | 25,134 | 32,684 | 0.433 | 8.45% | 0.8993 | 0.810 | 38.3% | 36.7% |
 | `ft_un_random` | 214,489 | 58,441 | 69,320 | 0.087 | 0.23% | 0.8629 | 0.714 | 38.9% | 37.9% |
-| `R0` | 214,489 | 62,000 | 72,574 | 0 | 0 | 0.8613 | 0.693 | 38.2% | n.m. |
-| `A_narrow` | 214,489 | 33,562 | 43,703 | 0 | 0 | 0.866 | 0.698 | 38.2% | n.m. |
-| `div_narrow` | 214,489 | target 25,134 ±2% (feasible range 20,284-34,070) | target 32,684 ±2% | 0 by construction | 0 by construction | n.m. | n.m. | n.m. | n.m. |
-| `rep_dedup` | 198,333 | 25,256 (scratch rebuild; feasibility draw, unrecorded: 25,296; dry run replaces) | n.m. (lower budget B) | 0.378 (scratch rebuild; feasibility draw, unrecorded: 0.379; dry run replaces) | 0.00% | n.m. | n.m. | n.m. | n.m. |
-| `div_dd` | 198,333 | 33,098 (scratch rebuild; dry run replaces) | n.m. (lower budget B) | 0 by construction | 0 by construction | n.m. | n.m. | n.m. | n.m. |
+| `R0` | 214,489 | 62,000 | 72,574 | 0 | 0 | 0.8613 | 0.693 | 38.2% | 37.7% (feasibility run) |
+| `A_narrow` | 214,489 | 33,562 | 43,703 | 0 | 0 | 0.866 | 0.698 | 38.3% (feasibility run; the vocab memo printed 38.2%) | 37.8% (feasibility run) |
+| `div_narrow` | 214,489 | 25,068 (feasibility run, OD 2 = c2 with OD 1(b); target 25,134 ±2%) | 32,773 (same; target 32,684 ±2%) | 0 by construction | 0 by construction | 0.8990 (same) | 0.784 (same) | 37.1% (same) | 37.1% (same) |
+| `rep_dedup` | 198,333 | 25,256 (scratch rebuild and feasibility run, OD 4(a); the unrecorded feasibility draw's 25,296 is not used) | 32,562 at B = 6,000,000 (feasibility run) | 0.378 (scratch rebuild and feasibility run; the unrecorded draw's 0.379 is not used) | 0.00% | 0.8993 (feasibility run) | 0.811 (feasibility run) | 37.3% (feasibility run) | 36.7% (feasibility run) |
+| `div_dd` | 198,333 | 33,098 (scratch rebuild and feasibility run) | 41,813 at B = 6,000,000 (feasibility run) | 0 by construction | 0 by construction | 0.8990 (feasibility run) | 0.783 (feasibility run) | 36.9% (feasibility run) | 36.9% (feasibility run) |
 
 Notes on the table:
 - "Pair in pretraining" is E0.5's exact-pair measure and "source in pretraining" is the vocab memo's
@@ -352,27 +376,33 @@ What follows from the table, and bears on how the outcomes may be read:
   and document codes, while the diverse half lacks procedural words. Its coverage of news-commentary
   v9 tokens seen at least 5 times (95.29) lies between the diverse half's (94.98) and R0's (96.00).
   If narrowness only matters through news words, S may absorb part of a vocabulary effect.
-- **Pretraining exposure is close but not equal.** On the source measure it is 38.2% for A_narrow
-  and R0 against 36.8% for the diverse half. This is reported, not matched (OPEN DECISION 7).
+- **Pretraining exposure is close but not equal.** On the source measure it is 38.3% for A_narrow
+  and 38.2% for R0 (feasibility run) against 36.8% for the diverse half. This is reported, not matched (OPEN DECISION 7).
 - **The `ft_un_rep` against `div_narrow` pair also differs in exact duplicates** (8.45% against 0%
   by construction), probably in French-side features (the repetitive half has a repeated French
   8-gram in 79.7% of rows against 23.0% for the diverse half, and literalness 0.810 against 0.783,
-  vocab memo; not yet measured for `div_narrow`), and in whatever choosing rows by their rarest
+  vocab memo; for `div_narrow` under c2 with OD 1(b) the feasibility run gives literalness 0.784,
+  and its French recurrence is not measured), and in whatever choosing rows by their rarest
   word's frequency shifts. The `rep_dedup` against `div_dd` pair is not coverage-matched (25,256
-  against 33,098 source types in the scratch rebuild) and probably differs in the same French-side
-  features (not measured for either set). No single pair in the eight sets holds both coverage and
+  against 33,098 source types, scratch rebuild and feasibility run) and differs in literalness
+  (0.811 against 0.783, feasibility run); French recurrence is not measured for either set. No single pair in the eight sets holds both coverage and
   duplicates fixed while repetition varies (OPEN DECISION 5).
-- **Two checks are still owed before the tag, both CPU work on the Mac** (OPEN DECISION 16). The
+- **Two checks are still owed before the tag, both CPU work on the Mac** (OPEN DECISION 16; its
+  status on 2026-10-19: piece types computed for the six E0.5 sets, R0 and A_narrow, still owed
+  for the new sets; newstest2014 now on the M5 Max, its coverage check not yet run). The
   vocabulary was measured in `\w+` word types and the model sees SentencePiece pieces, so
   piece-type counts and piece-frequency profiles of every new set are re-checked. The vocab memo
   had no SentencePiece model, but the HF release `euswbnix/transformer-wmt14-enfr-base` ships it,
   byte-identical to the original machine's `spm_enfr_v1_fixed.model` (`d1c10ea80fb95984…`;
   `phase0/README.md`, "Findings from the original training machine", item 4). It is fetched from
   there and its sha256 checked, and the `sentencepiece` package is installed into
-  `~/mt_local/venv` (not there yet; checked 2026-10-16); no rental is needed. News coverage above used news-commentary as a
-  proxy because newstest2014 is not on the Mac (only the WMT14 training shards are, in
-  `~/mt_local/hf_wmt14/`; checked 2026-10-16). It is fetched from the pinned `wmt/wmt14@b199e406`
-  and read with pyarrow, which `~/mt_local/venv` has (25.0.1). newstest2014 may be measured
+  `~/mt_local/venv` (not there yet when checked on 2026-10-16; the 2026-10-19 piece-type counts ran
+  with sentencepiece 0.2.2 on the M5 Max); no rental is needed. News coverage above used news-commentary as a
+  proxy because newstest2014 was not on the Mac when it was measured (only the WMT14 training shards were, in
+  `~/mt_local/hf_wmt14/`; checked 2026-10-16). The pinned newstest2014 is the training-box copy,
+  Machine_translation `data_enfr_v1/test.{en,fr}` (sha256 `967dca93…` / `82526d36…`, equal to
+  E0.5's BLEU cache), copied to the M5 Max for the 2026-10-19 ForgetGenUse run; it replaces the planned fetch from
+  `wmt/wmt14@b199e406`. newstest2014 may be measured
   descriptively, but **no test set may be used to define or tune any set** (OPEN DECISION 16 says
   what each check may change).
 
@@ -567,22 +597,55 @@ prepare for it, `eamt2027_outline.md` §9 names the decisions each paper slot de
    - (d) coverage of a generic non-test text, for example news-commentary v9 tokens seen at least 5
      times.
 
+   Measured on 2026-10-19 ("Measured feasibility" above; `phase0/next/cpu_items/item1_coverage/`,
+   descriptive, an independent check agrees, its `REVIEW_NOTES.md` corrects some README wording):
+   - under (b), only OPEN DECISION 2's rule c2 brings `div_narrow` within ±2% on both sides; under
+     (a), (c) and c2 meet the source side and leave French types at +9.5% and −7.8%;
+   - (d) does not separate the sets: `ft_un_div` is already within +1.9% of `ft_un_rep` on it, so
+     every rule passes, and the sets it accepts are 15.7-34.7% off `ft_un_rep` in source types;
+   - (c) was computed for the six E0.5 sets, R0 and A_narrow with the release's model (sha256
+     checked). In piece types `ft_un_rep` is 6.8% (source) and 6.5% (target) below `ft_un_div`,
+     against 25.8% and 24.0% in word types. A_narrow, within −0.9% / +1.6% of `ft_un_div` in word
+     types, covers 4.5% more source and 9.7% more target pieces, outside ±2%: matching on word
+     types did not match piece coverage. `div_narrow` under (c) is not built by the script and not
+     measured; its target would be `ft_un_rep`'s 17,310 source and 18,979 target piece types.
+
    Whatever is chosen, a test set may not be used to define it. **Recommendation: (b), with ±2% on
-   both sides.** The ±2% tolerance is what A_narrow as built satisfies (−0.9% and +1.6%). Also
-   compute (c) for all eight sets on the Mac before the tag and register it as a reported
-   covariate. If (c) separates `div_narrow` from `ft_un_rep` clearly, the author decides before any
+   both sides**, which the feasibility run reaches only with OPEN DECISION 2 = c2. The ±2%
+   tolerance is what A_narrow as built satisfies (−0.9% and +1.6%). Also compute (c) for all
+   eight sets on the Mac before the tag and register it as a reported covariate. If (c) separates `div_narrow` from `ft_un_rep` clearly, the author decides before any
    run whether to re-match on (c).
 2. **The narrowing rule for `div_narrow`.** Options:
    - (a) caps plus nearest-neighbour matching on `log(1 + maxrank)` to `ft_un_rep`'s rows, which is
      A_narrow's rule the other way round;
    - (b) caps plus a random draw at the histogram;
    - (c) a one-parameter family: within each length bucket, draw at random from the fraction q of
-     candidates with the most frequent rarest word, and search q to hit the target. The two ends of
-     this family were measured (20,284 and 34,070 types).
+     candidates with the most frequent rarest word, and search q to hit the target. Its two ends
+     measure 21,158 (q = 0) and 33,858 (q = 1, a random draw) source types in the feasibility run;
+     the earlier 20,284 and 34,070 had no script and are not reproduced;
+   - (c2) (added 2026-10-19, the PROPOSAL "c2" of `phase0/next/e06_build_spec.md` §6.5): as (c),
+     but candidates are ordered by a blend, with weight λ, of the log pretraining ranks of the
+     row's rarest source word and rarest French word; grid λ ∈ {0, 0.05, …, 1} × q in steps of
+     0.005, ties to the larger q, then the smaller λ. It makes `train.clean.fr` (pinned
+     `b0a6ba91…`) a set-defining input.
 
-   **Recommendation: (a), for symmetry with A_narrow; (c) if (a) cannot reach ±2%.** The grid and
-   the tie rule are fixed in the registered text.
+   Measured ("Measured feasibility" above): (a) and (b) cannot narrow at this histogram (30,197
+   forced rows); under OD 1(b), (c) reaches −5.7% / +5.8% at best, so the build stops, and c2
+   reaches −0.3% / +0.3%, the only rule within ±2% on both sides; the ninth set behaves the same
+   way (OPEN DECISION 5). Whichever rule is chosen, every row of 36 or more tokens in `div_narrow`
+   is a row of `ft_un_div`, so the narrowing acts only on shorter rows (the build spec, A24,
+   proposes that the C1-beyond-coverage and V readings say so).
+
+   **Recommendation (recommendation updated 2026-10-19 after the feasibility run): c2, with OD
+   1(b).** The earlier recommendation, (a) for symmetry with A_narrow and (c) if (a) cannot reach
+   ±2%, stops the build under OD 1(b). If OD 1(a) is chosen instead, (c) is feasible (+0.1% source
+   types) with one parameter, and French types are left at +9.5%. The grid and the tie rule are
+   fixed in the registered text.
 3. **A_narrow's caps.** Keep 42,000 / 58,000 as built, or re-tune them to a stricter tolerance.
+   Measured (feasibility run, `od3_cap_report`): with OD 6 = keep, 42,000 / 58,000 rebuilds
+   `A_narrow_42_58.npy` (same sha256) at −0.9% / +1.6%, every pair on the grid 38,000-46,000 x
+   54,000-62,000 (steps of 1,000) is feasible, and the closest, 43,000 / 55,000, gives −0.2% /
+   +0.1%. With OD 6 = remove, no pair on that grid is feasible (2 to 8 length buckets short).
    **Recommendation: keep them.** They were set before any run, and the build must reproduce
    `A_narrow_42_58.npy`.
 4. **What counts as a duplicate for `rep_dedup`.** Options:
@@ -593,23 +656,35 @@ prepare for it, `eamt2027_outline.md` §9 names the decisions each paper slot de
    Near-duplicates as Waldendorf et al. 2025 remove them (BiCleaner `--aggressive_dedup`) are not an
    E0.6 option: the plan places them in W4 (WMT 2027). Also open: whether `rep` is recomputed after
    deduplication. **Recommendation: (a) as the registered arm, without recomputing `rep`. Measure
-   the rates under (b) descriptively before registration.** If (b) removes far more rows than (a),
+   the rates under (b) descriptively before registration.** Measured (feasibility run,
+   descriptive): (b) removes 27,401 repetitive rows against (a)'s 19,845, and 1,017 diverse rows
+   (356 of them with 8 or more tokens) against 252, leaving 191,718 rows per side against 198,333;
+   `rep_dedup` under (b) then has 5,962,403 French tokens, below B = 6,000,000. If (b) removes far more rows than (a),
    the author decides before any run whether (b) replaces (a).
 5. **A set that holds coverage and duplicates fixed together.** Options:
    - (a) keep eight sets and state the gap;
    - (b) add a ninth set, `div_narrow_dd`: the diverse UN candidates narrowed to `rep_dedup`'s
      coverage at `rep_dedup`'s histogram, compared with `rep_dedup`. The target is `rep_dedup`'s
-     rebuilt type count (25,256 source types in the scratch rebuild, replaced by `e06_build.py`'s
-     dry run), not the feasibility file's unrecorded 25,296. That is 5 more runs and 2 more waves;
-     feasibility is **not measured**. Its contrast is C1-beyond-both, with the outcomes stated
-     above, and it counts in OPEN DECISION 9;
+     rebuilt type count (25,256 source types in the scratch rebuild and the feasibility run, and
+     32,562 French types at B = 6,000,000 in the feasibility run; the dry run fixes them), not the
+     feasibility file's unrecorded 25,296. That is 5 more runs and 2 more waves. Measured in the
+     feasibility run: only OD 2 = c2 with OD 1(b) is within ±2% on both sides (−0.2% / +0.3%,
+     q = 0.805, λ = 0.6); (a) gives +19.0% / +19.6%, (b) +31.0% / +28.2%, and (c) with OD 1(b)
+     −5.6% / +5.1%. Its contrast is C1-beyond-both, with the outcomes stated above, and it counts
+     in OPEN DECISION 9;
    - (c) replace `div_narrow` with `div_narrow_dd`, which loses the direct link to `ft_un_rep`.
 
-   **Recommendation: (b) if its build passes before registration, otherwise (a).**
+   **Recommendation: (b) if its build passes before registration, otherwise (a).** By the
+   feasibility run: under OD 1(b) it passes only with OD 2 = c2 (−0.2% / +0.3%); under OD 1(a),
+   (c) passes (+0.0% source, French +8.6%; c2 picks λ = 0, the same set); under OD 1(d), every
+   rule passes.
 6. **Top-band rows inside the random draws** (9.1% of R0, 11.7% of A_narrow). Keep them (E0.5's
-   rule), or remove them from every random arm to make S purer. **Recommendation: keep them**, for
-   consistency with E0.5, and report the counts.
-7. **The pretraining-exposure difference** (38.2% against 36.8% on the source measure). Accept and
+   rule), or remove them from every random arm to make S purer. Measured (feasibility run): with
+   "remove", R0 still builds (pool 415,480 rows, tightest bucket 1.114x), but A_narrow at its caps
+   42,000 / 58,000 does not (4 length buckets short: 28, 30, 32, 33), nor at any pair on OPEN
+   DECISION 3's cap grid. **Recommendation: keep them**, for consistency with E0.5, and report the
+   counts.
+7. **The pretraining-exposure difference** (38.3% against 36.8% on the source measure, feasibility run). Accept and
    report it, or add exposure to A_narrow's matching. **Recommendation: accept and report it.** It is
    small, and adding a matching criterion now risks making the build infeasible.
 8. **Step count for the 198,333-row pair.** Keep 10,000 steps (about 9.7 passes), or use about
@@ -663,7 +738,8 @@ prepare for it, `eamt2027_outline.md` §9 names the decisions each paper slot de
     v9), since the S readings already state that S may absorb part of a vocabulary effect.
 16. **When the piece-level and newstest2014 checks run, and what each may change.**
     **Recommendation: both on the Mac before the tag**, with the release's SentencePiece model and
-    the pinned newstest2014 (see "Two checks are still owed"); no rental is needed for them. The two
+    the pinned newstest2014 (the training-box copy, sha256 `967dca93…` / `82526d36…`, equal to
+    E0.5's BLEU cache; see "Two checks are still owed"); no rental is needed for them. The two
     checks may change different things:
     - the piece-level check (piece-type counts and piece-frequency profiles of the training sets;
       no test data) may lead to a design change before the tag, for example re-matching on OPEN
@@ -672,14 +748,26 @@ prepare for it, `eamt2027_outline.md` §9 names the decisions each paper slot de
       A_narrow's newstest2014 coverage leaving the range between `ft_un_div` and R0) is reported
       beside the results as a stated limitation, and it cannot change any set, cap, tolerance or
       rule, since no test set may define or tune a set.
+
+    Status on 2026-10-19: the piece-type counts (with a token-weighted variant) were computed on
+    the M5 Max for the six E0.5 sets, R0 and A_narrow with the release's model, sha256 checked
+    (`phase0/next/cpu_items/item1_coverage/`; findings under OPEN DECISION 1). `div_narrow`,
+    `rep_dedup` and `div_dd` are measured once they are built with the chosen decisions
+    (`e06_build.py --measure` computes the same piece types), and the piece-level token imbalance
+    of the new pairs is still owed. newstest2014 `test.{en,fr}` are now on the M5 Max (copied
+    from the training box, sha256 equal to E0.5's BLEU cache; used for the descriptive
+    ForgetGenUse run, `phase0/next/cpu_items/item6_forgetting/`); the newstest2014 coverage check
+    itself has not been run.
 17. **E0.6-LR** (the plan's risk 1): the UN triple at lr_scale 0.15, 5 seeds, 15 runs, about 6
     GPU-hours (*derived* in the plan). Yes or no. If yes, it is registered as its own section with
     its own tag, and it runs in the same rental; it is not part of E0.6's contrasts.
 18. **Register V = BLEU(`ft_un_div`) − BLEU(`div_narrow`)** (the outline's proposal). It costs no
     runs: both sets are among the eight, drawn from the same repetition-free candidates at the
     same size and length histogram. They differ in vocabulary size and in whatever choosing rows by
-    their rarest word's frequency shifts (genre or difficulty, for example), and they share rows
-    (overlap **to check**). Without V the design has no direct contrast of vocabulary size among
+    their rarest word's frequency shifts (genre or difficulty, for example), and they share about
+    127,000 of their 214,489 rows (126,893 under c2 with OD 1(b); 126,844-128,334 across options;
+    feasibility run), including all 30,197 rows of 36 or more tokens, so V compares the two sets
+    only on their shorter rows (OPEN DECISION 2; build spec A24). Without V the design has no direct contrast of vocabulary size among
     repetition-free top-band rows, and a not-detected C1-beyond-coverage supports no vocabulary
     account (a null is never read as a finding). **Recommendation: register it, with E0.5's
     rule.** It then counts among the primary contrasts of OPEN DECISION 9. Its outcomes, if

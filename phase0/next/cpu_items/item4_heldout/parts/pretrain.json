@@ -1,0 +1,39 @@
+{
+ "pretrain_rows": 9312233,
+ "pretrain_rows_touching_heldout": {
+  "exact_pair": 0,
+  "exact_source": 0,
+  "exact_target": 0,
+  "norm_source": 0,
+  "norm_target": 0
+ },
+ "heldout_rows_in_pretrain": {
+  "exact": {
+   "source": 0,
+   "target": 0,
+   "pair": 0
+  },
+  "norm": {
+   "source": 0,
+   "target": 0
+  },
+  "distinct_exact": {
+   "source": 0,
+   "target": 0,
+   "pair": 0
+  }
+ },
+ "first_hits": {
+  "en": [],
+  "fr": []
+ },
+ "seconds": 6.5,
+ "workers": 6,
+ "built_with": {
+  "python": "3.14.3",
+  "unidata_version": "16.0.0",
+  "numpy": "2.4.5",
+  "machine": "arm64",
+  "node": "Workstation.local"
+ }
+}

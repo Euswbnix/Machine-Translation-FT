@@ -1,0 +1,194 @@
+{
+ "ft_un_rep": {
+  "en_wrong_rows": 338,
+  "distinct_lines": 282,
+  "rows_whose_line_repeats_in_set": 102,
+  "conf_ge_0.9": 45,
+  "examples": [
+   {
+    "line": 20498,
+    "label": "nb",
+    "p": 0.995,
+    "copies_in_set": 2,
+    "en": "Olav Bjerkholt (Norway) — Professor of Economics, University of Oslo."
+   },
+   {
+    "line": 81503,
+    "label": "es",
+    "p": 0.313,
+    "copies_in_set": 1,
+    "en": "Abstaining: Argentina, Brazil, China, El Salvador, Liberia, Morocco, Nigeria, Russian Federation, Rwanda, Senegal."
+   },
+   {
+    "line": 85233,
+    "label": "nb",
+    "p": 0.523,
+    "copies_in_set": 1,
+    "en": "These were: Albania, Azerbaijan, Belgium, Croatia, the Czech Republic, Estonia, Finland, France, Hungary, Latvia, Lithuania, Luxembourg, Moldova, Norway, Portugal, Romania, Russian Federation, Slovaki"
+   },
+   {
+    "line": 95828,
+    "label": "id",
+    "p": 0.436,
+    "copies_in_set": 2,
+    "en": "Abstaining: Bahrain, Burkina Faso, China, Egypt, Indonesia, Pakistan, Qatar, Saudi Arabia, Sierra Leone, Sudan, Togo, Zimbabwe."
+   },
+   {
+    "line": 122298,
+    "label": "id",
+    "p": 0.426,
+    "copies_in_set": 1,
+    "en": "Bahrain, Cape Verde, Costa Rica, Croatia, France, Gambia, Guatemala, Guinea, Haiti, India, the Islamic Republic of Iran, Japan, the Netherlands, Poland, South Africa and Sweden were elected members of"
+   },
+   {
+    "line": 124471,
+    "label": "ro",
+    "p": 0.403,
+    "copies_in_set": 6,
+    "en": "Ms. Štiglic (Slovenia): I have the honour to speak on behalf of the European Union (EU)."
+   },
+   {
+    "line": 130300,
+    "label": "id",
+    "p": 0.398,
+    "copies_in_set": 1,
+    "en": "Argentina, Armenia, Azerbaijan, Belarus, Japan, Kazakhstan, Republic of Korea, Republic of Moldova, Russian Federation, Ukraine, Uzbekistan"
+   },
+   {
+    "line": 211578,
+    "label": "es",
+    "p": 0.797,
+    "copies_in_set": 1,
+    "en": "Belarus, Chile, Colombia, Dominican Republic, Ecuador, El Salvador, Fiji, Guatemala, Honduras, Kyrgyzstan, Mexico, Nicaragua, Paraguay, Peru, Sri Lanka and Tajikistan: draft resolution"
+   }
+  ]
+ },
+ "ft_un_div": {
+  "en_wrong_rows": 183,
+  "distinct_lines": 183,
+  "rows_whose_line_repeats_in_set": 0,
+  "conf_ge_0.9": 53,
+  "examples": [
+   {
+    "line": 9757,
+    "label": "id",
+    "p": 0.933,
+    "copies_in_set": 1,
+    "en": "A report compiled by Yayasan Kesejahteraan Anak Indonesia, an NGO, indicates that the number of cases of child abuse are increasing, from 172 cases in 1994, to 421 in 1995, and 476 in 1996."
+   },
+   {
+    "line": 10619,
+    "label": "vi",
+    "p": 0.629,
+    "copies_in_set": 1,
+    "en": "The overall objective of Chad's national health policy is to “guarantee the population access to quality basic services”."
+   },
+   {
+    "line": 40010,
+    "label": "ro",
+    "p": 1.0,
+    "copies_in_set": 1,
+    "en": "“Politica externă a Romaniei faţă de NATO” (The Romanian Foreign Policy towards NATO), Polis, 1/1997"
+   },
+   {
+    "line": 40300,
+    "label": "hr",
+    "p": 0.969,
+    "copies_in_set": 1,
+    "en": "The cases tried during the reporting period are: Milošević; Orić; Hadžihasanović and Kubura; Limaj, Musliu and Bala; Krajišnik; Halilović; and Mrkšić, Radić and Šljivančanin."
+   },
+   {
+    "line": 151798,
+    "label": "es",
+    "p": 0.988,
+    "copies_in_set": 1,
+    "en": "Teodoro Juárez Sánchez, Ramiro Jiménez Sonora, Lorenzo Adame del Rosario and Jerónimo Adame Benítez were allegedly arrested and tortured on 1 and 4 July 1996 in Sierra de Coyuca de Benítez, State of G"
+   },
+   {
+    "line": 177856,
+    "label": "nl",
+    "p": 0.434,
+    "copies_in_set": 1,
+    "en": "Moreover, they contravene international law and the most basic norms of international relations — namely development cooperation based on equality among sovereign States and non-discrimination with re"
+   },
+   {
+    "line": 188780,
+    "label": "es",
+    "p": 0.841,
+    "copies_in_set": 1,
+    "en": "Argentina, Azerbaijan, Brazil, Chile, Costa Rica, Ecuador, Egypt, El Salvador, Guatemala, Mexico, Nicaragua, Paraguay, Peru, Philippines: draft resolution"
+   },
+   {
+    "line": 203259,
+    "label": "nl",
+    "p": 0.929,
+    "copies_in_set": 1,
+    "en": "The UNESCO Conference on the Role of Women in Intercultural Dialogue in Central Asia was held in Dushanbe, Tajikistan, from 11 to 13 June 2003."
+   }
+  ]
+ },
+ "ft_un_random": {
+  "en_wrong_rows": 1043,
+  "distinct_lines": 1040,
+  "rows_whose_line_repeats_in_set": 6,
+  "conf_ge_0.9": 385,
+  "examples": [
+   {
+    "line": 12930,
+    "label": "fr",
+    "p": 0.989,
+    "copies_in_set": 1,
+    "en": "“Pour un mouvement de masse des femmes” (Working towards a mass movement for women's rights), Anoual."
+   },
+   {
+    "line": 87138,
+    "label": "sv",
+    "p": 0.297,
+    "copies_in_set": 1,
+    "en": "(Signed) Michael Freiherr von Ungern-Sternberg Chargé d'affaires a.i. Deputy Permanent Representative"
+   },
+   {
+    "line": 94747,
+    "label": "fr",
+    "p": 0.745,
+    "copies_in_set": 1,
+    "en": "The Direction de l'aéronautique civile is responsible for the remainder."
+   },
+   {
+    "line": 95102,
+    "label": "pt",
+    "p": 0.717,
+    "copies_in_set": 1,
+    "en": "501; ibid., Sixty-first Session, (A/61/10), para.  269; ibid, Sixty-second Session, (A/62/10), para."
+   },
+   {
+    "line": 100397,
+    "label": "fr",
+    "p": 0.965,
+    "copies_in_set": 1,
+    "en": "“Délinquance et politique pénale au Sénégal: chiffres clés de la Justice” (“Crime and penal policy in Senegal: key figures from the justice system”) (Mandiogou Ndiaye and Nelly Robin, October 2002)."
+   },
+   {
+    "line": 180057,
+    "label": "fr",
+    "p": 1.0,
+    "copies_in_set": 1,
+    "en": "Parti de libération du Peuple hutu (Palipehutu)-Forces Nationales pour la Libération (FNL) — Agathon Rwasa"
+   },
+   {
+    "line": 189263,
+    "label": "pt",
+    "p": 0.856,
+    "copies_in_set": 1,
+    "en": "S/Agenda/5976 Provisional agenda [A C E F R S]"
+   },
+   {
+    "line": 212457,
+    "label": "nl",
+    "p": 1.0,
+    "copies_in_set": 1,
+    "en": "The draft national ordinance on educational experiments (Ontwerp-Landsverordening Onderwijskundige Experimenten) was submitted for approval to Parliament, creating a legal basis for future educational"
+   }
+  ]
+ }
+}

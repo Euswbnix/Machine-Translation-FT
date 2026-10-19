@@ -1,0 +1,211 @@
+{
+ "inputs_all_ok": true,
+ "positive_controls": {
+  "sets_planted": true,
+  "sets_self": true,
+  "pretrain_e05_table": true,
+  "pool_key_path_same_rows": true
+ },
+ "rows": [
+  {
+   "claim": "(a) feasibility files",
+   "builder": 46,
+   "measured": 46,
+   "agree": true
+  },
+  {
+   "claim": "(a) files sharing nothing with heldout_un (exact and norm, both sides)",
+   "builder": 46,
+   "measured": 46,
+   "agree": true
+  },
+  {
+   "claim": "(a) report field heldout_un_shared_lines = 0/0 and equal to the recount",
+   "builder": 46,
+   "measured": 46,
+   "agree": true
+  },
+  {
+   "claim": "(a) failed options without a file",
+   "builder": 5,
+   "measured": 5,
+   "agree": true
+  },
+  {
+   "claim": "(a) supplementary sets all zero (R0, A_narrow, six E0.5, two parents)",
+   "builder": 10,
+   "measured": 10,
+   "agree": true
+  },
+  {
+   "claim": "(a) E0.5 rows whose pair is in the stated parent = all rows",
+   "builder": 1369533,
+   "measured": 1369533,
+   "agree": true
+  },
+  {
+   "claim": "(b) heldout rows with exact pair in pool",
+   "builder": 2000,
+   "measured": 2000,
+   "agree": true
+  },
+  {
+   "claim": "(b) heldout rows with exact source in pool",
+   "builder": 2000,
+   "measured": 2000,
+   "agree": true
+  },
+  {
+   "claim": "(b) heldout rows with exact target in pool",
+   "builder": 2000,
+   "measured": 2000,
+   "agree": true
+  },
+  {
+   "claim": "(b) pool rows, E0.3 category exact pair",
+   "builder": 3290,
+   "measured": 3290,
+   "agree": true
+  },
+  {
+   "claim": "(b) pool rows, E0.3 category + normalised source",
+   "builder": 1078,
+   "measured": 1078,
+   "agree": true
+  },
+  {
+   "claim": "(b) pool rows, E0.3 category + normalised target",
+   "builder": 284,
+   "measured": 284,
+   "agree": true
+  },
+  {
+   "claim": "(b) pool rows touching heldout_un, total",
+   "builder": 4652,
+   "measured": 4652,
+   "agree": true
+  },
+  {
+   "claim": "(b) of those inside the reused mask (item 5)",
+   "builder": 4645,
+   "measured": 4645,
+   "agree": true
+  },
+  {
+   "claim": "(b) pool rows with an exact heldout source (no prior figure)",
+   "builder": null,
+   "measured": 4139,
+   "agree": null
+  },
+  {
+   "claim": "(b) pool rows with an exact heldout target (no prior figure)",
+   "builder": null,
+   "measured": 3605,
+   "agree": null
+  },
+  {
+   "claim": "(b) pretraining rows touching heldout_un (exact or norm, any side)",
+   "builder": 0,
+   "measured": 0,
+   "agree": true
+  },
+  {
+   "claim": "(b) heldout rows found in pretraining, exact pair",
+   "builder": 0,
+   "measured": 0,
+   "agree": true
+  },
+  {
+   "claim": "(b) heldout rows found in pretraining, norm source",
+   "builder": 0,
+   "measured": 0,
+   "agree": true
+  },
+  {
+   "claim": "(b) heldout rows found in pretraining, norm target",
+   "builder": 0,
+   "measured": 0,
+   "agree": true
+  },
+  {
+   "claim": "build: pool rows (v2_scored.tsv)",
+   "builder": 38275284,
+   "measured": 38275284,
+   "agree": true
+  },
+  {
+   "claim": "build: eligible (reused mask)",
+   "builder": 16646992,
+   "measured": 16646992,
+   "agree": true
+  },
+  {
+   "claim": "build: UN-labelled rows",
+   "builder": 11598490,
+   "measured": 11598490,
+   "agree": true
+  },
+  {
+   "claim": "build: candidates after the pretraining exclusion",
+   "builder": 6767225,
+   "measured": 6767225,
+   "agree": true
+  },
+  {
+   "claim": "build: excluded as touching pretraining",
+   "builder": 4831265,
+   "measured": 4831265,
+   "agree": true
+  },
+  {
+   "claim": "build: pretraining rows",
+   "builder": 9312233,
+   "measured": 9312233,
+   "agree": true
+  },
+  {
+   "claim": "build: RandomState(42) draw equals heldout_un row by row",
+   "builder": 2000,
+   "measured": 2000,
+   "agree": true
+  },
+  {
+   "claim": "build: distinct pairs in the draw",
+   "builder": 1999,
+   "measured": 1999,
+   "agree": true
+  },
+  {
+   "claim": "build: pool copies of the duplicated heldout pair ('occurs twice in the pool')",
+   "builder": 2,
+   "measured": 24,
+   "agree": false
+  },
+  {
+   "claim": "build: PROTOCOL D4 default draw, pairs verbatim in pretraining",
+   "builder": 793,
+   "measured": 793,
+   "agree": true
+  },
+  {
+   "claim": "evaluated copy: rows",
+   "builder": 1999,
+   "measured": 1999,
+   "agree": true
+  },
+  {
+   "claim": "evaluated copy: dropped 0-based row",
+   "builder": 1764,
+   "measured": 1764,
+   "agree": true
+  }
+ ],
+ "disagreements": [
+  {
+   "claim": "build: pool copies of the duplicated heldout pair ('occurs twice in the pool')",
+   "builder": 2,
+   "measured": 24,
+   "agree": false
+  }
+ ]
+}

@@ -1,0 +1,56 @@
+{
+ "rows": [
+  1999,
+  1999
+ ],
+ "sha256": {
+  "heldout_un.en": "c014363fa198620453966f58391d55f31695d91279e4f8a224bf171b45688669",
+  "heldout_un.fr": "4222f10baa218c02a76bb1a8b8f5274535e669eae0f6a32a86a527db264a67a6"
+ },
+ "is_heldout_with_rows_removed_in_order": true,
+ "dropped_rows_0based": [
+  1764
+ ],
+ "source_pieces": {
+  "sentencepiece": "0.2.2",
+  "dropped_rows_pieces": [
+   649
+  ],
+  "max_kept": 144,
+  "rows_over_254": [
+   1764
+  ],
+  "rows_over_253": [
+   1764
+  ],
+  "top5": [
+   [
+    1764,
+    649
+   ],
+   [
+    1437,
+    144
+   ],
+   [
+    3,
+    143
+   ],
+   [
+    776,
+    134
+   ],
+   [
+    932,
+    132
+   ]
+  ]
+ },
+ "env": {
+  "python": "3.14.3",
+  "unidata_version": "16.0.0",
+  "numpy": "2.4.5",
+  "machine": "arm64",
+  "node": "Workstation.local"
+ }
+}

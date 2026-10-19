@@ -1,0 +1,247 @@
+{
+ "pool_rows": 38275284,
+ "pool_rows_e03_manifest": 38275284,
+ "rows_not_3_fields": 0,
+ "pool_rows_with_heldout": {
+  "exact_pair": 3290,
+  "exact_source": 4139,
+  "exact_target": 3605,
+  "exact_source_or_target": 4449,
+  "exact_source_not_pair": 849,
+  "exact_target_not_pair": 315,
+  "norm_source": 4368,
+  "norm_target": 3848,
+  "norm_source_not_exact": 229,
+  "norm_target_not_exact": 243,
+  "any": 4652
+ },
+ "e03_reservation_categories": {
+  "measured": {
+   "exact_pair": 3290,
+   "extra_by_source": 1078,
+   "extra_by_target": 284,
+   "rows_reserved_total": 4652
+  },
+  "e03_manifest": {
+   "normalisation": "NFKC, casefold, whitespace runs collapsed to one space, stripped",
+   "rows_reserved_total": 4652,
+   "exact_pair": 3290,
+   "extra_by_source": 1078,
+   "extra_by_target": 284,
+   "heldout_un": {
+    "reserved_rows_exact_pair": 3290,
+    "reserved_rows_extra_by_source": 1078,
+    "reserved_rows_extra_by_target": 284
+   }
+  }
+ },
+ "key_path": {
+  "exact_pair": 3290,
+  "exact_source": 4139,
+  "norm_source": 4368,
+  "norm_target": 3848,
+  "extra_by_source": 1078,
+  "extra_by_target": 284,
+  "total": 4652,
+  "same_rows_as_string_path": true
+ },
+ "heldout_rows_found_in_pool": {
+  "exact_pair": 2000,
+  "exact_source": 2000,
+  "exact_target": 2000,
+  "norm_source": 2000,
+  "norm_target": 2000
+ },
+ "pool_copies_per_heldout_row": {
+  "pair": {
+   "1": 1627,
+   "2": 208,
+   "3": 61,
+   "4": 28,
+   "5": 18,
+   "6": 10,
+   "7": 7,
+   "8": 3,
+   "9": 2,
+   "10": 2,
+   "11": 4,
+   "12": 4,
+   "13": 2,
+   "14": 2,
+   "15": 2,
+   "16": 1,
+   "17": 1,
+   "18": 4,
+   "20": 1,
+   "23": 1,
+   "24": 4,
+   "25": 1,
+   "32": 1,
+   "34": 1,
+   "37": 1,
+   "40": 1,
+   "41": 1,
+   "42": 1,
+   "44": 1
+  },
+  "pair_max": 44,
+  "pair_rows_with_more_than_1": 373,
+  "source_max": 95,
+  "target_max": 48,
+  "sum_over_distinct_pairs": 3290
+ },
+ "duplicated_heldout_pair": [
+  {
+   "heldout_rows": [
+    1054,
+    1903
+   ],
+   "pool_copies": 24,
+   "pool_rows": [
+    9944888,
+    9944911,
+    9944931,
+    9944954,
+    9944962,
+    9944985,
+    9945030,
+    9945101,
+    9945114,
+    9945126,
+    9945141,
+    9945148,
+    9945167,
+    9945209,
+    9945225,
+    9945234,
+    9945247,
+    9945275,
+    9945285,
+    9945366,
+    9945377,
+    9945445,
+    9945476,
+    9945495
+   ]
+  }
+ ],
+ "touching_rows_by_source_and_mask": {
+  "exact_pair": {
+   "rows": 3290,
+   "inside_reused_mask": 3290,
+   "sources": {
+    "un": 3290
+   }
+  },
+  "extra_by_source": {
+   "rows": 1078,
+   "inside_reused_mask": 1072,
+   "sources": {
+    "giga-fren": 6,
+    "un": 1072
+   }
+  },
+  "extra_by_target": {
+   "rows": 284,
+   "inside_reused_mask": 283,
+   "sources": {
+    "giga-fren": 1,
+    "un": 283
+   }
+  },
+  "rows_reserved_total": {
+   "rows": 4652,
+   "inside_reused_mask": 4645,
+   "sources": {
+    "giga-fren": 7,
+    "un": 4645
+   }
+  },
+  "exact_source": {
+   "rows": 4139,
+   "inside_reused_mask": 4133,
+   "sources": {
+    "giga-fren": 6,
+    "un": 4133
+   }
+  },
+  "exact_target": {
+   "rows": 3605,
+   "inside_reused_mask": 3605,
+   "sources": {
+    "un": 3605
+   }
+  },
+  "any": {
+   "rows": 4652,
+   "inside_reused_mask": 4645,
+   "sources": {
+    "giga-fren": 7,
+    "un": 4645
+   }
+  }
+ },
+ "heldout_rows_found_in_mask_rows": {
+  "exact_pair": 2000,
+  "exact_source": 2000,
+  "exact_target": 2000
+ },
+ "scored_rows_in_pretrain": {
+  "measured": {
+   "pair": 9578493,
+   "source": 9835750,
+   "target": 9730352,
+   "any": 9912462
+  },
+  "e03_manifest": {
+   "pair": 9578493,
+   "source": 9835750,
+   "target": 9730352,
+   "any": 9912462
+  }
+ },
+ "heldout_candidates": {
+  "measured": {
+   "n_pool_eligible": 16646992,
+   "label_rows": 11598490,
+   "pool_rows": 6767225,
+   "pool_rows_excluded_pretrain": 4831265,
+   "pool_rows_excluded_mask": 0
+  },
+  "e03_manifest": {
+   "n_pool_eligible": 16646992,
+   "label_rows": 11598490,
+   "pool_rows": 6767225,
+   "pool_rows_excluded_pretrain": 4831265,
+   "pool_rows_excluded_mask": 0
+  }
+ },
+ "draw_rederived": {
+  "seed": 42,
+  "n": 2000,
+  "rows_equal_to_heldout_un_row_by_row": 2000,
+  "first_mismatch": null,
+  "distinct_pairs_in_draw": 1999,
+  "drawn_rows_in_pretrain_any": 0,
+  "reservation_from_drawn_rows": {
+   "exact_pair": 3290,
+   "extra_by_source": 1078,
+   "extra_by_target": 284,
+   "total": 4652
+  }
+ },
+ "protocol_d4_default_draw": {
+  "pairs_verbatim_in_pretrain": 793,
+  "sources_verbatim_in_pretrain": 826,
+  "protocol_text": "793/2000 pairs (826/2000 sources)",
+  "note": "the D4 measurement's pool definition is not recorded; this assumes UN & reused mask, first rng use"
+ },
+ "seconds": 54.7,
+ "env": {
+  "python": "3.14.3",
+  "unidata_version": "16.0.0",
+  "numpy": "2.4.5",
+  "machine": "arm64",
+  "node": "Workstation.local"
+ }
+}
