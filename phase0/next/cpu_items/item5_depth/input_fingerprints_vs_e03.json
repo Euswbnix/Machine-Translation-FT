@@ -1,0 +1,17 @@
+{
+ "inputs/provenance_labels.npy": {
+  "size_equal": true,
+  "head_equal": true,
+  "tail_equal": true
+ },
+ "inputs/pool_mask_reused.npy": {
+  "size_equal": true,
+  "head_equal": true,
+  "tail_equal": true
+ },
+ "inputs/provenance_report.json": {
+  "size_equal": true,
+  "head_equal": true,
+  "tail_equal": true
+ }
+}

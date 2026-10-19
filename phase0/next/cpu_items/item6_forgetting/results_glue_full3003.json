@@ -1,0 +1,278 @@
+{
+ "ft_random_small_words": {
+  "All": {
+   "mean": 0.2337596468862661,
+   "sd": 0.0
+  },
+  "ID": {
+   "mean": 0.23080477150537634,
+   "sd": 0.0
+  },
+  "OOD": {
+   "mean": 0.3719711853307138,
+   "sd": 0.0
+  },
+  "OOD_in_src": {
+   "mean": 0.3719711853307138,
+   "sd": 0.0
+  },
+  "OOD_not_in_src": {
+   "mean": null,
+   "sd": null
+  },
+  "ref_occ_share_ID": 0.9790681416293128
+ },
+ "ft_topk_div_words": {
+  "All": {
+   "mean": 0.2337596468862661,
+   "sd": 0.0
+  },
+  "ID": {
+   "mean": 0.2230834495750586,
+   "sd": 0.0
+  },
+  "OOD": {
+   "mean": 0.4513481828839391,
+   "sd": 0.0
+  },
+  "OOD_in_src": {
+   "mean": 0.4513481828839391,
+   "sd": 0.0
+  },
+  "OOD_not_in_src": {
+   "mean": null,
+   "sd": null
+  },
+  "ref_occ_share_ID": 0.9532288796589492
+ },
+ "ft_topk_rep_words": {
+  "All": {
+   "mean": 0.2337596468862661,
+   "sd": 0.0
+  },
+  "ID": {
+   "mean": 0.21385188662637172,
+   "sd": 0.0
+  },
+  "OOD": {
+   "mean": 0.5172341758930437,
+   "sd": 0.0
+  },
+  "OOD_in_src": {
+   "mean": 0.5172341758930437,
+   "sd": 0.0
+  },
+  "OOD_not_in_src": {
+   "mean": null,
+   "sd": null
+  },
+  "ref_occ_share_ID": 0.9343806116434319
+ },
+ "ft_un_div_words": {
+  "All": {
+   "mean": 0.2337596468862661,
+   "sd": 0.0
+  },
+  "ID": {
+   "mean": 0.21937810872916605,
+   "sd": 0.0
+  },
+  "OOD": {
+   "mean": 0.4695921774385881,
+   "sd": 0.0
+  },
+  "OOD_in_src": {
+   "mean": 0.4695921774385881,
+   "sd": 0.0
+  },
+  "OOD_not_in_src": {
+   "mean": null,
+   "sd": null
+  },
+  "ref_occ_share_ID": 0.9425230634261353
+ },
+ "ft_un_random_words": {
+  "All": {
+   "mean": 0.2337596468862661,
+   "sd": 0.0
+  },
+  "ID": {
+   "mean": 0.2257641236289989,
+   "sd": 0.0
+  },
+  "OOD": {
+   "mean": 0.4312896405919662,
+   "sd": 0.0
+  },
+  "OOD_in_src": {
+   "mean": 0.4312896405919662,
+   "sd": 0.0
+  },
+  "OOD_not_in_src": {
+   "mean": null,
+   "sd": null
+  },
+  "ref_occ_share_ID": 0.9610971748159723
+ },
+ "ft_un_rep_words": {
+  "All": {
+   "mean": 0.2337596468862661,
+   "sd": 0.0
+  },
+  "ID": {
+   "mean": 0.20878974282961535,
+   "sd": 0.0
+  },
+  "OOD": {
+   "mean": 0.540831206707984,
+   "sd": 0.0
+  },
+  "OOD_in_src": {
+   "mean": 0.540831206707984,
+   "sd": 0.0
+  },
+  "OOD_not_in_src": {
+   "mean": null,
+   "sd": null
+  },
+  "ref_occ_share_ID": 0.9247988375759071
+ },
+ "ft_random_small_spm": {
+  "All": {
+   "mean": 0.2449422406943341,
+   "sd": 0.0
+  },
+  "ID": {
+   "mean": 0.24481644879619346,
+   "sd": 0.0
+  },
+  "OOD": {
+   "mean": 0.8947368421052632,
+   "sd": 0.0
+  },
+  "OOD_in_src": {
+   "mean": 0.8947368421052632,
+   "sd": 0.0
+  },
+  "OOD_not_in_src": {
+   "mean": null,
+   "sd": null
+  },
+  "ref_occ_share_ID": 0.999806450298474
+ },
+ "ft_topk_div_spm": {
+  "All": {
+   "mean": 0.2449422406943341,
+   "sd": 0.0
+  },
+  "ID": {
+   "mean": 0.2416390787868849,
+   "sd": 0.0
+  },
+  "OOD": {
+   "mean": 0.7829716193656093,
+   "sd": 0.0
+  },
+  "OOD_in_src": {
+   "mean": 0.7829716193656093,
+   "sd": 0.0
+  },
+  "OOD_not_in_src": {
+   "mean": null,
+   "sd": null
+  },
+  "ref_occ_share_ID": 0.9938980909887334
+ },
+ "ft_topk_rep_spm": {
+  "All": {
+   "mean": 0.2449422406943341,
+   "sd": 0.0
+  },
+  "ID": {
+   "mean": 0.2362873991758497,
+   "sd": 0.0
+  },
+  "OOD": {
+   "mean": 0.8707991038088124,
+   "sd": 0.0
+  },
+  "OOD_in_src": {
+   "mean": 0.8707991038088124,
+   "sd": 0.0
+  },
+  "OOD_not_in_src": {
+   "mean": null,
+   "sd": null
+  },
+  "ref_occ_share_ID": 0.986359839455616
+ },
+ "ft_un_div_spm": {
+  "All": {
+   "mean": 0.2449422406943341,
+   "sd": 0.0
+  },
+  "ID": {
+   "mean": 0.23888328218647664,
+   "sd": 0.0
+  },
+  "OOD": {
+   "mean": 0.8,
+   "sd": 0.0
+  },
+  "OOD_in_src": {
+   "mean": 0.8,
+   "sd": 0.0
+  },
+  "OOD_not_in_src": {
+   "mean": null,
+   "sd": null
+  },
+  "ref_occ_share_ID": 0.9892019640201292
+ },
+ "ft_un_random_spm": {
+  "All": {
+   "mean": 0.2449422406943341,
+   "sd": 0.0
+  },
+  "ID": {
+   "mean": 0.24269929369435675,
+   "sd": 0.0
+  },
+  "OOD": {
+   "mean": 0.903903903903904,
+   "sd": 0.0
+  },
+  "OOD_in_src": {
+   "mean": 0.903903903903904,
+   "sd": 0.0
+  },
+  "OOD_not_in_src": {
+   "mean": null,
+   "sd": null
+  },
+  "ref_occ_share_ID": 0.9966077868100972
+ },
+ "ft_un_rep_spm": {
+  "All": {
+   "mean": 0.2449422406943341,
+   "sd": 0.0
+  },
+  "ID": {
+   "mean": 0.2322059618342826,
+   "sd": 0.0
+  },
+  "OOD": {
+   "mean": 0.872057318321392,
+   "sd": 0.0
+  },
+  "OOD_in_src": {
+   "mean": 0.872057318321392,
+   "sd": 0.0
+  },
+  "OOD_not_in_src": {
+   "mean": null,
+   "sd": null
+  },
+  "ref_occ_share_ID": 0.9800949412220117
+ }
+}

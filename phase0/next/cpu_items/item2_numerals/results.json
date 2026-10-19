@@ -1,0 +1,1962 @@
+{
+ "item": "WMT2027_PLAN.md section 3.2 item 2: templated numerals",
+ "descriptive_only": true,
+ "definition": {
+  "tokens": "lowercased \\w+ (re.UNICODE), phase0/e04_split.py line 13",
+  "rep": "fraction of the row's 8-grams (blake2b-64 of ' '.join(8 tokens)) whose count over the parent set is > 1; rows under 8 tokens take 0 (e04_split.py lines 29-37)",
+  "parents": {
+   "ft_topk_div": "ft_topk",
+   "ft_topk_rep": "ft_topk",
+   "ft_un_div": "ft_topk",
+   "ft_un_rep": "ft_topk",
+   "ft_un_random": "ft_random",
+   "ft_random_small": "ft_random"
+  },
+  "token_classes": {
+   "SYM": "(?<![\\w/])[A-Z][A-Za-z]{0,11}(?:\\.\\d+)?(?:/[A-Za-z0-9][A-Za-z0-9.()\\-]*)+   (match must contain a digit)",
+   "DATE": "(?<!\\w)(?:(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),?\\s+)?\\d{1,2}(?:st|nd|rd|th)?(?:\\s*(?:-|–|—|to|and|or)\\s*\\d{1,2}(?:st|nd|rd|th)?)?\\s+(?:of\\s+)?(?:January|February|March|April|May|June|July|August|September|October|November|December)(?:\\s*,?\\s*\\d{4})?(?!\\w)|(?<!\\w)(?:(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),?\\s+)?(?:January|February|March|April|May|June|July|August|September|October|November|December)\\s+\\d{1,2}(?:st|nd|rd|th)?(?:\\s*(?:-|–|—|to|and|or)\\s*\\d{1,2}(?:st|nd|rd|th)?)?(?:\\s*,\\s*\\d{4}|\\s+\\d{4})?(?!\\w)|(?<!\\w)(?:January|February|March|April|May|June|July|August|September|October|November|December)(?:\\s*(?:-|–|—|to|and|or)\\s*(?:January|February|March|April|May|June|July|August|September|October|November|December))?\\s+\\d{4}(?!\\w)|(?<![\\w./-])\\d{1,2}[./-]\\d{1,2}[./-](?:\\d{4}|\\d{2})(?![\\w/-])|(?<![\\w./-])\\d{4}-\\d{1,2}-\\d{1,2}(?![\\w/-])",
+   "NUM": "fullmatch \\d+(?:st|nd|rd|th|s)? on the lowercased token",
+   "priority": "a token overlapping a SYM span is SYM, else overlapping a DATE span is DATE, else NUM if it matches, else WORD"
+  },
+  "M1": "exclude: a SYM/DATE/NUM token matches nothing, so an 8-gram occurrence containing one never counts as repeated, and an untouched 8-gram counts only if it occurs untouched more than once in the parent; denominator unchanged (headline)",
+  "M1_digit": "M1 with exactly the tokens containing a Unicode digit masked",
+  "M1_prime": "M1's repeated 8-grams over the row's number of 8-grams with no masked token (0 if none)",
+  "M2": "placeholder: SYM/DATE/NUM tokens -> #sym/#date/#num, counts recomputed over the parent",
+  "M2_A17": "every Unicode digit -> '0' inside each token (e06_build.py A17_RULE), counts recomputed"
+ },
+ "reproduction_checks": {
+  "median rep over ft_topk": {
+   "got": 0.0,
+   "e05_manifest": 0.0
+  },
+  "ft_topk UN rows with rep = 0": {
+   "got": 486475,
+   "e05_manifest": 486475
+  },
+  "ft_topk UN rows with rep > 0": {
+   "got": 227406,
+   "e05_manifest": 227406
+  },
+  "ft_topk_div rep_mean": {
+   "got": 0.0,
+   "e05_manifest": 0.0
+  },
+  "ft_topk_div rep_positive_fraction": {
+   "got": 0.0,
+   "e05_manifest": 0.0
+  },
+  "ft_topk_div duplicate_source_fraction": {
+   "got": 0.0,
+   "e05_manifest": 0.0
+  },
+  "ft_topk_rep rep_mean": {
+   "got": 0.4174032126878764,
+   "e05_manifest": 0.4174032126878764
+  },
+  "ft_topk_rep rep_positive_fraction": {
+   "got": 1.0,
+   "e05_manifest": 1.0
+  },
+  "ft_topk_rep duplicate_source_fraction": {
+   "got": 0.08130252621662493,
+   "e05_manifest": 0.08130252621662493
+  },
+  "ft_un_div rep_mean": {
+   "got": 0.0,
+   "e05_manifest": 0.0
+  },
+  "ft_un_div rep_positive_fraction": {
+   "got": 0.0,
+   "e05_manifest": 0.0
+  },
+  "ft_un_div duplicate_source_fraction": {
+   "got": 0.0,
+   "e05_manifest": 0.0
+  },
+  "ft_un_rep rep_mean": {
+   "got": 0.43319171142447993,
+   "e05_manifest": 0.43319171142447993
+  },
+  "ft_un_rep rep_positive_fraction": {
+   "got": 1.0,
+   "e05_manifest": 1.0
+  },
+  "ft_un_rep duplicate_source_fraction": {
+   "got": 0.0844612078008663,
+   "e05_manifest": 0.0844612078008663
+  },
+  "ft_un_random rep_mean": {
+   "got": 0.08662713559666128,
+   "e05_manifest": 0.08662713559666128
+  },
+  "ft_un_random rep_positive_fraction": {
+   "got": 0.25468905165299854,
+   "e05_manifest": 0.25468905165299854
+  },
+  "ft_un_random duplicate_source_fraction": {
+   "got": 0.002270512706945338,
+   "e05_manifest": 0.002270512706945338
+  },
+  "ft_random_small rep_mean": {
+   "got": 0.06482029723010914,
+   "e05_manifest": 0.06482029723010914
+  },
+  "ft_random_small rep_positive_fraction": {
+   "got": 0.1970647296526762,
+   "e05_manifest": 0.1970647296526762
+  },
+  "ft_random_small duplicate_source_fraction": {
+   "got": 0.0015990281875201129,
+   "e05_manifest": 0.0015990281875201129
+  }
+ },
+ "parents": {
+  "ft_topk": {
+   "rows": 926999,
+   "grams": 14345949,
+   "gram_types_unmasked": 13066603,
+   "rows_where_M2_is_below_rep": 116,
+   "rows_where_strict_M1_is_below_loose_M1": 33
+  },
+  "ft_random": {
+   "rows": 926999,
+   "grams": 18192557,
+   "gram_types_unmasked": 17053644,
+   "rows_where_M2_is_below_rep": 180,
+   "rows_where_strict_M1_is_below_loose_M1": 168
+  }
+ },
+ "whole_band": {
+  "ft_topk (all rows)": {
+   "rows": 926999,
+   "variants": {
+    "rep": {
+     "rep_mean": 0.11236846462876451,
+     "rows_rep_positive": 250008
+    },
+    "M1": {
+     "rep_mean": 0.09925536779896399,
+     "rows_rep_positive": 238078
+    },
+    "M1_digit": {
+     "rep_mean": 0.09943788695824378,
+     "rows_rep_positive": 238271
+    },
+    "M2": {
+     "rep_mean": 0.12660110822859608,
+     "rows_rep_positive": 282155
+    },
+    "M2_A17": {
+     "rep_mean": 0.1223294134209492,
+     "rows_rep_positive": 273009
+    }
+   },
+   "rows_rep_positive_that_lose_all_rep_under_M1": 11930,
+   "rows_rep_zero_that_gain_rep_under_M2": 32171,
+   "rows_rep_zero_that_gain_rep_under_M2_A17": 23001,
+   "token_share_masked_total": 0.03101493200714105,
+   "token_share_containing_a_digit": 0.02764690543526443
+  },
+  "ft_topk UN rows": {
+   "rows": 713881,
+   "variants": {
+    "rep": {
+     "rep_mean": 0.13748314019863317,
+     "rows_rep_positive": 227406
+    },
+    "M1": {
+     "rep_mean": 0.12143862898764379,
+     "rows_rep_positive": 216680
+    },
+    "M1_digit": {
+     "rep_mean": 0.12165148984958105,
+     "rows_rep_positive": 216831
+    },
+    "M2": {
+     "rep_mean": 0.15446337090682216,
+     "rows_rep_positive": 256696
+    },
+    "M2_A17": {
+     "rep_mean": 0.14938742327517246,
+     "rows_rep_positive": 248556
+    }
+   },
+   "rows_rep_positive_that_lose_all_rep_under_M1": 10726,
+   "rows_rep_zero_that_gain_rep_under_M2": 29309,
+   "rows_rep_zero_that_gain_rep_under_M2_A17": 21150,
+   "token_share_masked_total": 0.03419131410663361,
+   "token_share_containing_a_digit": 0.03030491005738525
+  }
+ },
+ "sets": {
+  "ft_topk_div": {
+   "rows": 242022,
+   "source_tokens": 6370553,
+   "rep_parent": "ft_topk",
+   "variants": {
+    "rep": {
+     "rep_mean": 0.0,
+     "rows_rep_positive": 0,
+     "rep_positive_fraction": 0.0
+    },
+    "M1": {
+     "rep_mean": 0.0,
+     "rows_rep_positive": 0,
+     "rep_positive_fraction": 0.0
+    },
+    "M1_digit": {
+     "rep_mean": 0.0,
+     "rows_rep_positive": 0,
+     "rep_positive_fraction": 0.0
+    },
+    "M2": {
+     "rep_mean": 0.011377916737102395,
+     "rows_rep_positive": 14878,
+     "rep_positive_fraction": 0.061473750320218824
+    },
+    "M2_A17": {
+     "rep_mean": 0.007698539889270064,
+     "rows_rep_positive": 10810,
+     "rep_positive_fraction": 0.04466536100023965
+    },
+    "M1_prime": {
+     "rep_mean": 0.0,
+     "rows_rep_positive": 0,
+     "rep_positive_fraction": 0.0
+    }
+   },
+   "rows_rep_positive_that_lose_all_rep_under_M1": 0,
+   "of_which_source_line_occurs_more_than_once_in_parent": 0,
+   "rows_rep_positive_that_keep_rep_under_M1": 0,
+   "rows_rep_zero_that_gain_rep_under_M2": 14878,
+   "rows_where_M2_is_below_rep": 0,
+   "share_of_repeated_8gram_occurrences_touching_a_masked_token": null,
+   "token_share": {
+    "num": 0.02395710388093467,
+    "date": 0.006313580626360066,
+    "sym": 0.00012683357316076014,
+    "masked_total": 0.030397518080455495,
+    "tokens_containing_a_digit": 0.027784715078895034,
+    "rows_with_a_masked_token": 0.26206295295469006,
+    "symbol_matches": 239,
+    "counts": {
+     "n_num": 152620,
+     "n_date": 40221,
+     "n_sym": 808,
+     "n_dig": 177004,
+     "source_tokens": 6370553
+    },
+    "fr_tokens_containing_a_digit": 0.023414181943003813,
+    "fr_num": 0.023146460119591313,
+    "fr_tokens": 7492852
+   },
+   "duplicate_source_fraction": {
+    "raw_line": 0.0,
+    "token_sequence": 0.0,
+    "A17_digits_to_0": 0.00012395567345113712,
+    "full_mask_placeholders": 0.00020659278908530254
+   }
+  },
+  "ft_topk_rep": {
+   "rows": 242022,
+   "source_tokens": 6370553,
+   "rep_parent": "ft_topk",
+   "variants": {
+    "rep": {
+     "rep_mean": 0.4174032126878764,
+     "rows_rep_positive": 242022,
+     "rep_positive_fraction": 1.0
+    },
+    "M1": {
+     "rep_mean": 0.36812292089238546,
+     "rows_rep_positive": 230313,
+     "rep_positive_fraction": 0.9516201006520069
+    },
+    "M1_digit": {
+     "rep_mean": 0.3688150978038417,
+     "rows_rep_positive": 230504,
+     "rep_positive_fraction": 0.9524092851063126
+    },
+    "M2": {
+     "rep_mean": 0.4392989098105996,
+     "rows_rep_positive": 241998,
+     "rep_positive_fraction": 0.9999008354612391
+    },
+    "M2_A17": {
+     "rep_mean": 0.43386362080163055,
+     "rows_rep_positive": 242022,
+     "rep_positive_fraction": 1.0
+    },
+    "M1_prime": {
+     "rep_mean": 0.4246437375724228,
+     "rows_rep_positive": 230313,
+     "rep_positive_fraction": 0.9516201006520069
+    }
+   },
+   "rows_rep_positive_that_lose_all_rep_under_M1": 11709,
+   "of_which_source_line_occurs_more_than_once_in_parent": 1297,
+   "rows_rep_positive_that_keep_rep_under_M1": 230313,
+   "rows_rep_zero_that_gain_rep_under_M2": 0,
+   "rows_where_M2_is_below_rep": 110,
+   "share_of_repeated_8gram_occurrences_touching_a_masked_token": 0.10285620473390344,
+   "token_share": {
+    "num": 0.01949453995595045,
+    "date": 0.011005324027600115,
+    "sym": 0.0007148515992253734,
+    "masked_total": 0.03121471558277594,
+    "tokens_containing_a_digit": 0.02675654688062402,
+    "rows_with_a_masked_token": 0.2772929733660576,
+    "symbol_matches": 1289,
+    "counts": {
+     "n_num": 124191,
+     "n_date": 70110,
+     "n_sym": 4554,
+     "n_dig": 170454,
+     "source_tokens": 6370553
+    },
+    "fr_tokens_containing_a_digit": 0.02271727533996398,
+    "fr_num": 0.022270540180174228,
+    "fr_tokens": 7445127
+   },
+   "duplicate_source_fraction": {
+    "raw_line": 0.08130252621662493,
+    "token_sequence": 0.10237499070332445,
+    "A17_digits_to_0": 0.11248564180115861,
+    "full_mask_placeholders": 0.11784052689424929
+   }
+  },
+  "ft_un_div": {
+   "rows": 214489,
+   "source_tokens": 5606498,
+   "rep_parent": "ft_topk",
+   "variants": {
+    "rep": {
+     "rep_mean": 0.0,
+     "rows_rep_positive": 0,
+     "rep_positive_fraction": 0.0
+    },
+    "M1": {
+     "rep_mean": 0.0,
+     "rows_rep_positive": 0,
+     "rep_positive_fraction": 0.0
+    },
+    "M1_digit": {
+     "rep_mean": 0.0,
+     "rows_rep_positive": 0,
+     "rep_positive_fraction": 0.0
+    },
+    "M2": {
+     "rep_mean": 0.014170474017406148,
+     "rows_rep_positive": 16024,
+     "rep_positive_fraction": 0.07470779387287926
+    },
+    "M2_A17": {
+     "rep_mean": 0.009690816775957496,
+     "rows_rep_positive": 11757,
+     "rep_positive_fraction": 0.05481399978553679
+    },
+    "M1_prime": {
+     "rep_mean": 0.0,
+     "rows_rep_positive": 0,
+     "rep_positive_fraction": 0.0
+    }
+   },
+   "rows_rep_positive_that_lose_all_rep_under_M1": 0,
+   "of_which_source_line_occurs_more_than_once_in_parent": 0,
+   "rows_rep_positive_that_keep_rep_under_M1": 0,
+   "rows_rep_zero_that_gain_rep_under_M2": 16024,
+   "rows_where_M2_is_below_rep": 0,
+   "share_of_repeated_8gram_occurrences_touching_a_masked_token": null,
+   "token_share": {
+    "num": 0.02713654762741376,
+    "date": 0.007257649962596972,
+    "sym": 0.00015767418449092463,
+    "masked_total": 0.034551871774501655,
+    "tokens_containing_a_digit": 0.03148739195126798,
+    "rows_with_a_masked_token": 0.28455072288089367,
+    "symbol_matches": 264,
+    "counts": {
+     "n_num": 152141,
+     "n_date": 40690,
+     "n_sym": 884,
+     "n_dig": 176534,
+     "source_tokens": 5606498
+    },
+    "fr_tokens_containing_a_digit": 0.02639509097906714,
+    "fr_num": 0.02617576657634307,
+    "fr_tokens": 6656806
+   },
+   "duplicate_source_fraction": {
+    "raw_line": 0.0,
+    "token_sequence": 0.0,
+    "A17_digits_to_0": 0.0001352050687913886,
+    "full_mask_placeholders": 0.00028439686883707793
+   }
+  },
+  "ft_un_rep": {
+   "rows": 214489,
+   "source_tokens": 5606498,
+   "rep_parent": "ft_topk",
+   "variants": {
+    "rep": {
+     "rep_mean": 0.43319171142447993,
+     "rows_rep_positive": 214489,
+     "rep_positive_fraction": 1.0
+    },
+    "M1": {
+     "rep_mean": 0.38166977635345695,
+     "rows_rep_positive": 204134,
+     "rep_positive_fraction": 0.951722465953965
+    },
+    "M1_digit": {
+     "rep_mean": 0.38236618020900226,
+     "rows_rep_positive": 204283,
+     "rep_positive_fraction": 0.9524171402729278
+    },
+    "M2": {
+     "rep_mean": 0.4559143865882664,
+     "rows_rep_positive": 214470,
+     "rep_positive_fraction": 0.9999114173687229
+    },
+    "M2_A17": {
+     "rep_mean": 0.45025783285350723,
+     "rows_rep_positive": 214489,
+     "rep_positive_fraction": 1.0
+    },
+    "M1_prime": {
+     "rep_mean": 0.4410906570988971,
+     "rows_rep_positive": 204134,
+     "rep_positive_fraction": 0.951722465953965
+    }
+   },
+   "rows_rep_positive_that_lose_all_rep_under_M1": 10355,
+   "of_which_source_line_occurs_more_than_once_in_parent": 1178,
+   "rows_rep_positive_that_keep_rep_under_M1": 204134,
+   "rows_rep_zero_that_gain_rep_under_M2": 0,
+   "rows_where_M2_is_below_rep": 98,
+   "share_of_repeated_8gram_occurrences_touching_a_masked_token": 0.10353677071678669,
+   "token_share": {
+    "num": 0.01985178626657853,
+    "date": 0.011698211610884371,
+    "sym": 0.0007873007356820603,
+    "masked_total": 0.03233729861314496,
+    "tokens_containing_a_digit": 0.02760314906025116,
+    "rows_with_a_masked_token": 0.28367422105562523,
+    "symbol_matches": 1248,
+    "counts": {
+     "n_num": 111299,
+     "n_date": 65586,
+     "n_sym": 4414,
+     "n_dig": 154757,
+     "source_tokens": 5606498
+    },
+    "fr_tokens_containing_a_digit": 0.023446400710460127,
+    "fr_num": 0.023066535685718717,
+    "fr_tokens": 6576020
+   },
+   "duplicate_source_fraction": {
+    "raw_line": 0.0844612078008663,
+    "token_sequence": 0.10670011049517691,
+    "A17_digits_to_0": 0.11749320477973224,
+    "full_mask_placeholders": 0.12301330138142286
+   }
+  },
+  "ft_un_random": {
+   "rows": 214489,
+   "source_tokens": 5606498,
+   "rep_parent": "ft_random",
+   "variants": {
+    "rep": {
+     "rep_mean": 0.08662713559666128,
+     "rows_rep_positive": 54628,
+     "rep_positive_fraction": 0.25468905165299854
+    },
+    "M1": {
+     "rep_mean": 0.07271796711156266,
+     "rows_rep_positive": 51152,
+     "rep_positive_fraction": 0.23848309237303544
+    },
+    "M1_digit": {
+     "rep_mean": 0.0734183876902157,
+     "rows_rep_positive": 51345,
+     "rep_positive_fraction": 0.239382905417061
+    },
+    "M2": {
+     "rep_mean": 0.10943865136203838,
+     "rows_rep_positive": 62768,
+     "rep_positive_fraction": 0.2926397157896209
+    },
+    "M2_A17": {
+     "rep_mean": 0.10204207635097905,
+     "rows_rep_positive": 59837,
+     "rep_positive_fraction": 0.278974679354186
+    },
+    "M1_prime": {
+     "rep_mean": 0.09548375118663541,
+     "rows_rep_positive": 51152,
+     "rep_positive_fraction": 0.23848309237303544
+    }
+   },
+   "rows_rep_positive_that_lose_all_rep_under_M1": 3476,
+   "of_which_source_line_occurs_more_than_once_in_parent": 68,
+   "rows_rep_positive_that_keep_rep_under_M1": 51152,
+   "rows_rep_zero_that_gain_rep_under_M2": 8141,
+   "rows_where_M2_is_below_rep": 51,
+   "share_of_repeated_8gram_occurrences_touching_a_masked_token": 0.14778193187284094,
+   "token_share": {
+    "num": 0.022279148231213138,
+    "date": 0.010107557337931807,
+    "sym": 0.007765631950640132,
+    "masked_total": 0.04015233751978508,
+    "tokens_containing_a_digit": 0.03297441647174404,
+    "rows_with_a_masked_token": 0.3207670323419849,
+    "symbol_matches": 9609,
+    "counts": {
+     "n_num": 124908,
+     "n_date": 56668,
+     "n_sym": 43538,
+     "n_dig": 184871,
+     "source_tokens": 5606498
+    },
+    "fr_tokens_containing_a_digit": 0.0278063738845642,
+    "fr_num": 0.026951342786110426,
+    "fr_tokens": 6661746
+   },
+   "duplicate_source_fraction": {
+    "raw_line": 0.002270512706945338,
+    "token_sequence": 0.0035106695448251513,
+    "A17_digits_to_0": 0.007002690114644605,
+    "full_mask_placeholders": 0.010569306584486848
+   }
+  },
+  "ft_random_small": {
+   "rows": 242022,
+   "source_tokens": 6370553,
+   "rep_parent": "ft_random",
+   "variants": {
+    "rep": {
+     "rep_mean": 0.06482029723010914,
+     "rows_rep_positive": 47694,
+     "rep_positive_fraction": 0.1970647296526762
+    },
+    "M1": {
+     "rep_mean": 0.05492157489862869,
+     "rows_rep_positive": 44897,
+     "rep_positive_fraction": 0.1855079290312451
+    },
+    "M1_digit": {
+     "rep_mean": 0.05536587972325308,
+     "rows_rep_positive": 45055,
+     "rep_positive_fraction": 0.1861607622447546
+    },
+    "M2": {
+     "rep_mean": 0.08107374432714433,
+     "rows_rep_positive": 54486,
+     "rep_positive_fraction": 0.22512829412202195
+    },
+    "M2_A17": {
+     "rep_mean": 0.07601548524755904,
+     "rows_rep_positive": 52098,
+     "rep_positive_fraction": 0.21526142251530853
+    },
+    "M1_prime": {
+     "rep_mean": 0.07115187657542041,
+     "rows_rep_positive": 44897,
+     "rep_positive_fraction": 0.1855079290312451
+    }
+   },
+   "rows_rep_positive_that_lose_all_rep_under_M1": 2797,
+   "of_which_source_line_occurs_more_than_once_in_parent": 56,
+   "rows_rep_positive_that_keep_rep_under_M1": 44897,
+   "rows_rep_zero_that_gain_rep_under_M2": 6797,
+   "rows_where_M2_is_below_rep": 47,
+   "share_of_repeated_8gram_occurrences_touching_a_masked_token": 0.14143692122969154,
+   "token_share": {
+    "num": 0.019376025911722262,
+    "date": 0.007813921334615693,
+    "sym": 0.005215559779504228,
+    "masked_total": 0.03240550702584218,
+    "tokens_containing_a_digit": 0.027575628049872594,
+    "rows_with_a_masked_token": 0.28164794935997556,
+    "symbol_matches": 7386,
+    "counts": {
+     "n_num": 123436,
+     "n_date": 49779,
+     "n_sym": 33226,
+     "n_dig": 175672,
+     "source_tokens": 6370553
+    },
+    "fr_tokens_containing_a_digit": 0.02366010916506427,
+    "fr_num": 0.022599253642674764,
+    "fr_tokens": 7423254
+   },
+   "duplicate_source_fraction": {
+    "raw_line": 0.0015990281875201129,
+    "token_sequence": 0.0021692242853955657,
+    "A17_digits_to_0": 0.004127723925924087,
+    "full_mask_placeholders": 0.006296948211319653
+   }
+  }
+ },
+ "examples_ft_un_rep_lose_all_rep_under_M1": [
+  {
+   "ft_un_rep_line": 2146,
+   "source": "According to the Central Intelligence Agency estimates for July 2004, the population of American Samoa was 57,902, of which 51.2 per cent was male and 48.8 per cent was female.",
+   "source_line_count_in_ft_topk": 1,
+   "rep": 0.3076923076923077,
+   "rep_M1": 0.0,
+   "rep_M2": 0.8846153846153846,
+   "masked": "according to the central intelligence agency estimates for [date:july] [date:2004] the population of american samoa was [num:57] [num:902] of which [num:51] [num:2] per cent was male and [num:48] [num:8] per cent was female",
+   "repeated_8grams_touching_mask": 8,
+   "repeated_8grams_untouched": 0,
+   "repeated_8grams_top4": [
+    {
+     "gram": "of which 51 2 per cent was male",
+     "count": 2,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "which 51 2 per cent was male and",
+     "count": 2,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "51 2 per cent was male and 48",
+     "count": 2,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "2 per cent was male and 48 8",
+     "count": 2,
+     "touches_mask": true,
+     "count_untouched": 0
+    }
+   ]
+  },
+  {
+   "ft_un_rep_line": 2311,
+   "source": "Over 250 million people are directly affected by desertification.",
+   "source_line_count_in_ft_topk": 2,
+   "rep": 1.0,
+   "rep_M1": 0.0,
+   "rep_M2": 1.0,
+   "masked": "over [num:250] million people are directly affected by desertification",
+   "repeated_8grams_touching_mask": 2,
+   "repeated_8grams_untouched": 0,
+   "repeated_8grams_top4": [
+    {
+     "gram": "over 250 million people are directly affected by",
+     "count": 2,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "250 million people are directly affected by desertification",
+     "count": 2,
+     "touches_mask": true,
+     "count_untouched": 0
+    }
+   ]
+  },
+  {
+   "ft_un_rep_line": 2813,
+   "source": "During the first quarter of 2008, Israeli authorities demolished 124 structures for lack of permits.  Of those, 61 were residential buildings that caused the displacement of 435 Palestinians, 135 of whom were children.",
+   "source_line_count_in_ft_topk": 1,
+   "rep": 0.15384615384615385,
+   "rep_M1": 0.0,
+   "rep_M2": 0.15384615384615385,
+   "masked": "during the first quarter of [num:2008] israeli authorities demolished [num:124] structures for lack of permits of those [num:61] were residential buildings that caused the displacement of [num:435] palestinians [num:135] of whom were children",
+   "repeated_8grams_touching_mask": 4,
+   "repeated_8grams_untouched": 0,
+   "repeated_8grams_top4": [
+    {
+     "gram": "during the first quarter of 2008 israeli authorities",
+     "count": 2,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "the first quarter of 2008 israeli authorities demolished",
+     "count": 2,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "first quarter of 2008 israeli authorities demolished 124",
+     "count": 2,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "quarter of 2008 israeli authorities demolished 124 structures",
+     "count": 2,
+     "touches_mask": true,
+     "count_untouched": 0
+    }
+   ]
+  },
+  {
+   "ft_un_rep_line": 3065,
+   "source": "Some 30 per cent of children 5 to 14 years old are working.",
+   "source_line_count_in_ft_topk": 1,
+   "rep": 0.3333333333333333,
+   "rep_M1": 0.0,
+   "rep_M2": 0.5,
+   "masked": "some [num:30] per cent of children [num:5] to [num:14] years old are working",
+   "repeated_8grams_touching_mask": 2,
+   "repeated_8grams_untouched": 0,
+   "repeated_8grams_top4": [
+    {
+     "gram": "30 per cent of children 5 to 14",
+     "count": 2,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "per cent of children 5 to 14 years",
+     "count": 2,
+     "touches_mask": true,
+     "count_untouched": 0
+    }
+   ]
+  },
+  {
+   "ft_un_rep_line": 13827,
+   "source": "In 1999 alone, there were more than 700 large-scale disasters, resulting in the death of approximately 100,000 people and causing economic losses in excess of US$ 100 billion.",
+   "source_line_count_in_ft_topk": 1,
+   "rep": 0.17391304347826086,
+   "rep_M1": 0.0,
+   "rep_M2": 0.21739130434782608,
+   "masked": "in [num:1999] alone there were more than [num:700] large scale disasters resulting in the death of approximately [num:100] [num:000] people and causing economic losses in excess of us [num:100] billion",
+   "repeated_8grams_touching_mask": 4,
+   "repeated_8grams_untouched": 0,
+   "repeated_8grams_top4": [
+    {
+     "gram": "in 1999 alone there were more than 700",
+     "count": 4,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "1999 alone there were more than 700 large",
+     "count": 4,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "alone there were more than 700 large scale",
+     "count": 4,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "there were more than 700 large scale disasters",
+     "count": 4,
+     "touches_mask": true,
+     "count_untouched": 0
+    }
+   ]
+  },
+  {
+   "ft_un_rep_line": 15505,
+   "source": "Slovakia is also a signatory to all 12 United Nations anti-terrorism conventions.",
+   "source_line_count_in_ft_topk": 1,
+   "rep": 0.16666666666666666,
+   "rep_M1": 0.0,
+   "rep_M2": 0.16666666666666666,
+   "masked": "slovakia is also a signatory to all [num:12] united nations anti terrorism conventions",
+   "repeated_8grams_touching_mask": 1,
+   "repeated_8grams_untouched": 0,
+   "repeated_8grams_top4": [
+    {
+     "gram": "to all 12 united nations anti terrorism conventions",
+     "count": 2,
+     "touches_mask": true,
+     "count_untouched": 0
+    }
+   ]
+  },
+  {
+   "ft_un_rep_line": 17766,
+   "source": "3.1 The complainant claims that his extradition to the United States would constitute a breach of article 3 of the Convention.",
+   "source_line_count_in_ft_topk": 1,
+   "rep": 0.2,
+   "rep_M1": 0.0,
+   "rep_M2": 0.2,
+   "masked": "[num:3] [num:1] the complainant claims that his extradition to the united states would constitute a breach of article [num:3] of the convention",
+   "repeated_8grams_touching_mask": 3,
+   "repeated_8grams_untouched": 0,
+   "repeated_8grams_top4": [
+    {
+     "gram": "constitute a breach of article 3 of the",
+     "count": 12,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "a breach of article 3 of the convention",
+     "count": 12,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "would constitute a breach of article 3 of",
+     "count": 3,
+     "touches_mask": true,
+     "count_untouched": 0
+    }
+   ]
+  },
+  {
+   "ft_un_rep_line": 20024,
+   "source": "The Royal Cayman Islands Police Force comprises 295 officers and 40 support staff.",
+   "source_line_count_in_ft_topk": 2,
+   "rep": 1.0,
+   "rep_M1": 0.0,
+   "rep_M2": 1.0,
+   "masked": "the royal cayman islands police force comprises [num:295] officers and [num:40] support staff",
+   "repeated_8grams_touching_mask": 6,
+   "repeated_8grams_untouched": 0,
+   "repeated_8grams_top4": [
+    {
+     "gram": "the royal cayman islands police force comprises 295",
+     "count": 2,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "royal cayman islands police force comprises 295 officers",
+     "count": 2,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "cayman islands police force comprises 295 officers and",
+     "count": 2,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "islands police force comprises 295 officers and 40",
+     "count": 2,
+     "touches_mask": true,
+     "count_untouched": 0
+    }
+   ]
+  },
+  {
+   "ft_un_rep_line": 28438,
+   "source": "The report covers the period from July 2006 to June 2007.",
+   "source_line_count_in_ft_topk": 1,
+   "rep": 0.25,
+   "rep_M1": 0.0,
+   "rep_M2": 1.0,
+   "masked": "the report covers the period from [date:july] [date:2006] to [date:june] [date:2007]",
+   "repeated_8grams_touching_mask": 1,
+   "repeated_8grams_untouched": 0,
+   "repeated_8grams_top4": [
+    {
+     "gram": "the period from july 2006 to june 2007",
+     "count": 3,
+     "touches_mask": true,
+     "count_untouched": 0
+    }
+   ]
+  },
+  {
+   "ft_un_rep_line": 53609,
+   "source": "On average, LDCs accounted for 0.5 per cent of world exports and 0.7 per cent of world imports.",
+   "source_line_count_in_ft_topk": 2,
+   "rep": 1.0,
+   "rep_M1": 0.0,
+   "rep_M2": 1.0,
+   "masked": "on average ldcs accounted for [num:0] [num:5] per cent of world exports and [num:0] [num:7] per cent of world imports",
+   "repeated_8grams_touching_mask": 13,
+   "repeated_8grams_untouched": 0,
+   "repeated_8grams_top4": [
+    {
+     "gram": "0 5 per cent of world exports and",
+     "count": 6,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "5 per cent of world exports and 0",
+     "count": 6,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "per cent of world exports and 0 7",
+     "count": 6,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "cent of world exports and 0 7 per",
+     "count": 6,
+     "touches_mask": true,
+     "count_untouched": 0
+    }
+   ]
+  },
+  {
+   "ft_un_rep_line": 55028,
+   "source": "The cost is estimated to be $1,552.8 million, reflecting a $503.8 million increase over the initial estimates.",
+   "source_line_count_in_ft_topk": 1,
+   "rep": 1.0,
+   "rep_M1": 0.0,
+   "rep_M2": 1.0,
+   "masked": "the cost is estimated to be [num:1] [num:552] [num:8] million reflecting a [num:503] [num:8] million increase over the initial estimates",
+   "repeated_8grams_touching_mask": 13,
+   "repeated_8grams_untouched": 0,
+   "repeated_8grams_top4": [
+    {
+     "gram": "the cost is estimated to be 1 552",
+     "count": 2,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "cost is estimated to be 1 552 8",
+     "count": 2,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "is estimated to be 1 552 8 million",
+     "count": 2,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "estimated to be 1 552 8 million reflecting",
+     "count": 2,
+     "touches_mask": true,
+     "count_untouched": 0
+    }
+   ]
+  },
+  {
+   "ft_un_rep_line": 58639,
+   "source": "The Convention was ratified by Brazil on 18 November 1952.",
+   "source_line_count_in_ft_topk": 1,
+   "rep": 0.3333333333333333,
+   "rep_M1": 0.0,
+   "rep_M2": 1.0,
+   "masked": "the convention was ratified by brazil on [date:18] [date:november] [date:1952]",
+   "repeated_8grams_touching_mask": 1,
+   "repeated_8grams_untouched": 0,
+   "repeated_8grams_top4": [
+    {
+     "gram": "the convention was ratified by brazil on 18",
+     "count": 2,
+     "touches_mask": true,
+     "count_untouched": 0
+    }
+   ]
+  },
+  {
+   "ft_un_rep_line": 63270,
+   "source": "This principle is also reflected in Principle 10 of the Rio Declaration and in Principle 23 of the World Charter for Nature.",
+   "source_line_count_in_ft_topk": 2,
+   "rep": 1.0,
+   "rep_M1": 0.0,
+   "rep_M2": 1.0,
+   "masked": "this principle is also reflected in principle [num:10] of the rio declaration and in principle [num:23] of the world charter for nature",
+   "repeated_8grams_touching_mask": 15,
+   "repeated_8grams_untouched": 0,
+   "repeated_8grams_top4": [
+    {
+     "gram": "this principle is also reflected in principle 10",
+     "count": 4,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "principle is also reflected in principle 10 of",
+     "count": 4,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "is also reflected in principle 10 of the",
+     "count": 4,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "also reflected in principle 10 of the rio",
+     "count": 4,
+     "touches_mask": true,
+     "count_untouched": 0
+    }
+   ]
+  },
+  {
+   "ft_un_rep_line": 73948,
+   "source": "According to 1998 estimates, Anguilla has a total of 279 kilometres of motorable roads, of which 253 are paved.",
+   "source_line_count_in_ft_topk": 1,
+   "rep": 0.4166666666666667,
+   "rep_M1": 0.0,
+   "rep_M2": 0.4166666666666667,
+   "masked": "according to [num:1998] estimates anguilla has a total of [num:279] kilometres of motorable roads of which [num:253] are paved",
+   "repeated_8grams_touching_mask": 5,
+   "repeated_8grams_untouched": 0,
+   "repeated_8grams_top4": [
+    {
+     "gram": "according to 1998 estimates anguilla has a total",
+     "count": 2,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "to 1998 estimates anguilla has a total of",
+     "count": 2,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "1998 estimates anguilla has a total of 279",
+     "count": 2,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "estimates anguilla has a total of 279 kilometres",
+     "count": 2,
+     "touches_mask": true,
+     "count_untouched": 0
+    }
+   ]
+  },
+  {
+   "ft_un_rep_line": 129260,
+   "source": "Pursuant to General Assembly decision 48/432 of 20 December 1993, 3 May has been declared World Press Freedom Day.",
+   "source_line_count_in_ft_topk": 2,
+   "rep": 1.0,
+   "rep_M1": 0.0,
+   "rep_M2": 1.0,
+   "masked": "pursuant to general assembly decision [num:48] [num:432] of [date:20] [date:december] [date:1993] [date:3] [date:may] has been declared world press freedom day",
+   "repeated_8grams_touching_mask": 13,
+   "repeated_8grams_untouched": 0,
+   "repeated_8grams_top4": [
+    {
+     "gram": "pursuant to general assembly decision 48 432 of",
+     "count": 2,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "to general assembly decision 48 432 of 20",
+     "count": 2,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "general assembly decision 48 432 of 20 december",
+     "count": 2,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "assembly decision 48 432 of 20 december 1993",
+     "count": 2,
+     "touches_mask": true,
+     "count_untouched": 0
+    }
+   ]
+  },
+  {
+   "ft_un_rep_line": 162562,
+   "source": "In terms of official development assistance, along with most other donor countries, we are committed to reaching the target of 0.7 per cent of gross national product in ODA, consistent with the Millennium Development Goals.",
+   "source_line_count_in_ft_topk": 1,
+   "rep": 0.2413793103448276,
+   "rep_M1": 0.0,
+   "rep_M2": 0.27586206896551724,
+   "masked": "in terms of official development assistance along with most other donor countries we are committed to reaching the target of [num:0] [num:7] per cent of gross national product in oda consistent with the millennium development goals",
+   "repeated_8grams_touching_mask": 7,
+   "repeated_8grams_untouched": 0,
+   "repeated_8grams_top4": [
+    {
+     "gram": "of 0 7 per cent of gross national",
+     "count": 32,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "target of 0 7 per cent of gross",
+     "count": 27,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "0 7 per cent of gross national product",
+     "count": 23,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "the target of 0 7 per cent of",
+     "count": 17,
+     "touches_mask": true,
+     "count_untouched": 0
+    }
+   ]
+  },
+  {
+   "ft_un_rep_line": 178422,
+   "source": "4.2 The State party maintains that the complainant did not exhaust all domestic remedies before submitting his complaint to the Committee.",
+   "source_line_count_in_ft_topk": 1,
+   "rep": 0.06666666666666667,
+   "rep_M1": 0.0,
+   "rep_M2": 0.13333333333333333,
+   "masked": "[num:4] [num:2] the state party maintains that the complainant did not exhaust all domestic remedies before submitting his complaint to the committee",
+   "repeated_8grams_touching_mask": 1,
+   "repeated_8grams_untouched": 0,
+   "repeated_8grams_top4": [
+    {
+     "gram": "4 2 the state party maintains that the",
+     "count": 4,
+     "touches_mask": true,
+     "count_untouched": 0
+    }
+   ]
+  },
+  {
+   "ft_un_rep_line": 184368,
+   "source": "For nearly half of the global population (3 billion people) who live on less than $2 a day, and the 1.5 billion who live in extreme poverty, poverty eradication is a dream.",
+   "source_line_count_in_ft_topk": 1,
+   "rep": 0.11538461538461539,
+   "rep_M1": 0.0,
+   "rep_M2": 0.11538461538461539,
+   "masked": "for nearly half of the global population [num:3] billion people who live on less than [num:2] a day and the [num:1] [num:5] billion who live in extreme poverty poverty eradication is a dream",
+   "repeated_8grams_touching_mask": 3,
+   "repeated_8grams_untouched": 0,
+   "repeated_8grams_top4": [
+    {
+     "gram": "live on less than 2 a day and",
+     "count": 4,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "people who live on less than 2 a",
+     "count": 2,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "who live on less than 2 a day",
+     "count": 2,
+     "touches_mask": true,
+     "count_untouched": 0
+    }
+   ]
+  },
+  {
+   "ft_un_rep_line": 196972,
+   "source": "Exceptions authorized owing to medical conditions, 1 July 2006-30 June 2008",
+   "source_line_count_in_ft_topk": 1,
+   "rep": 0.2,
+   "rep_M1": 0.0,
+   "rep_M2": 1.0,
+   "masked": "exceptions authorized owing to medical conditions [date:1] [date:july] [date:2006] [date:30] [date:june] [date:2008]",
+   "repeated_8grams_touching_mask": 1,
+   "repeated_8grams_untouched": 0,
+   "repeated_8grams_top4": [
+    {
+     "gram": "exceptions authorized owing to medical conditions 1 july",
+     "count": 5,
+     "touches_mask": true,
+     "count_untouched": 0
+    }
+   ]
+  },
+  {
+   "ft_un_rep_line": 201884,
+   "source": "For the current period, $418,200 was authorized, and for the period from 1 July 2001 to 30 June 2002, estimated requirements total $412,600 (see annex III to the present report).",
+   "source_line_count_in_ft_topk": 1,
+   "rep": 0.16,
+   "rep_M1": 0.0,
+   "rep_M2": 0.16,
+   "masked": "for the current period [num:418] [num:200] was authorized and for the period from [date:1] [date:july] [date:2001] to [date:30] [date:june] [date:2002] estimated requirements total [num:412] [num:600] see annex iii to the present report",
+   "repeated_8grams_touching_mask": 4,
+   "repeated_8grams_untouched": 0,
+   "repeated_8grams_top4": [
+    {
+     "gram": "period from 1 july 2001 to 30 june",
+     "count": 12,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "from 1 july 2001 to 30 june 2002",
+     "count": 12,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "for the period from 1 july 2001 to",
+     "count": 11,
+     "touches_mask": true,
+     "count_untouched": 0
+    },
+    {
+     "gram": "the period from 1 july 2001 to 30",
+     "count": 11,
+     "touches_mask": true,
+     "count_untouched": 0
+    }
+   ]
+  }
+ ],
+ "examples_ft_un_div_gain_rep_under_M2": [
+  {
+   "ft_un_div_line": 1187,
+   "source": "World population is projected to grow from 6.5 billion in 2005 to more than 9 billion by 2050, and indications are that the increase will take place entirely in developing countries.",
+   "rep_M2": 0.16,
+   "masked": "world population is projected to grow from [num:6] [num:5] billion in [num:2005] to more than [num:9] billion by [num:2050] and indications are that the increase will take place entirely in developing countries"
+  },
+  {
+   "ft_un_div_line": 7993,
+   "source": "Agriculture contributed about 33 per cent of the GDP in 2005-2007 as compared to 36 per cent 10 years earlier.",
+   "rep_M2": 0.35714285714285715,
+   "masked": "agriculture contributed about [num:33] per cent of the gdp in [num:2005] [num:2007] as compared to [num:36] per cent [num:10] years earlier"
+  },
+  {
+   "ft_un_div_line": 8960,
+   "source": "Pre-school enrolment declined by 36 per cent between 1990 and 1999.",
+   "rep_M2": 0.4,
+   "masked": "pre school enrolment declined by [num:36] per cent between [num:1990] and [num:1999]"
+  },
+  {
+   "ft_un_div_line": 12363,
+   "source": "Opium seizures in 2007 increased by more than one third in the United States, amounting to 431 kg (up from 300 kg in 2006), and remained essentially stable in Canada, at 120 kg.",
+   "rep_M2": 0.11538461538461539,
+   "masked": "opium seizures in [num:2007] increased by more than one third in the united states amounting to [num:431] kg up from [num:300] kg in [num:2006] and remained essentially stable in canada at [num:120] kg"
+  },
+  {
+   "ft_un_div_line": 24078,
+   "source": "Two other NGOs stated that infant mortality was two to three times higher among Tibetans than among Chinese citizens, that Tibetan social services were less developed, and that 80 per cent of Tibetans were illiterate, compared with 25 per cent of the Chinese population.",
+   "rep_M2": 0.02702702702702703,
+   "masked": "two other ngos stated that infant mortality was two to three times higher among tibetans than among chinese citizens that tibetan social services were less developed and that [num:80] per cent of tibetans were illiterate compared with [num:25] per cent of the chinese population"
+  },
+  {
+   "ft_un_div_line": 27251,
+   "source": "Results of the survey indicated there were a total of 450 people with different types of disabilities, of which 150 of these are children under 18 years of age.",
+   "rep_M2": 0.13636363636363635,
+   "masked": "results of the survey indicated there were a total of [num:450] people with different types of disabilities of which [num:150] of these are children under [num:18] years of age"
+  },
+  {
+   "ft_un_div_line": 32420,
+   "source": "The Survey reports that over the period 1998-2005, only four countries recorded average growth rates of more than 7 per cent.  These are: Equatorial Guinea (22.3 per cent), Chad (9.7 per cent), Mozambique (8.9 per cent) and Angola (8.2 per cent).",
+   "rep_M2": 0.07692307692307693,
+   "masked": "the survey reports that over the period [num:1998] [num:2005] only four countries recorded average growth rates of more than [num:7] per cent these are equatorial guinea [num:22] [num:3] per cent chad [num:9] [num:7] per cent mozambique [num:8] [num:9] per cent and angola [num:8] [num:2] per cent"
+  },
+  {
+   "ft_un_div_line": 115739,
+   "source": "The amount of PLN 242 372 187 was spent, including PLN 11 814 822 in the rural areas (48 per cent of the funds spent).",
+   "rep_M2": 0.1111111111111111,
+   "masked": "the amount of pln [num:242] [num:372] [num:187] was spent including pln [num:11] [num:814] [num:822] in the rural areas [num:48] per cent of the funds spent"
+  },
+  {
+   "ft_un_div_line": 143425,
+   "source": "The staffing of regional and country offices had improved: the vacancy ratio of Professional posts had been reduced from 47 to 20 per cent, and to 11 per cent for international Professional posts.",
+   "rep_M2": 0.038461538461538464,
+   "masked": "the staffing of regional and country offices had improved the vacancy ratio of professional posts had been reduced from [num:47] to [num:20] per cent and to [num:11] per cent for international professional posts"
+  },
+  {
+   "ft_un_div_line": 145004,
+   "source": "In the Director category, women accounted for 44.7 per cent of recruits (17 of 38) and in the Professional category, 41.9 per cent were women (215 of 513).",
+   "rep_M2": 1.0,
+   "masked": "in the director category women accounted for [num:44] [num:7] per cent of recruits [num:17] of [num:38] and in the professional category [num:41] [num:9] per cent were women [num:215] of [num:513]"
+  }
+ ],
+ "ft_topk_symbol_matches": {
+  "total": 1740,
+  "distinct": 1324,
+  "top30": [
+   [
+    "S/2007/757",
+    13
+   ],
+   [
+    "S/2008/39",
+    12
+   ],
+   [
+    "S/2007/567",
+    7
+   ],
+   [
+    "A/61/299",
+    7
+   ],
+   [
+    "S/2009/158",
+    7
+   ],
+   [
+    "A/AC.105/788",
+    7
+   ],
+   [
+    "S/2005/740",
+    7
+   ],
+   [
+    "S/2008/622",
+    7
+   ],
+   [
+    "S/2008/159",
+    6
+   ],
+   [
+    "S/PRST/2004/43",
+    6
+   ],
+   [
+    "S/2000/809",
+    6
+   ],
+   [
+    "S/2007/643",
+    6
+   ],
+   [
+    "A/60/825",
+    6
+   ],
+   [
+    "S/2005/525",
+    5
+   ],
+   [
+    "S/1999/957",
+    5
+   ],
+   [
+    "A/54/2000",
+    5
+   ],
+   [
+    "S/2005/699",
+    5
+   ],
+   [
+    "S/2005/72",
+    5
+   ],
+   [
+    "S/PRST/2005/32",
+    5
+   ],
+   [
+    "Hawk/UH60",
+    4
+   ],
+   [
+    "S/2002/1299",
+    4
+   ],
+   [
+    "S/2006/826",
+    4
+   ],
+   [
+    "S/2009/135",
+    4
+   ],
+   [
+    "S/2009/362",
+    4
+   ],
+   [
+    "S/PRST/2007/7",
+    4
+   ],
+   [
+    "S/2007/619",
+    4
+   ],
+   [
+    "S/2009/590",
+    4
+   ],
+   [
+    "S/2004/431",
+    4
+   ],
+   [
+    "S/2009/465",
+    4
+   ],
+   [
+    "S/2005/69",
+    4
+   ]
+  ],
+  "series_codes": [
+   [
+    "S",
+    1252
+   ],
+   [
+    "A",
+    312
+   ],
+   [
+    "E",
+    94
+   ],
+   [
+    "CEDAW",
+    9
+   ],
+   [
+    "CAT",
+    7
+   ],
+   [
+    "CRC",
+    5
+   ],
+   [
+    "Hawk",
+    4
+   ],
+   [
+    "HBP",
+    4
+   ],
+   [
+    "TRANS",
+    4
+   ],
+   [
+    "CCPR",
+    4
+   ],
+   [
+    "ST",
+    3
+   ],
+   [
+    "WHO",
+    3
+   ],
+   [
+    "CERD",
+    3
+   ],
+   [
+    "ISBA",
+    2
+   ],
+   [
+    "SC",
+    2
+   ],
+   [
+    "ECE",
+    2
+   ],
+   [
+    "UNCTAD",
+    2
+   ],
+   [
+    "DP",
+    2
+   ],
+   [
+    "II",
+    2
+   ],
+   [
+    "SG",
+    2
+   ],
+   [
+    "AC.105",
+    2
+   ],
+   [
+    "INS",
+    1
+   ],
+   [
+    "PRST",
+    1
+   ],
+   [
+    "ENERGY",
+    1
+   ],
+   [
+    "Kwh",
+    1
+   ],
+   [
+    "CD",
+    1
+   ],
+   [
+    "UNODC",
+    1
+   ],
+   [
+    "O",
+    1
+   ],
+   [
+    "NT",
+    1
+   ],
+   [
+    "PAK",
+    1
+   ],
+   [
+    "ECA",
+    1
+   ],
+   [
+    "No.15",
+    1
+   ],
+   [
+    "XVII",
+    1
+   ],
+   [
+    "XVIII",
+    1
+   ],
+   [
+    "GA",
+    1
+   ],
+   [
+    "No.193",
+    1
+   ],
+   [
+    "No.1011",
+    1
+   ],
+   [
+    "VI",
+    1
+   ],
+   [
+    "IV",
+    1
+   ],
+   [
+    "XV",
+    1
+   ],
+   [
+    "HRI",
+    1
+   ]
+  ],
+  "not_A_E_S": [
+   [
+    "Hawk/UH60",
+    4
+   ],
+   [
+    "CAT/C/34/Add.6",
+    2
+   ],
+   [
+    "CCPR/C/20/Rev.2",
+    2
+   ],
+   [
+    "CCPR/C/79/Add.25",
+    2
+   ],
+   [
+    "CEDAW/C/LTU/4",
+    2
+   ],
+   [
+    "CEDAW/SP/2006/2",
+    2
+   ],
+   [
+    "CRC/C/118",
+    2
+   ],
+   [
+    "HBP/2003/6",
+    2
+   ],
+   [
+    "HBP/2005/6",
+    2
+   ],
+   [
+    "ISBA/12/C/11",
+    2
+   ],
+   [
+    "WHO/WHA/9",
+    2
+   ],
+   [
+    "AC.105/788",
+    1
+   ],
+   [
+    "AC.105/838",
+    1
+   ],
+   [
+    "CAT/C/12/Add.2",
+    1
+   ],
+   [
+    "CAT/C/33/Add.6",
+    1
+   ],
+   [
+    "CAT/C/54/Add.2",
+    1
+   ],
+   [
+    "CAT/C/7/Add.6",
+    1
+   ],
+   [
+    "CAT/C/ISR/4",
+    1
+   ],
+   [
+    "CD/1679",
+    1
+   ],
+   [
+    "CEDAW/C/CAN/5",
+    1
+   ],
+   [
+    "CEDAW/C/CAN/CO/7",
+    1
+   ],
+   [
+    "CEDAW/C/HUN/4-5",
+    1
+   ],
+   [
+    "CEDAW/C/POL/4-5",
+    1
+   ],
+   [
+    "CEDAW/C/SLV/6",
+    1
+   ],
+   [
+    "CERD/C/298/Add.4",
+    1
+   ],
+   [
+    "CERD/C/SR.1922",
+    1
+   ],
+   [
+    "CERD/C/SR/1806",
+    1
+   ],
+   [
+    "CRC/C/148",
+    1
+   ],
+   [
+    "CRC/C/41/Add.4/Rev.1",
+    1
+   ],
+   [
+    "CRC/C/41/Add.8",
+    1
+   ],
+   [
+    "DP/2003/28",
+    1
+   ],
+   [
+    "DP/2004/6",
+    1
+   ],
+   [
+    "ECA/SDD/06/01",
+    1
+   ],
+   [
+    "ECE/CEP/104",
+    1
+   ],
+   [
+    "ECE/HBP/2009/6",
+    1
+   ],
+   [
+    "ENERGY/2003/8",
+    1
+   ],
+   [
+    "GA/PAL/1017",
+    1
+   ],
+   [
+    "HRI/ICM/2003/4",
+    1
+   ],
+   [
+    "II/5b",
+    1
+   ],
+   [
+    "II/8",
+    1
+   ],
+   [
+    "INS/ECAM3/2007",
+    1
+   ],
+   [
+    "IV/7",
+    1
+   ],
+   [
+    "Kwh/m2/day",
+    1
+   ],
+   [
+    "NT/2000",
+    1
+   ],
+   [
+    "No.1011/2001",
+    1
+   ],
+   [
+    "No.15/2003",
+    1
+   ],
+   [
+    "No.193/1999",
+    1
+   ],
+   [
+    "O/02",
+    1
+   ],
+   [
+    "PAK/99/A01",
+    1
+   ],
+   [
+    "PRST/2006/28",
+    1
+   ],
+   [
+    "SC/7516",
+    1
+   ],
+   [
+    "SC/8050",
+    1
+   ],
+   [
+    "SG/SM/7958",
+    1
+   ],
+   [
+    "SG/SM/8020",
+    1
+   ],
+   [
+    "ST/AI/2001/6",
+    1
+   ],
+   [
+    "ST/SGB/2005/21",
+    1
+   ],
+   [
+    "ST/SGB/2007/11",
+    1
+   ],
+   [
+    "TRANS/2000/7",
+    1
+   ],
+   [
+    "TRANS/2002/5",
+    1
+   ],
+   [
+    "TRANS/WP.15/185/Add.3",
+    1
+   ],
+   [
+    "TRANS/WP.6/2001/2",
+    1
+   ],
+   [
+    "UNCTAD/COM/70",
+    1
+   ],
+   [
+    "UNCTAD/GDS/2009/1",
+    1
+   ],
+   [
+    "UNODC/HONLAP/2007/5",
+    1
+   ],
+   [
+    "VI/41",
+    1
+   ],
+   [
+    "WHO/20",
+    1
+   ],
+   [
+    "XV/15",
+    1
+   ],
+   [
+    "XVII/42",
+    1
+   ],
+   [
+    "XVIII/4",
+    1
+   ]
+  ]
+ },
+ "ft_topk_date_shapes": {
+  "total": 64409,
+  "top20": [
+   [
+    "00 December 0000",
+    2674
+   ],
+   [
+    "00 June 0000",
+    2595
+   ],
+   [
+    "00 September 0000",
+    2252
+   ],
+   [
+    "December 0000",
+    2164
+   ],
+   [
+    "June 0000",
+    1941
+   ],
+   [
+    "September 0000",
+    1924
+   ],
+   [
+    "00 July 0000",
+    1702
+   ],
+   [
+    "January 0000",
+    1686
+   ],
+   [
+    "October 0000",
+    1573
+   ],
+   [
+    "March 0000",
+    1571
+   ],
+   [
+    "May 0000",
+    1514
+   ],
+   [
+    "July 0000",
+    1481
+   ],
+   [
+    "00 April 0000",
+    1446
+   ],
+   [
+    "April 0000",
+    1422
+   ],
+   [
+    "00 March 0000",
+    1414
+   ],
+   [
+    "00 May 0000",
+    1396
+   ],
+   [
+    "November 0000",
+    1386
+   ],
+   [
+    "00 October 0000",
+    1305
+   ],
+   [
+    "00 January 0000",
+    1271
+   ],
+   [
+    "00 November 0000",
+    1247
+   ]
+  ]
+ },
+ "built_with": {
+  "python": "3.14.3",
+  "unidata_version": "16.0.0",
+  "numpy": "2.4.5",
+  "machine": "arm64",
+  "node": "Workstation.local",
+  "workers": 4,
+  "seconds": 67.5
+ },
+ "inputs_sha256": {
+  "e05_src/ft_topk.en": "787339d08e0c47d9960cb263757edafd844ec80a45875ac083845a02a20ff2b2",
+  "e05_src/ft_topk.source": "a4ad45860c92eae6b512c4a7178fe78fc92f00d4b9551d00a6637c80079244ca",
+  "e05_src/ft_random.en": "937d4d4ab2683b585942107d4d260badef54a5a136e3caf97ef6da48d93552a0",
+  "e05_src/ft_random.source": "fd675a1948ab4e30dce05aae4c85d2432aec99549c05fb794903a49e9b0b6923",
+  "phase0_e05/manifest.json": "979dafd76344444c56cad9afc52e0ec7ba7ebb74c73115cbeb237583419b8eb2",
+  "phase0_e05/ft_topk_div.en": "321474497238a74704fd29653878814e1742d419e740e0148fca4191742c47fa",
+  "phase0_e05/ft_topk_div.fr": "2fdc192521c64f966bcbb1a321fd99ff55d0dce7a661fd60837b01e723d0357f",
+  "phase0_e05/ft_topk_rep.en": "6db2a842ee9fbb21d9806738861ac0e94734310121d4ff5f5d3d684a442fa386",
+  "phase0_e05/ft_topk_rep.fr": "0598ddfdeba978bbdbc354594889630dc175bb7ea0ab401bdce51a48c122ec75",
+  "phase0_e05/ft_un_div.en": "51d9ec1157c58591a7b25b2a1bde52e9dc93342a34c55e55547f0e3857ba94da",
+  "phase0_e05/ft_un_div.fr": "1957872adf3f96b8e7fe551eeeae42bbd38f03811511e013f9017b65b954a7e1",
+  "phase0_e05/ft_un_rep.en": "940cde0f051d6b473c55a6771af64900a20c9c52d66e1a4772e18a5bf9cafe68",
+  "phase0_e05/ft_un_rep.fr": "9373be1fc7afb86a1b5ebf76d7cb567bde0ef349443ca9c3c6a87c175185edbd",
+  "phase0_e05/ft_un_random.en": "80fa6aea32f342cc43adec8e66063f8f08c20b6e3b66a60b0bfd7baf3e35c59c",
+  "phase0_e05/ft_un_random.fr": "1b54a882d989153697417b1f4b2300b81500acac258e29c542776d39a32094c0",
+  "phase0_e05/ft_random_small.en": "d75365502e1db21ad7975150c1a7a6b6f680e2432e9473dc5d3041a152881f84",
+  "phase0_e05/ft_random_small.fr": "7072a04327a56ddd399ca48d885b6d2cdde737bca4db8b7fd3d01672ea8bb0f9"
+ }
+}

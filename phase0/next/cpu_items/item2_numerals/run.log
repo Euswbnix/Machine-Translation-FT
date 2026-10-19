@@ -1,0 +1,11 @@
+sha256: 17 inputs match their pins
+ft_topk: 926,999 rows, 14,345,949 8-grams, 13,066,603 types (10.9 s)
+ft_random: 926,999 rows, 18,192,557 8-grams, 17,053,644 types (15.5 s)
+reproduction: 21 checks equal E0.5's manifest exactly
+ft_topk_div      rep 0.0000 (0 >0) | M1 0.0000 (0 >0) | M2 0.0114 (14,878 >0) | masked tokens 3.04% (num 2.40 date 0.63 sym 0.013)
+ft_topk_rep      rep 0.4174 (242,022 >0) | M1 0.3681 (230,313 >0) | M2 0.4393 (241,998 >0) | masked tokens 3.12% (num 1.95 date 1.10 sym 0.071)
+ft_un_div        rep 0.0000 (0 >0) | M1 0.0000 (0 >0) | M2 0.0142 (16,024 >0) | masked tokens 3.46% (num 2.71 date 0.73 sym 0.016)
+ft_un_rep        rep 0.4332 (214,489 >0) | M1 0.3817 (204,134 >0) | M2 0.4559 (214,470 >0) | masked tokens 3.23% (num 1.99 date 1.17 sym 0.079)
+ft_un_random     rep 0.0866 (54,628 >0) | M1 0.0727 (51,152 >0) | M2 0.1094 (62,768 >0) | masked tokens 4.02% (num 2.23 date 1.01 sym 0.777)
+ft_random_small  rep 0.0648 (47,694 >0) | M1 0.0549 (44,897 >0) | M2 0.0811 (54,486 >0) | masked tokens 3.24% (num 1.94 date 0.78 sym 0.522)
+wrote /Users/euswbnic/cpu_items/item2_numerals/results.json in 68 s

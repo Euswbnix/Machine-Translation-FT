@@ -1,0 +1,2059 @@
+{
+ "compared": 342,
+ "disagree": 0,
+ "disagreements": [],
+ "all": [
+  {
+   "what": "ft_un_rep rows",
+   "builder": 214489,
+   "checker": 214489,
+   "ok": true
+  },
+  {
+   "what": "ft_un_rep rows dropped by trainer",
+   "builder": 0,
+   "checker": 0,
+   "ok": true
+  },
+  {
+   "what": "ft_un_rep source piece types",
+   "builder": 17310,
+   "checker": 17310,
+   "ok": true
+  },
+  {
+   "what": "ft_un_rep source coverage %",
+   "builder": 54.10051256407051,
+   "checker": 54.100512564070506,
+   "ok": true
+  },
+  {
+   "what": "ft_un_rep source piece tokens",
+   "builder": 6358582,
+   "checker": 6358582,
+   "ok": true
+  },
+  {
+   "what": "ft_un_rep source unk tokens",
+   "builder": 0,
+   "checker": 0,
+   "ok": true
+  },
+  {
+   "what": "ft_un_rep source types k>=2",
+   "builder": 16181,
+   "checker": 16181,
+   "ok": true
+  },
+  {
+   "what": "ft_un_rep source types k>=5",
+   "builder": 14044,
+   "checker": 14044,
+   "ok": true
+  },
+  {
+   "what": "ft_un_rep source types k>=20",
+   "builder": 9846,
+   "checker": 9846,
+   "ok": true
+  },
+  {
+   "what": "ft_un_rep source matched-piece types",
+   "builder": 17301,
+   "checker": 17301,
+   "ok": true
+  },
+  {
+   "what": "ft_un_rep source uncovered pretraining share (ppm, all pretraining rows)",
+   "builder": 17247.25232728726,
+   "checker": 17247.25232728726,
+   "ok": true
+  },
+  {
+   "what": "ft_un_rep source coverage of side vocab",
+   "builder": 0.5577071787601495,
+   "checker": 0.5577071787601495,
+   "ok": true
+  },
+  {
+   "what": "ft_un_rep source set types outside side vocab",
+   "builder": 1,
+   "checker": 1,
+   "ok": true
+  },
+  {
+   "what": "ft_un_rep target piece types",
+   "builder": 18979,
+   "checker": 18979,
+   "ok": true
+  },
+  {
+   "what": "ft_un_rep target coverage %",
+   "builder": 59.316789598699835,
+   "checker": 59.316789598699835,
+   "ok": true
+  },
+  {
+   "what": "ft_un_rep target piece tokens",
+   "builder": 7731883,
+   "checker": 7731883,
+   "ok": true
+  },
+  {
+   "what": "ft_un_rep target unk tokens",
+   "builder": 1,
+   "checker": 1,
+   "ok": true
+  },
+  {
+   "what": "ft_un_rep target types k>=2",
+   "builder": 17764,
+   "checker": 17764,
+   "ok": true
+  },
+  {
+   "what": "ft_un_rep target types k>=5",
+   "builder": 15612,
+   "checker": 15612,
+   "ok": true
+  },
+  {
+   "what": "ft_un_rep target types k>=20",
+   "builder": 11382,
+   "checker": 11382,
+   "ok": true
+  },
+  {
+   "what": "ft_un_rep target matched-piece types",
+   "builder": 18976,
+   "checker": 18976,
+   "ok": true
+  },
+  {
+   "what": "ft_un_rep target uncovered pretraining share (ppm, all pretraining rows)",
+   "builder": 23346.74044757558,
+   "checker": 23346.74044757558,
+   "ok": true
+  },
+  {
+   "what": "ft_un_rep target coverage of side vocab",
+   "builder": 0.5988010727244045,
+   "checker": 0.5988010727244045,
+   "ok": true
+  },
+  {
+   "what": "ft_un_rep target set types outside side vocab",
+   "builder": 0,
+   "checker": 0,
+   "ok": true
+  },
+  {
+   "what": "ft_un_rep source words",
+   "builder": 5606498,
+   "checker": 5606498,
+   "ok": true
+  },
+  {
+   "what": "ft_un_rep french words",
+   "builder": 6576020,
+   "checker": 6576020,
+   "ok": true
+  },
+  {
+   "what": "ft_un_rep source word types D11",
+   "builder": 25134,
+   "checker": 25134,
+   "ok": true
+  },
+  {
+   "what": "ft_un_rep french types @6.5M D12",
+   "builder": 32684,
+   "checker": 32684,
+   "ok": true
+  },
+  {
+   "what": "ft_un_rep source types @5.6M",
+   "builder": 25131,
+   "checker": 25131,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div rows",
+   "builder": 214489,
+   "checker": 214489,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div rows dropped by trainer",
+   "builder": 0,
+   "checker": 0,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div source piece types",
+   "builder": 18576,
+   "checker": 18576,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div source coverage %",
+   "builder": 58.05725715714465,
+   "checker": 58.05725715714464,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div source piece tokens",
+   "builder": 6447618,
+   "checker": 6447618,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div source unk tokens",
+   "builder": 5,
+   "checker": 5,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div source types k>=2",
+   "builder": 17310,
+   "checker": 17310,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div source types k>=5",
+   "builder": 15280,
+   "checker": 15280,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div source types k>=20",
+   "builder": 11166,
+   "checker": 11166,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div source matched-piece types",
+   "builder": 18543,
+   "checker": 18543,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div source uncovered pretraining share (ppm, all pretraining rows)",
+   "builder": 11028.713840098028,
+   "checker": 11028.713840098028,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div source coverage of side vocab",
+   "builder": 0.5984340765562572,
+   "checker": 0.5984340765562572,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div source set types outside side vocab",
+   "builder": 3,
+   "checker": 3,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div target piece types",
+   "builder": 20307,
+   "checker": 20307,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div target coverage %",
+   "builder": 63.46730841355169,
+   "checker": 63.46730841355169,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div target piece tokens",
+   "builder": 7904543,
+   "checker": 7904543,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div target unk tokens",
+   "builder": 1,
+   "checker": 1,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div target types k>=2",
+   "builder": 18878,
+   "checker": 18878,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div target types k>=5",
+   "builder": 16736,
+   "checker": 16736,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div target types k>=20",
+   "builder": 12685,
+   "checker": 12685,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div target matched-piece types",
+   "builder": 20271,
+   "checker": 20271,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div target uncovered pretraining share (ppm, all pretraining rows)",
+   "builder": 17567.239811740717,
+   "checker": 17567.239811740717,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div target coverage of side vocab",
+   "builder": 0.6406688752169112,
+   "checker": 0.6406688752169112,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div target set types outside side vocab",
+   "builder": 1,
+   "checker": 1,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div source words",
+   "builder": 5606498,
+   "checker": 5606498,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div french words",
+   "builder": 6656806,
+   "checker": 6656806,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div source word types D11",
+   "builder": 33874,
+   "checker": 33874,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div french types @6.5M D12",
+   "builder": 43021,
+   "checker": 43021,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div source types @5.6M",
+   "builder": 33855,
+   "checker": 33855,
+   "ok": true
+  },
+  {
+   "what": "ft_un_random rows",
+   "builder": 214489,
+   "checker": 214489,
+   "ok": true
+  },
+  {
+   "what": "ft_un_random rows dropped by trainer",
+   "builder": 0,
+   "checker": 0,
+   "ok": true
+  },
+  {
+   "what": "ft_un_random source piece types",
+   "builder": 20805,
+   "checker": 20805,
+   "ok": true
+  },
+  {
+   "what": "ft_un_random source coverage %",
+   "builder": 65.02375296912113,
+   "checker": 65.02375296912113,
+   "ok": true
+  },
+  {
+   "what": "ft_un_random source piece tokens",
+   "builder": 6679708,
+   "checker": 6679708,
+   "ok": true
+  },
+  {
+   "what": "ft_un_random source unk tokens",
+   "builder": 7,
+   "checker": 7,
+   "ok": true
+  },
+  {
+   "what": "ft_un_random source types k>=2",
+   "builder": 19588,
+   "checker": 19588,
+   "ok": true
+  },
+  {
+   "what": "ft_un_random source types k>=5",
+   "builder": 18006,
+   "checker": 18006,
+   "ok": true
+  },
+  {
+   "what": "ft_un_random source types k>=20",
+   "builder": 14368,
+   "checker": 14368,
+   "ok": true
+  },
+  {
+   "what": "ft_un_random source matched-piece types",
+   "builder": 20745,
+   "checker": 20745,
+   "ok": true
+  },
+  {
+   "what": "ft_un_random source uncovered pretraining share (ppm, all pretraining rows)",
+   "builder": 4476.4847618338645,
+   "checker": 4476.4847618338645,
+   "ok": true
+  },
+  {
+   "what": "ft_un_random source coverage of side vocab",
+   "builder": 0.6702538986982859,
+   "checker": 0.6702538986982859,
+   "ok": true
+  },
+  {
+   "what": "ft_un_random source set types outside side vocab",
+   "builder": 3,
+   "checker": 3,
+   "ok": true
+  },
+  {
+   "what": "ft_un_random target piece types",
+   "builder": 24300,
+   "checker": 24300,
+   "ok": true
+  },
+  {
+   "what": "ft_un_random target coverage %",
+   "builder": 75.94699337417177,
+   "checker": 75.94699337417177,
+   "ok": true
+  },
+  {
+   "what": "ft_un_random target piece tokens",
+   "builder": 8109783,
+   "checker": 8109783,
+   "ok": true
+  },
+  {
+   "what": "ft_un_random target unk tokens",
+   "builder": 4,
+   "checker": 4,
+   "ok": true
+  },
+  {
+   "what": "ft_un_random target types k>=2",
+   "builder": 22510,
+   "checker": 22510,
+   "ok": true
+  },
+  {
+   "what": "ft_un_random target types k>=5",
+   "builder": 20225,
+   "checker": 20225,
+   "ok": true
+  },
+  {
+   "what": "ft_un_random target types k>=20",
+   "builder": 15828,
+   "checker": 15828,
+   "ok": true
+  },
+  {
+   "what": "ft_un_random target matched-piece types",
+   "builder": 24212,
+   "checker": 24212,
+   "ok": true
+  },
+  {
+   "what": "ft_un_random target uncovered pretraining share (ppm, all pretraining rows)",
+   "builder": 9446.435107253561,
+   "checker": 9446.435107253561,
+   "ok": true
+  },
+  {
+   "what": "ft_un_random target coverage of side vocab",
+   "builder": 0.7666193405899985,
+   "checker": 0.7666193405899985,
+   "ok": true
+  },
+  {
+   "what": "ft_un_random target set types outside side vocab",
+   "builder": 2,
+   "checker": 2,
+   "ok": true
+  },
+  {
+   "what": "ft_un_random source words",
+   "builder": 5606498,
+   "checker": 5606498,
+   "ok": true
+  },
+  {
+   "what": "ft_un_random french words",
+   "builder": 6661746,
+   "checker": 6661746,
+   "ok": true
+  },
+  {
+   "what": "ft_un_random source word types D11",
+   "builder": 58441,
+   "checker": 58441,
+   "ok": true
+  },
+  {
+   "what": "ft_un_random french types @6.5M D12",
+   "builder": 69320,
+   "checker": 69320,
+   "ok": true
+  },
+  {
+   "what": "ft_un_random source types @5.6M",
+   "builder": 58420,
+   "checker": 58420,
+   "ok": true
+  },
+  {
+   "what": "A_narrow rows",
+   "builder": 214489,
+   "checker": 214489,
+   "ok": true
+  },
+  {
+   "what": "A_narrow rows dropped by trainer",
+   "builder": 0,
+   "checker": 0,
+   "ok": true
+  },
+  {
+   "what": "A_narrow source piece types",
+   "builder": 19410,
+   "checker": 19410,
+   "ok": true
+  },
+  {
+   "what": "A_narrow source coverage %",
+   "builder": 60.66383297912239,
+   "checker": 60.66383297912239,
+   "ok": true
+  },
+  {
+   "what": "A_narrow source piece tokens",
+   "builder": 6526070,
+   "checker": 6526070,
+   "ok": true
+  },
+  {
+   "what": "A_narrow source unk tokens",
+   "builder": 2,
+   "checker": 2,
+   "ok": true
+  },
+  {
+   "what": "A_narrow source types k>=2",
+   "builder": 18585,
+   "checker": 18585,
+   "ok": true
+  },
+  {
+   "what": "A_narrow source types k>=5",
+   "builder": 16951,
+   "checker": 16951,
+   "ok": true
+  },
+  {
+   "what": "A_narrow source types k>=20",
+   "builder": 13179,
+   "checker": 13179,
+   "ok": true
+  },
+  {
+   "what": "A_narrow source matched-piece types",
+   "builder": 19376,
+   "checker": 19376,
+   "ok": true
+  },
+  {
+   "what": "A_narrow source uncovered pretraining share (ppm, all pretraining rows)",
+   "builder": 6735.58476959251,
+   "checker": 6735.5847695925095,
+   "ok": true
+  },
+  {
+   "what": "A_narrow source coverage of side vocab",
+   "builder": 0.6254027580873824,
+   "checker": 0.6254027580873823,
+   "ok": true
+  },
+  {
+   "what": "A_narrow source set types outside side vocab",
+   "builder": 0,
+   "checker": 0,
+   "ok": true
+  },
+  {
+   "what": "A_narrow target piece types",
+   "builder": 22283,
+   "checker": 22283,
+   "ok": true
+  },
+  {
+   "what": "A_narrow target coverage %",
+   "builder": 69.64308038504812,
+   "checker": 69.64308038504814,
+   "ok": true
+  },
+  {
+   "what": "A_narrow target piece tokens",
+   "builder": 8045971,
+   "checker": 8045971,
+   "ok": true
+  },
+  {
+   "what": "A_narrow target unk tokens",
+   "builder": 0,
+   "checker": 0,
+   "ok": true
+  },
+  {
+   "what": "A_narrow target types k>=2",
+   "builder": 20870,
+   "checker": 20870,
+   "ok": true
+  },
+  {
+   "what": "A_narrow target types k>=5",
+   "builder": 18761,
+   "checker": 18761,
+   "ok": true
+  },
+  {
+   "what": "A_narrow target types k>=20",
+   "builder": 14616,
+   "checker": 14616,
+   "ok": true
+  },
+  {
+   "what": "A_narrow target matched-piece types",
+   "builder": 22195,
+   "checker": 22195,
+   "ok": true
+  },
+  {
+   "what": "A_narrow target uncovered pretraining share (ppm, all pretraining rows)",
+   "builder": 12111.82118552796,
+   "checker": 12111.82118552796,
+   "ok": true
+  },
+  {
+   "what": "A_narrow target coverage of side vocab",
+   "builder": 0.703044644265657,
+   "checker": 0.703044644265657,
+   "ok": true
+  },
+  {
+   "what": "A_narrow target set types outside side vocab",
+   "builder": 0,
+   "checker": 0,
+   "ok": true
+  },
+  {
+   "what": "A_narrow source words",
+   "builder": 5606498,
+   "checker": 5606498,
+   "ok": true
+  },
+  {
+   "what": "A_narrow french words",
+   "builder": 6715356,
+   "checker": 6715356,
+   "ok": true
+  },
+  {
+   "what": "A_narrow source word types D11",
+   "builder": 33562,
+   "checker": 33562,
+   "ok": true
+  },
+  {
+   "what": "A_narrow french types @6.5M D12",
+   "builder": 43703,
+   "checker": 43703,
+   "ok": true
+  },
+  {
+   "what": "A_narrow source types @5.6M",
+   "builder": 33555,
+   "checker": 33555,
+   "ok": true
+  },
+  {
+   "what": "R0 rows",
+   "builder": 214489,
+   "checker": 214489,
+   "ok": true
+  },
+  {
+   "what": "R0 rows dropped by trainer",
+   "builder": 0,
+   "checker": 0,
+   "ok": true
+  },
+  {
+   "what": "R0 source piece types",
+   "builder": 20958,
+   "checker": 20958,
+   "ok": true
+  },
+  {
+   "what": "R0 source coverage %",
+   "builder": 65.50193774221778,
+   "checker": 65.50193774221778,
+   "ok": true
+  },
+  {
+   "what": "R0 source piece tokens",
+   "builder": 6690150,
+   "checker": 6690150,
+   "ok": true
+  },
+  {
+   "what": "R0 source unk tokens",
+   "builder": 7,
+   "checker": 7,
+   "ok": true
+  },
+  {
+   "what": "R0 source types k>=2",
+   "builder": 19711,
+   "checker": 19711,
+   "ok": true
+  },
+  {
+   "what": "R0 source types k>=5",
+   "builder": 18168,
+   "checker": 18168,
+   "ok": true
+  },
+  {
+   "what": "R0 source types k>=20",
+   "builder": 14464,
+   "checker": 14464,
+   "ok": true
+  },
+  {
+   "what": "R0 source matched-piece types",
+   "builder": 20885,
+   "checker": 20885,
+   "ok": true
+  },
+  {
+   "what": "R0 source uncovered pretraining share (ppm, all pretraining rows)",
+   "builder": 4229.123996544586,
+   "checker": 4229.123996544586,
+   "ok": true
+  },
+  {
+   "what": "R0 source coverage of side vocab",
+   "builder": 0.6750225544528934,
+   "checker": 0.6750225544528934,
+   "ok": true
+  },
+  {
+   "what": "R0 source set types outside side vocab",
+   "builder": 8,
+   "checker": 8,
+   "ok": true
+  },
+  {
+   "what": "R0 target piece types",
+   "builder": 24471,
+   "checker": 24471,
+   "ok": true
+  },
+  {
+   "what": "R0 target coverage %",
+   "builder": 76.48143517939742,
+   "checker": 76.48143517939742,
+   "ok": true
+  },
+  {
+   "what": "R0 target piece tokens",
+   "builder": 8194797,
+   "checker": 8194797,
+   "ok": true
+  },
+  {
+   "what": "R0 target unk tokens",
+   "builder": 1,
+   "checker": 1,
+   "ok": true
+  },
+  {
+   "what": "R0 target types k>=2",
+   "builder": 22645,
+   "checker": 22645,
+   "ok": true
+  },
+  {
+   "what": "R0 target types k>=5",
+   "builder": 20347,
+   "checker": 20347,
+   "ok": true
+  },
+  {
+   "what": "R0 target types k>=20",
+   "builder": 15965,
+   "checker": 15965,
+   "ok": true
+  },
+  {
+   "what": "R0 target matched-piece types",
+   "builder": 24354,
+   "checker": 24354,
+   "ok": true
+  },
+  {
+   "what": "R0 target uncovered pretraining share (ppm, all pretraining rows)",
+   "builder": 9205.497293493452,
+   "checker": 9205.497293493452,
+   "ok": true
+  },
+  {
+   "what": "R0 target coverage of side vocab",
+   "builder": 0.7720460640479571,
+   "checker": 0.7720460640479572,
+   "ok": true
+  },
+  {
+   "what": "R0 target set types outside side vocab",
+   "builder": 1,
+   "checker": 1,
+   "ok": true
+  },
+  {
+   "what": "R0 source words",
+   "builder": 5606498,
+   "checker": 5606498,
+   "ok": true
+  },
+  {
+   "what": "R0 french words",
+   "builder": 6716886,
+   "checker": 6716886,
+   "ok": true
+  },
+  {
+   "what": "R0 source word types D11",
+   "builder": 62000,
+   "checker": 62000,
+   "ok": true
+  },
+  {
+   "what": "R0 french types @6.5M D12",
+   "builder": 72574,
+   "checker": 72574,
+   "ok": true
+  },
+  {
+   "what": "R0 source types @5.6M",
+   "builder": 61958,
+   "checker": 61958,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_rep rows",
+   "builder": 242022,
+   "checker": 242022,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_rep rows dropped by trainer",
+   "builder": 0,
+   "checker": 0,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_rep source piece types",
+   "builder": 17966,
+   "checker": 17966,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_rep source coverage %",
+   "builder": 56.150768846105755,
+   "checker": 56.15076884610576,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_rep source piece tokens",
+   "builder": 7221853,
+   "checker": 7221853,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_rep source unk tokens",
+   "builder": 0,
+   "checker": 0,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_rep source types k>=2",
+   "builder": 16867,
+   "checker": 16867,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_rep source types k>=5",
+   "builder": 14733,
+   "checker": 14733,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_rep source types k>=20",
+   "builder": 10508,
+   "checker": 10508,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_rep source matched-piece types",
+   "builder": 17818,
+   "checker": 17818,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_rep source uncovered pretraining share (ppm, all pretraining rows)",
+   "builder": 11249.376423851345,
+   "checker": 11249.376423851345,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_rep source coverage of side vocab",
+   "builder": 0.5788439231859775,
+   "checker": 0.5788439231859775,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_rep source set types outside side vocab",
+   "builder": 1,
+   "checker": 1,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_rep target piece types",
+   "builder": 19787,
+   "checker": 19787,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_rep target coverage %",
+   "builder": 61.8421052631579,
+   "checker": 61.8421052631579,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_rep target piece tokens",
+   "builder": 8762157,
+   "checker": 8762157,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_rep target unk tokens",
+   "builder": 1,
+   "checker": 1,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_rep target types k>=2",
+   "builder": 18532,
+   "checker": 18532,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_rep target types k>=5",
+   "builder": 16362,
+   "checker": 16362,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_rep target types k>=20",
+   "builder": 12105,
+   "checker": 12105,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_rep target matched-piece types",
+   "builder": 19617,
+   "checker": 19617,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_rep target uncovered pretraining share (ppm, all pretraining rows)",
+   "builder": 12025.723577569808,
+   "checker": 12025.723577569806,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_rep target coverage of side vocab",
+   "builder": 0.6242940526896987,
+   "checker": 0.6242940526896986,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_rep target set types outside side vocab",
+   "builder": 0,
+   "checker": 0,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_rep source words",
+   "builder": 6370553,
+   "checker": 6370553,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_rep french words",
+   "builder": 7445127,
+   "checker": 7445127,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_rep source word types D11",
+   "builder": 27524,
+   "checker": 27524,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_rep french types @6.5M D12",
+   "builder": 34789,
+   "checker": 34789,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_rep source types @5.6M",
+   "builder": 26575,
+   "checker": 26575,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_div rows",
+   "builder": 242022,
+   "checker": 242022,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_div rows dropped by trainer",
+   "builder": 0,
+   "checker": 0,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_div source piece types",
+   "builder": 19314,
+   "checker": 19314,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_div source coverage %",
+   "builder": 60.3637954744343,
+   "checker": 60.363795474434305,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_div source piece tokens",
+   "builder": 7324449,
+   "checker": 7324449,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_div source unk tokens",
+   "builder": 6,
+   "checker": 6,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_div source types k>=2",
+   "builder": 18058,
+   "checker": 18058,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_div source types k>=5",
+   "builder": 16076,
+   "checker": 16076,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_div source types k>=20",
+   "builder": 11933,
+   "checker": 11933,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_div source matched-piece types",
+   "builder": 19133,
+   "checker": 19133,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_div source uncovered pretraining share (ppm, all pretraining rows)",
+   "builder": 5921.623829021618,
+   "checker": 5921.623829021618,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_div source coverage of side vocab",
+   "builder": 0.6222129140353139,
+   "checker": 0.6222129140353139,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_div source set types outside side vocab",
+   "builder": 3,
+   "checker": 3,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_div target piece types",
+   "builder": 21194,
+   "checker": 21194,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_div target coverage %",
+   "builder": 66.23952994124267,
+   "checker": 66.23952994124265,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_div target piece tokens",
+   "builder": 8930288,
+   "checker": 8930288,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_div target unk tokens",
+   "builder": 1,
+   "checker": 1,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_div target types k>=2",
+   "builder": 19799,
+   "checker": 19799,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_div target types k>=5",
+   "builder": 17725,
+   "checker": 17725,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_div target types k>=20",
+   "builder": 13548,
+   "checker": 13548,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_div target matched-piece types",
+   "builder": 20968,
+   "checker": 20968,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_div target uncovered pretraining share (ppm, all pretraining rows)",
+   "builder": 7603.045417122557,
+   "checker": 7603.045417122558,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_div target coverage of side vocab",
+   "builder": 0.6686859126045117,
+   "checker": 0.6686859126045117,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_div target set types outside side vocab",
+   "builder": 0,
+   "checker": 0,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_div source words",
+   "builder": 6370553,
+   "checker": 6370553,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_div french words",
+   "builder": 7492852,
+   "checker": 7492852,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_div source word types D11",
+   "builder": 38783,
+   "checker": 38783,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_div french types @6.5M D12",
+   "builder": 47216,
+   "checker": 47216,
+   "ok": true
+  },
+  {
+   "what": "ft_topk_div source types @5.6M",
+   "builder": 36829,
+   "checker": 36829,
+   "ok": true
+  },
+  {
+   "what": "ft_random_small rows",
+   "builder": 242022,
+   "checker": 242022,
+   "ok": true
+  },
+  {
+   "what": "ft_random_small rows dropped by trainer",
+   "builder": 0,
+   "checker": 0,
+   "ok": true
+  },
+  {
+   "what": "ft_random_small source piece types",
+   "builder": 23480,
+   "checker": 23480,
+   "ok": true
+  },
+  {
+   "what": "ft_random_small source coverage %",
+   "builder": 73.3841730216277,
+   "checker": 73.3841730216277,
+   "ok": true
+  },
+  {
+   "what": "ft_random_small source piece tokens",
+   "builder": 7726286,
+   "checker": 7726286,
+   "ok": true
+  },
+  {
+   "what": "ft_random_small source unk tokens",
+   "builder": 6,
+   "checker": 6,
+   "ok": true
+  },
+  {
+   "what": "ft_random_small source types k>=2",
+   "builder": 21705,
+   "checker": 21705,
+   "ok": true
+  },
+  {
+   "what": "ft_random_small source types k>=5",
+   "builder": 20056,
+   "checker": 20056,
+   "ok": true
+  },
+  {
+   "what": "ft_random_small source types k>=20",
+   "builder": 17044,
+   "checker": 17044,
+   "ok": true
+  },
+  {
+   "what": "ft_random_small source matched-piece types",
+   "builder": 23149,
+   "checker": 23149,
+   "ok": true
+  },
+  {
+   "what": "ft_random_small source uncovered pretraining share (ppm, all pretraining rows)",
+   "builder": 358.0378794833606,
+   "checker": 358.0378794833606,
+   "ok": true
+  },
+  {
+   "what": "ft_random_small source coverage of side vocab",
+   "builder": 0.7564441293981183,
+   "checker": 0.7564441293981183,
+   "ok": true
+  },
+  {
+   "what": "ft_random_small source set types outside side vocab",
+   "builder": 3,
+   "checker": 3,
+   "ok": true
+  },
+  {
+   "what": "ft_random_small target piece types",
+   "builder": 27167,
+   "checker": 27167,
+   "ok": true
+  },
+  {
+   "what": "ft_random_small target coverage %",
+   "builder": 84.9074884360545,
+   "checker": 84.9074884360545,
+   "ok": true
+  },
+  {
+   "what": "ft_random_small target piece tokens",
+   "builder": 9239951,
+   "checker": 9239951,
+   "ok": true
+  },
+  {
+   "what": "ft_random_small target unk tokens",
+   "builder": 2,
+   "checker": 2,
+   "ok": true
+  },
+  {
+   "what": "ft_random_small target types k>=2",
+   "builder": 25299,
+   "checker": 25299,
+   "ok": true
+  },
+  {
+   "what": "ft_random_small target types k>=5",
+   "builder": 23033,
+   "checker": 23033,
+   "ok": true
+  },
+  {
+   "what": "ft_random_small target types k>=20",
+   "builder": 18995,
+   "checker": 18995,
+   "ok": true
+  },
+  {
+   "what": "ft_random_small target matched-piece types",
+   "builder": 26793,
+   "checker": 26793,
+   "ok": true
+  },
+  {
+   "what": "ft_random_small target uncovered pretraining share (ppm, all pretraining rows)",
+   "builder": 280.8593881303253,
+   "checker": 280.8593881303253,
+   "ok": true
+  },
+  {
+   "what": "ft_random_small target coverage of side vocab",
+   "builder": 0.8571383498974602,
+   "checker": 0.8571383498974602,
+   "ok": true
+  },
+  {
+   "what": "ft_random_small target set types outside side vocab",
+   "builder": 0,
+   "checker": 0,
+   "ok": true
+  },
+  {
+   "what": "ft_random_small source words",
+   "builder": 6370553,
+   "checker": 6370553,
+   "ok": true
+  },
+  {
+   "what": "ft_random_small french words",
+   "builder": 7423254,
+   "checker": 7423254,
+   "ok": true
+  },
+  {
+   "what": "ft_random_small source word types D11",
+   "builder": 94897,
+   "checker": 94897,
+   "ok": true
+  },
+  {
+   "what": "ft_random_small french types @6.5M D12",
+   "builder": 105692,
+   "checker": 105692,
+   "ok": true
+  },
+  {
+   "what": "ft_random_small source types @5.6M",
+   "builder": 88876,
+   "checker": 88876,
+   "ok": true
+  },
+  {
+   "what": "ft_topk rows",
+   "builder": 926999,
+   "checker": 926999,
+   "ok": true
+  },
+  {
+   "what": "ft_topk rows dropped by trainer",
+   "builder": 0,
+   "checker": 0,
+   "ok": true
+  },
+  {
+   "what": "ft_topk source piece types",
+   "builder": 20507,
+   "checker": 20507,
+   "ok": true
+  },
+  {
+   "what": "ft_topk source coverage %",
+   "builder": 64.09238654831853,
+   "checker": 64.09238654831854,
+   "ok": true
+  },
+  {
+   "what": "ft_topk source piece tokens",
+   "builder": 23966999,
+   "checker": 23966999,
+   "ok": true
+  },
+  {
+   "what": "ft_topk source unk tokens",
+   "builder": 10,
+   "checker": 10,
+   "ok": true
+  },
+  {
+   "what": "ft_topk source types k>=2",
+   "builder": 19696,
+   "checker": 19696,
+   "ok": true
+  },
+  {
+   "what": "ft_topk source types k>=5",
+   "builder": 18437,
+   "checker": 18437,
+   "ok": true
+  },
+  {
+   "what": "ft_topk source types k>=20",
+   "builder": 15508,
+   "checker": 15508,
+   "ok": true
+  },
+  {
+   "what": "ft_topk source matched-piece types",
+   "builder": 19142,
+   "checker": 19142,
+   "ok": true
+  },
+  {
+   "what": "ft_topk source uncovered pretraining share (ppm, all pretraining rows)",
+   "builder": 2623.9111142468773,
+   "checker": 2623.9111142468773,
+   "ok": true
+  },
+  {
+   "what": "ft_topk source coverage of side vocab",
+   "builder": 0.6606521458950896,
+   "checker": 0.6606521458950896,
+   "ok": true
+  },
+  {
+   "what": "ft_topk source set types outside side vocab",
+   "builder": 3,
+   "checker": 3,
+   "ok": true
+  },
+  {
+   "what": "ft_topk target piece types",
+   "builder": 22662,
+   "checker": 22662,
+   "ok": true
+  },
+  {
+   "what": "ft_topk target coverage %",
+   "builder": 70.82760345043131,
+   "checker": 70.8276034504313,
+   "ok": true
+  },
+  {
+   "what": "ft_topk target piece tokens",
+   "builder": 29337762,
+   "checker": 29337762,
+   "ok": true
+  },
+  {
+   "what": "ft_topk target unk tokens",
+   "builder": 2,
+   "checker": 2,
+   "ok": true
+  },
+  {
+   "what": "ft_topk target types k>=2",
+   "builder": 21581,
+   "checker": 21581,
+   "ok": true
+  },
+  {
+   "what": "ft_topk target types k>=5",
+   "builder": 20186,
+   "checker": 20186,
+   "ok": true
+  },
+  {
+   "what": "ft_topk target types k>=20",
+   "builder": 17148,
+   "checker": 17148,
+   "ok": true
+  },
+  {
+   "what": "ft_topk target matched-piece types",
+   "builder": 20998,
+   "checker": 20998,
+   "ok": true
+  },
+  {
+   "what": "ft_topk target uncovered pretraining share (ppm, all pretraining rows)",
+   "builder": 3915.7163575468785,
+   "checker": 3915.7163575468785,
+   "ok": true
+  },
+  {
+   "what": "ft_topk target coverage of side vocab",
+   "builder": 0.7149708155860546,
+   "checker": 0.7149708155860546,
+   "ok": true
+  },
+  {
+   "what": "ft_topk target set types outside side vocab",
+   "builder": 1,
+   "checker": 1,
+   "ok": true
+  },
+  {
+   "what": "ft_topk source words",
+   "builder": 20819907,
+   "checker": 20819907,
+   "ok": true
+  },
+  {
+   "what": "ft_topk french words",
+   "builder": 24617824,
+   "checker": 24617824,
+   "ok": true
+  },
+  {
+   "what": "ft_topk source word types D11",
+   "builder": 61190,
+   "checker": 61190,
+   "ok": true
+  },
+  {
+   "what": "ft_topk french types @6.5M D12",
+   "builder": 46446,
+   "checker": 46446,
+   "ok": true
+  },
+  {
+   "what": "ft_topk source types @5.6M",
+   "builder": 36545,
+   "checker": 36545,
+   "ok": true
+  },
+  {
+   "what": "ft_random rows",
+   "builder": 926999,
+   "checker": 926999,
+   "ok": true
+  },
+  {
+   "what": "ft_random rows dropped by trainer",
+   "builder": 268,
+   "checker": 268,
+   "ok": true
+  },
+  {
+   "what": "ft_random source piece types",
+   "builder": 26258,
+   "checker": 26258,
+   "ok": true
+  },
+  {
+   "what": "ft_random source coverage %",
+   "builder": 82.06650831353919,
+   "checker": 82.06650831353919,
+   "ok": true
+  },
+  {
+   "what": "ft_random source piece tokens",
+   "builder": 29969976,
+   "checker": 29969976,
+   "ok": true
+  },
+  {
+   "what": "ft_random source unk tokens",
+   "builder": 43,
+   "checker": 43,
+   "ok": true
+  },
+  {
+   "what": "ft_random source types k>=2",
+   "builder": 24129,
+   "checker": 24129,
+   "ok": true
+  },
+  {
+   "what": "ft_random source types k>=5",
+   "builder": 22034,
+   "checker": 22034,
+   "ok": true
+  },
+  {
+   "what": "ft_random source types k>=20",
+   "builder": 19869,
+   "checker": 19869,
+   "ok": true
+  },
+  {
+   "what": "ft_random source matched-piece types",
+   "builder": 23131,
+   "checker": 23131,
+   "ok": true
+  },
+  {
+   "what": "ft_random source uncovered pretraining share (ppm, all pretraining rows)",
+   "builder": 101.39929525393906,
+   "checker": 101.39929525393906,
+   "ok": true
+  },
+  {
+   "what": "ft_random source coverage of side vocab",
+   "builder": 0.8453086737981699,
+   "checker": 0.8453086737981699,
+   "ok": true
+  },
+  {
+   "what": "ft_random source set types outside side vocab",
+   "builder": 23,
+   "checker": 23,
+   "ok": true
+  },
+  {
+   "what": "ft_random target piece types",
+   "builder": 29419,
+   "checker": 29419,
+   "ok": true
+  },
+  {
+   "what": "ft_random target coverage %",
+   "builder": 91.9458682335292,
+   "checker": 91.9458682335292,
+   "ok": true
+  },
+  {
+   "what": "ft_random target piece tokens",
+   "builder": 35675139,
+   "checker": 35675139,
+   "ok": true
+  },
+  {
+   "what": "ft_random target unk tokens",
+   "builder": 36,
+   "checker": 36,
+   "ok": true
+  },
+  {
+   "what": "ft_random target types k>=2",
+   "builder": 28091,
+   "checker": 28091,
+   "ok": true
+  },
+  {
+   "what": "ft_random target types k>=5",
+   "builder": 25917,
+   "checker": 25917,
+   "ok": true
+  },
+  {
+   "what": "ft_random target types k>=20",
+   "builder": 22815,
+   "checker": 22815,
+   "ok": true
+  },
+  {
+   "what": "ft_random target matched-piece types",
+   "builder": 26703,
+   "checker": 26703,
+   "ok": true
+  },
+  {
+   "what": "ft_random target uncovered pretraining share (ppm, all pretraining rows)",
+   "builder": 50.77551238557783,
+   "checker": 50.77551238557783,
+   "ok": true
+  },
+  {
+   "what": "ft_random target coverage of side vocab",
+   "builder": 0.9280643634642688,
+   "checker": 0.9280643634642688,
+   "ok": true
+  },
+  {
+   "what": "ft_random target set types outside side vocab",
+   "builder": 4,
+   "checker": 4,
+   "ok": true
+  },
+  {
+   "what": "ft_random source words",
+   "builder": 24599531,
+   "checker": 24599531,
+   "ok": true
+  },
+  {
+   "what": "ft_random french words",
+   "builder": 28567445,
+   "checker": 28567445,
+   "ok": true
+  },
+  {
+   "what": "ft_random source word types D11",
+   "builder": 195719,
+   "checker": 195719,
+   "ok": true
+  },
+  {
+   "what": "ft_random french types @6.5M D12",
+   "builder": 105989,
+   "checker": 105989,
+   "ok": true
+  },
+  {
+   "what": "ft_random source types @5.6M",
+   "builder": 89484,
+   "checker": 89484,
+   "ok": true
+  },
+  {
+   "what": "budget source pieces",
+   "builder": 6300000,
+   "checker": 6300000,
+   "ok": true
+  },
+  {
+   "what": "budget target pieces",
+   "builder": 7700000,
+   "checker": 7700000,
+   "ok": true
+  },
+  {
+   "what": "pretraining source piece tokens",
+   "builder": 286274424,
+   "checker": 286274424,
+   "ok": true
+  },
+  {
+   "what": "pretraining source unk tokens",
+   "builder": 245,
+   "checker": 245,
+   "ok": true
+  },
+  {
+   "what": "pretraining source types seen",
+   "builder": 31036,
+   "checker": 31036,
+   "ok": true
+  },
+  {
+   "what": "pretraining target piece tokens",
+   "builder": 336560108,
+   "checker": 336560108,
+   "ok": true
+  },
+  {
+   "what": "pretraining target unk tokens",
+   "builder": 235,
+   "checker": 235,
+   "ok": true
+  },
+  {
+   "what": "pretraining target types seen",
+   "builder": 31695,
+   "checker": 31695,
+   "ok": true
+  },
+  {
+   "what": "redraw R0_rule source sd types (ddof=1)",
+   "builder": 40.23679907746142,
+   "checker": 40.23679907746142,
+   "ok": true
+  },
+  {
+   "what": "redraw R0_rule target sd types (ddof=1)",
+   "builder": 32.813107137240145,
+   "checker": 32.813107137240145,
+   "ok": true
+  },
+  {
+   "what": "redraw ft_un_random_rule source sd types (ddof=1)",
+   "builder": 44.04543109109048,
+   "checker": 44.04543109109048,
+   "ok": true
+  },
+  {
+   "what": "redraw ft_un_random_rule target sd types (ddof=1)",
+   "builder": 59.09483903015558,
+   "checker": 59.09483903015558,
+   "ok": true
+  },
+  {
+   "what": "ft_un_rep - ft_un_div src cov diff (pp)",
+   "builder": -3.956744593074135,
+   "checker": -3.9567445930741343,
+   "ok": true
+  },
+  {
+   "what": "ft_un_rep - ft_un_div tgt cov diff (pp)",
+   "builder": -4.150518814851855,
+   "checker": -4.150518814851857,
+   "ok": true
+  },
+  {
+   "what": "ft_un_rep - ft_un_div src cov rel (%)",
+   "builder": -6.815245478036176,
+   "checker": -6.815245478036176,
+   "ok": true
+  },
+  {
+   "what": "ft_un_rep - ft_un_div tgt cov rel (%)",
+   "builder": -6.539616880878514,
+   "checker": -6.5396168808785164,
+   "ok": true
+  },
+  {
+   "what": "ft_un_rep - ft_un_div src k20 rel (%)",
+   "builder": -11.821601289629237,
+   "checker": -11.821601289629232,
+   "ok": true
+  },
+  {
+   "what": "ft_un_rep - ft_un_div tgt k20 rel (%)",
+   "builder": -10.271974773354355,
+   "checker": -10.271974773354355,
+   "ok": true
+  },
+  {
+   "what": "ft_un_rep - ft_un_div src word types rel (%)",
+   "builder": -25.801499675267163,
+   "checker": -25.801499675267166,
+   "ok": true
+  },
+  {
+   "what": "ft_un_rep - ft_un_div fr types D12 rel (%)",
+   "builder": -24.027800376560286,
+   "checker": -24.027800376560286,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div - ft_un_random src cov diff (pp)",
+   "builder": -6.9664958119764915,
+   "checker": -6.966495811976493,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div - ft_un_random tgt cov diff (pp)",
+   "builder": -12.479684960620075,
+   "checker": -12.479684960620077,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div - ft_un_random src cov rel (%)",
+   "builder": -10.71377072819033,
+   "checker": -10.713770728190335,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div - ft_un_random tgt cov rel (%)",
+   "builder": -16.432098765432094,
+   "checker": -16.432098765432098,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div - ft_un_random src k20 rel (%)",
+   "builder": -22.285634743875278,
+   "checker": -22.285634743875278,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div - ft_un_random tgt k20 rel (%)",
+   "builder": -19.857215061915596,
+   "checker": -19.857215061915593,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div - ft_un_random src word types rel (%)",
+   "builder": -42.03726835611985,
+   "checker": -42.037268356119846,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div - ft_un_random fr types D12 rel (%)",
+   "builder": -37.93854587420658,
+   "checker": -37.938545874206575,
+   "ok": true
+  },
+  {
+   "what": "A_narrow - R0 src cov diff (pp)",
+   "builder": -4.8381047630953855,
+   "checker": -4.838104763095387,
+   "ok": true
+  },
+  {
+   "what": "A_narrow - R0 tgt cov diff (pp)",
+   "builder": -6.8383547943493,
+   "checker": -6.838354794349286,
+   "ok": true
+  },
+  {
+   "what": "A_narrow - R0 src cov rel (%)",
+   "builder": -7.3862009733753204,
+   "checker": -7.386200973375322,
+   "ok": true
+  },
+  {
+   "what": "A_narrow - R0 tgt cov rel (%)",
+   "builder": -8.941195701033884,
+   "checker": -8.941195701033868,
+   "ok": true
+  },
+  {
+   "what": "A_narrow - R0 src k20 rel (%)",
+   "builder": -8.884126106194692,
+   "checker": -8.88412610619469,
+   "ok": true
+  },
+  {
+   "what": "A_narrow - R0 tgt k20 rel (%)",
+   "builder": -8.449733792671465,
+   "checker": -8.449733792671468,
+   "ok": true
+  },
+  {
+   "what": "A_narrow - R0 src word types rel (%)",
+   "builder": -45.86774193548387,
+   "checker": -45.86774193548387,
+   "ok": true
+  },
+  {
+   "what": "A_narrow - R0 fr types D12 rel (%)",
+   "builder": -39.7814644362995,
+   "checker": -39.7814644362995,
+   "ok": true
+  },
+  {
+   "what": "A_narrow - ft_un_div src cov diff (pp)",
+   "builder": 2.6065758219777413,
+   "checker": 2.6065758219777493,
+   "ok": true
+  },
+  {
+   "what": "A_narrow - ft_un_div tgt cov diff (pp)",
+   "builder": 6.175771971496435,
+   "checker": 6.175771971496445,
+   "ok": true
+  },
+  {
+   "what": "A_narrow - ft_un_div src cov rel (%)",
+   "builder": 4.489664082687328,
+   "checker": 4.489664082687342,
+   "ok": true
+  },
+  {
+   "what": "A_narrow - ft_un_div tgt cov rel (%)",
+   "builder": 9.730634756487907,
+   "checker": 9.730634756487923,
+   "ok": true
+  },
+  {
+   "what": "A_narrow - ft_un_div src k20 rel (%)",
+   "builder": 18.02794196668457,
+   "checker": 18.02794196668458,
+   "ok": true
+  },
+  {
+   "what": "A_narrow - ft_un_div tgt k20 rel (%)",
+   "builder": 15.222703981080022,
+   "checker": 15.222703981080016,
+   "ok": true
+  },
+  {
+   "what": "A_narrow - ft_un_div src word types rel (%)",
+   "builder": -0.9210604003070201,
+   "checker": -0.9210604003070202,
+   "ok": true
+  },
+  {
+   "what": "A_narrow - ft_un_div fr types D12 rel (%)",
+   "builder": 1.585272308872411,
+   "checker": 1.5852723088724112,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div - R0 src cov diff (pp)",
+   "builder": -7.444680585073127,
+   "checker": -7.444680585073137,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div - R0 tgt cov diff (pp)",
+   "builder": -13.014126765845734,
+   "checker": -13.014126765845731,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div - R0 src cov rel (%)",
+   "builder": -11.365588319496124,
+   "checker": -11.365588319496139,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div - R0 tgt cov rel (%)",
+   "builder": -17.016059825916397,
+   "checker": -17.016059825916393,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div - R0 src k20 rel (%)",
+   "builder": -22.801438053097343,
+   "checker": -22.801438053097346,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div - R0 tgt k20 rel (%)",
+   "builder": -20.544942060757908,
+   "checker": -20.544942060757908,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div - R0 src word types rel (%)",
+   "builder": -45.36451612903225,
+   "checker": -45.36451612903226,
+   "ok": true
+  },
+  {
+   "what": "ft_un_div - R0 fr types D12 rel (%)",
+   "builder": -40.7211949182903,
+   "checker": -40.721194918290294,
+   "ok": true
+  }
+ ]
+}

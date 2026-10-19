@@ -1,0 +1,13 @@
+test_clipping (__main__.T.test_clipping) ... ok
+test_id_min_count (__main__.T.test_id_min_count) ... ok
+test_invariants_and_summary (__main__.T.test_invariants_and_summary) ... ok
+test_read_lines_splits_on_newline_only (__main__.T.test_read_lines_splits_on_newline_only) ... ok
+test_refuses (__main__.T.test_refuses) ... ok
+test_top_lists (__main__.T.test_top_lists) ... ok
+test_words_cased (__main__.T.test_words_cased) ... ok
+test_words_hand_computed (__main__.T.test_words_hand_computed) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.011s
+
+OK

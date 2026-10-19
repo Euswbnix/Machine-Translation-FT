@@ -1,0 +1,27 @@
+{
+ "0.13%": {
+  "n_dedup": 20621,
+  "all_equal": true,
+  "diffs": {}
+ },
+ "0.3%": {
+  "n_dedup": 47413,
+  "all_equal": true,
+  "diffs": {}
+ },
+ "1%": {
+  "n_dedup": 156689,
+  "all_equal": true,
+  "diffs": {}
+ },
+ "6%": {
+  "n_dedup": 925633,
+  "all_equal": true,
+  "diffs": {}
+ },
+ "E0.3 band": {
+  "n_dedup": 926999,
+  "all_equal": true,
+  "diffs": {}
+ }
+}

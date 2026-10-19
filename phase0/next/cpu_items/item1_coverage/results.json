@@ -1,0 +1,2052 @@
+{
+ "what": "item1_coverage: Saunders & DeNeefe (2024) subword vocabulary coverage and word types (WMT2027_PLAN.md 3.2 item 1); descriptive, not a registered result",
+ "interpreter": {
+  "python": "3.14.3",
+  "unidata_version": "16.0.0",
+  "machine": "arm64",
+  "numpy": "2.4.5",
+  "sentencepiece": "0.2.2",
+  "spm_threads": 4
+ },
+ "inputs": {
+  "e05_src/ft_topk.en": {
+   "sha256": "787339d08e0c47d9960cb263757edafd844ec80a45875ac083845a02a20ff2b2",
+   "listed": "787339d08e0c47d9960cb263757edafd844ec80a45875ac083845a02a20ff2b2",
+   "match": true
+  },
+  "e05_src/ft_topk.fr": {
+   "sha256": "22263da18eaf62cb7deea7438068ce0cb00ce3849c1a83f7e0c55008c3d78797",
+   "listed": "22263da18eaf62cb7deea7438068ce0cb00ce3849c1a83f7e0c55008c3d78797",
+   "match": true
+  },
+  "e05_src/ft_topk.source": {
+   "sha256": "a4ad45860c92eae6b512c4a7178fe78fc92f00d4b9551d00a6637c80079244ca",
+   "listed": "a4ad45860c92eae6b512c4a7178fe78fc92f00d4b9551d00a6637c80079244ca",
+   "match": true
+  },
+  "e05_src/ft_random.en": {
+   "sha256": "937d4d4ab2683b585942107d4d260badef54a5a136e3caf97ef6da48d93552a0",
+   "listed": "937d4d4ab2683b585942107d4d260badef54a5a136e3caf97ef6da48d93552a0",
+   "match": true
+  },
+  "e05_src/ft_random.fr": {
+   "sha256": "382e0de574feaaa323939d73a24736b762c76a8b55a0ffd258d64b15e5303e29",
+   "listed": "382e0de574feaaa323939d73a24736b762c76a8b55a0ffd258d64b15e5303e29",
+   "match": true
+  },
+  "e05_src/ft_random.source": {
+   "sha256": "fd675a1948ab4e30dce05aae4c85d2432aec99549c05fb794903a49e9b0b6923",
+   "listed": "fd675a1948ab4e30dce05aae4c85d2432aec99549c05fb794903a49e9b0b6923",
+   "match": true
+  },
+  "phase0_e05/manifest.json": {
+   "sha256": "979dafd76344444c56cad9afc52e0ec7ba7ebb74c73115cbeb237583419b8eb2",
+   "listed": "979dafd76344444c56cad9afc52e0ec7ba7ebb74c73115cbeb237583419b8eb2",
+   "match": true
+  },
+  "spm/spm_enfr_v1_fixed.model": {
+   "sha256": "d1c10ea80fb95984f3f240b3579c87a16313b77aa9bc103ca0d6a0e06672a561",
+   "listed": "d1c10ea80fb95984f3f240b3579c87a16313b77aa9bc103ca0d6a0e06672a561",
+   "match": true
+  },
+  "vocab/R0.npy": {
+   "sha256": "22eeb53dd3cb621831939cb41a5b9280045dbc5f6b1ce48686234479ac354dc9",
+   "listed": "22eeb53dd3cb621831939cb41a5b9280045dbc5f6b1ce48686234479ac354dc9",
+   "match": true
+  },
+  "vocab/A_narrow_42_58.npy": {
+   "sha256": "e9fac76975bb83e2a4b12ed913c333212cc4a70c440346278c12ad7c0bd7cfa8",
+   "listed": "e9fac76975bb83e2a4b12ed913c333212cc4a70c440346278c12ad7c0bd7cfa8",
+   "match": true
+  },
+  "v1_fixed/train.clean.en": {
+   "sha256": "7230adc6c823d4df51407e445b1181ada450363dfe43507885c9f529d49b6b6e",
+   "listed": "7230adc6c823d4df51407e445b1181ada450363dfe43507885c9f529d49b6b6e",
+   "match": true
+  },
+  "v1_fixed/train.clean.fr": {
+   "sha256": "b0a6ba91eeba2b4bdf28e8a73816a2bdd7ccbddd5f889fcc7d3f3f0a52dad7e2",
+   "listed": "b0a6ba91eeba2b4bdf28e8a73816a2bdd7ccbddd5f889fcc7d3f3f0a52dad7e2",
+   "match": true
+  },
+  "code/phase0/e06_build.py": {
+   "sha256": "64014a7b063ee7bf0a9877f98982fc99bb714c03966b19df7c69b984b15fe270",
+   "listed": "64014a7b063ee7bf0a9877f98982fc99bb714c03966b19df7c69b984b15fe270",
+   "match": true
+  },
+  "phase0_e05/ft_un_div.en": {
+   "sha256": "51d9ec1157c58591a7b25b2a1bde52e9dc93342a34c55e55547f0e3857ba94da",
+   "listed": "51d9ec1157c58591a7b25b2a1bde52e9dc93342a34c55e55547f0e3857ba94da",
+   "match": true
+  },
+  "phase0_e05/ft_un_div.fr": {
+   "sha256": "1957872adf3f96b8e7fe551eeeae42bbd38f03811511e013f9017b65b954a7e1",
+   "listed": "1957872adf3f96b8e7fe551eeeae42bbd38f03811511e013f9017b65b954a7e1",
+   "match": true
+  },
+  "phase0_e05/ft_un_rep.en": {
+   "sha256": "940cde0f051d6b473c55a6771af64900a20c9c52d66e1a4772e18a5bf9cafe68",
+   "listed": "940cde0f051d6b473c55a6771af64900a20c9c52d66e1a4772e18a5bf9cafe68",
+   "match": true
+  },
+  "phase0_e05/ft_un_rep.fr": {
+   "sha256": "9373be1fc7afb86a1b5ebf76d7cb567bde0ef349443ca9c3c6a87c175185edbd",
+   "listed": "9373be1fc7afb86a1b5ebf76d7cb567bde0ef349443ca9c3c6a87c175185edbd",
+   "match": true
+  },
+  "phase0_e05/ft_un_random.en": {
+   "sha256": "80fa6aea32f342cc43adec8e66063f8f08c20b6e3b66a60b0bfd7baf3e35c59c",
+   "listed": "80fa6aea32f342cc43adec8e66063f8f08c20b6e3b66a60b0bfd7baf3e35c59c",
+   "match": true
+  },
+  "phase0_e05/ft_un_random.fr": {
+   "sha256": "1b54a882d989153697417b1f4b2300b81500acac258e29c542776d39a32094c0",
+   "listed": "1b54a882d989153697417b1f4b2300b81500acac258e29c542776d39a32094c0",
+   "match": true
+  },
+  "phase0_e05/ft_topk_div.en": {
+   "sha256": "321474497238a74704fd29653878814e1742d419e740e0148fca4191742c47fa",
+   "listed": "321474497238a74704fd29653878814e1742d419e740e0148fca4191742c47fa",
+   "match": true
+  },
+  "phase0_e05/ft_topk_div.fr": {
+   "sha256": "2fdc192521c64f966bcbb1a321fd99ff55d0dce7a661fd60837b01e723d0357f",
+   "listed": "2fdc192521c64f966bcbb1a321fd99ff55d0dce7a661fd60837b01e723d0357f",
+   "match": true
+  },
+  "phase0_e05/ft_topk_rep.en": {
+   "sha256": "6db2a842ee9fbb21d9806738861ac0e94734310121d4ff5f5d3d684a442fa386",
+   "listed": "6db2a842ee9fbb21d9806738861ac0e94734310121d4ff5f5d3d684a442fa386",
+   "match": true
+  },
+  "phase0_e05/ft_topk_rep.fr": {
+   "sha256": "0598ddfdeba978bbdbc354594889630dc175bb7ea0ab401bdce51a48c122ec75",
+   "listed": "0598ddfdeba978bbdbc354594889630dc175bb7ea0ab401bdce51a48c122ec75",
+   "match": true
+  },
+  "phase0_e05/ft_random_small.en": {
+   "sha256": "d75365502e1db21ad7975150c1a7a6b6f680e2432e9473dc5d3041a152881f84",
+   "listed": "d75365502e1db21ad7975150c1a7a6b6f680e2432e9473dc5d3041a152881f84",
+   "match": true
+  },
+  "phase0_e05/ft_random_small.fr": {
+   "sha256": "7072a04327a56ddd399ca48d885b6d2cdde737bca4db8b7fd3d01672ea8bb0f9",
+   "listed": "7072a04327a56ddd399ca48d885b6d2cdde737bca4db8b7fd3d01672ea8bb0f9",
+   "match": true
+  }
+ },
+ "spm": {
+  "vocab_size": 32000,
+  "special_ids": {
+   "0": "<pad>",
+   "1": "<unk>",
+   "2": "<s>",
+   "3": "</s>"
+  },
+  "countable_ids": 31996,
+  "unused_ids": 0,
+  "byte_ids": 0,
+  "scores_are_minus_rank (BPE)": true,
+  "joint": "one model for both sides (dataset.py: self.tokenizer.sp encodes src and tgt)"
+ },
+ "pretraining": {
+  "source": {
+   "file": "v1_fixed/train.clean.en",
+   "lines": 9312233,
+   "lines_with_cr": 0,
+   "empty_after_strip": 0,
+   "piece_tokens": 286274424,
+   "unknown_tokens": 245,
+   "piece_types_seen": 31036,
+   "piece_types_seen_share_of_countable": 0.9699962495311913
+  },
+  "target": {
+   "file": "v1_fixed/train.clean.fr",
+   "lines": 9312233,
+   "lines_with_cr": 0,
+   "empty_after_strip": 0,
+   "piece_tokens": 336560108,
+   "unknown_tokens": 235,
+   "piece_types_seen": 31695,
+   "piece_types_seen_share_of_countable": 0.9905925740717589
+  }
+ },
+ "budgets": {
+  "source_words_common": 5600000,
+  "french_words": 6500000,
+  "pieces_matched": {
+   "source": 6300000,
+   "target": 7700000
+  },
+  "pieces_matched_rule": "largest multiple of 100,000 below the smallest set's piece count on that side"
+ },
+ "cr_rows_in_files": {
+  "ft_un_div": 0,
+  "ft_un_rep": 0,
+  "ft_un_random": 0,
+  "ft_topk_div": 0,
+  "ft_topk_rep": 0,
+  "ft_random_small": 0,
+  "ft_topk": 0,
+  "ft_random": 0
+ },
+ "sets": {
+  "ft_un_div": {
+   "parent_file": "ft_un_div",
+   "rows": 214489,
+   "source": {
+    "piece_tokens": 6447618,
+    "unknown_tokens": 5,
+    "piece_types": 18576,
+    "coverage": 0.5805725715714465,
+    "coverage_min_count": {
+     "k1": 0.5805725715714465,
+     "k2": 0.5410051256407051,
+     "k5": 0.47755969496187023,
+     "k20": 0.34898112264033004
+    },
+    "piece_types_min_count": {
+     "k1": 18576,
+     "k2": 17310,
+     "k5": 15280,
+     "k20": 11166
+    },
+    "coverage_of_side_vocab": 0.5984340765562572,
+    "types_outside_side_vocab": 3,
+    "pretraining_token_share_covered": 0.9889712861599019,
+    "pretraining_token_share_uncovered_ppm": 11028.713840098028,
+    "coverage_at_matched_pieces": 0.5795411926490811,
+    "piece_types_at_matched_pieces": 18543,
+    "coverage_rows_kept_by_trainer": 0.5805725715714465
+   },
+   "target": {
+    "piece_tokens": 7904543,
+    "unknown_tokens": 1,
+    "piece_types": 20307,
+    "coverage": 0.6346730841355169,
+    "coverage_min_count": {
+     "k1": 0.6346730841355169,
+     "k2": 0.5900112514064259,
+     "k5": 0.5230653831728966,
+     "k20": 0.39645580697587196
+    },
+    "piece_types_min_count": {
+     "k1": 20307,
+     "k2": 18878,
+     "k5": 16736,
+     "k20": 12685
+    },
+    "coverage_of_side_vocab": 0.6406688752169112,
+    "types_outside_side_vocab": 1,
+    "pretraining_token_share_covered": 0.9824327601882593,
+    "pretraining_token_share_uncovered_ppm": 17567.239811740717,
+    "coverage_at_matched_pieces": 0.6335479434929366,
+    "piece_types_at_matched_pieces": 20271,
+    "coverage_rows_kept_by_trainer": 0.6346730841355169
+   },
+   "rows_dropped_by_trainer": 0,
+   "words": {
+    "source_words": 5606498,
+    "french_words": 6656806,
+    "source_word_types_D11": 33874,
+    "french_word_types_all_rows": 43420,
+    "source_word_types_at_5600000": 33855,
+    "french_word_types_at_6500000_D12": 43021
+   },
+   "rows_with_cr": 0
+  },
+  "ft_un_rep": {
+   "parent_file": "ft_un_rep",
+   "rows": 214489,
+   "source": {
+    "piece_tokens": 6358582,
+    "unknown_tokens": 0,
+    "piece_types": 17310,
+    "coverage": 0.5410051256407051,
+    "coverage_min_count": {
+     "k1": 0.5410051256407051,
+     "k2": 0.5057194649331166,
+     "k5": 0.4389298662332792,
+     "k20": 0.3077259657457182
+    },
+    "piece_types_min_count": {
+     "k1": 17310,
+     "k2": 16181,
+     "k5": 14044,
+     "k20": 9846
+    },
+    "coverage_of_side_vocab": 0.5577071787601495,
+    "types_outside_side_vocab": 1,
+    "pretraining_token_share_covered": 0.9827527476727127,
+    "pretraining_token_share_uncovered_ppm": 17247.25232728726,
+    "coverage_at_matched_pieces": 0.5407238404800601,
+    "piece_types_at_matched_pieces": 17301,
+    "coverage_rows_kept_by_trainer": 0.5410051256407051
+   },
+   "target": {
+    "piece_tokens": 7731883,
+    "unknown_tokens": 1,
+    "piece_types": 18979,
+    "coverage": 0.5931678959869984,
+    "coverage_min_count": {
+     "k1": 0.5931678959869984,
+     "k2": 0.5551943992999125,
+     "k5": 0.4879359919989999,
+     "k20": 0.35573196649581196
+    },
+    "piece_types_min_count": {
+     "k1": 18979,
+     "k2": 17764,
+     "k5": 15612,
+     "k20": 11382
+    },
+    "coverage_of_side_vocab": 0.5988010727244045,
+    "types_outside_side_vocab": 0,
+    "pretraining_token_share_covered": 0.9766532595524244,
+    "pretraining_token_share_uncovered_ppm": 23346.74044757558,
+    "coverage_at_matched_pieces": 0.5930741342667833,
+    "piece_types_at_matched_pieces": 18976,
+    "coverage_rows_kept_by_trainer": 0.5931678959869984
+   },
+   "rows_dropped_by_trainer": 0,
+   "words": {
+    "source_words": 5606498,
+    "french_words": 6576020,
+    "source_word_types_D11": 25134,
+    "french_word_types_all_rows": 32771,
+    "source_word_types_at_5600000": 25131,
+    "french_word_types_at_6500000_D12": 32684
+   },
+   "rows_with_cr": 0
+  },
+  "ft_un_random": {
+   "parent_file": "ft_un_random",
+   "rows": 214489,
+   "source": {
+    "piece_tokens": 6679708,
+    "unknown_tokens": 7,
+    "piece_types": 20805,
+    "coverage": 0.6502375296912114,
+    "coverage_min_count": {
+     "k1": 0.6502375296912114,
+     "k2": 0.6122015251906489,
+     "k5": 0.5627578447305913,
+     "k20": 0.4490561320165021
+    },
+    "piece_types_min_count": {
+     "k1": 20805,
+     "k2": 19588,
+     "k5": 18006,
+     "k20": 14368
+    },
+    "coverage_of_side_vocab": 0.6702538986982859,
+    "types_outside_side_vocab": 3,
+    "pretraining_token_share_covered": 0.9955235152381662,
+    "pretraining_token_share_uncovered_ppm": 4476.4847618338645,
+    "coverage_at_matched_pieces": 0.6483622952869109,
+    "piece_types_at_matched_pieces": 20745,
+    "coverage_rows_kept_by_trainer": 0.6502375296912114
+   },
+   "target": {
+    "piece_tokens": 8109783,
+    "unknown_tokens": 4,
+    "piece_types": 24300,
+    "coverage": 0.7594699337417177,
+    "coverage_min_count": {
+     "k1": 0.7594699337417177,
+     "k2": 0.703525440680085,
+     "k5": 0.6321102637829729,
+     "k20": 0.4946868358544818
+    },
+    "piece_types_min_count": {
+     "k1": 24300,
+     "k2": 22510,
+     "k5": 20225,
+     "k20": 15828
+    },
+    "coverage_of_side_vocab": 0.7666193405899985,
+    "types_outside_side_vocab": 2,
+    "pretraining_token_share_covered": 0.9905535648927465,
+    "pretraining_token_share_uncovered_ppm": 9446.435107253561,
+    "coverage_at_matched_pieces": 0.7567195899487436,
+    "piece_types_at_matched_pieces": 24212,
+    "coverage_rows_kept_by_trainer": 0.7594699337417177
+   },
+   "rows_dropped_by_trainer": 0,
+   "words": {
+    "source_words": 5606498,
+    "french_words": 6661746,
+    "source_word_types_D11": 58441,
+    "french_word_types_all_rows": 70046,
+    "source_word_types_at_5600000": 58420,
+    "french_word_types_at_6500000_D12": 69320
+   },
+   "rows_with_cr": 0
+  },
+  "ft_topk_div": {
+   "parent_file": "ft_topk_div",
+   "rows": 242022,
+   "source": {
+    "piece_tokens": 7324449,
+    "unknown_tokens": 6,
+    "piece_types": 19314,
+    "coverage": 0.603637954744343,
+    "coverage_min_count": {
+     "k1": 0.603637954744343,
+     "k2": 0.5643830478809851,
+     "k5": 0.5024378047255907,
+     "k20": 0.37295286910863856
+    },
+    "piece_types_min_count": {
+     "k1": 19314,
+     "k2": 18058,
+     "k5": 16076,
+     "k20": 11933
+    },
+    "coverage_of_side_vocab": 0.6222129140353139,
+    "types_outside_side_vocab": 3,
+    "pretraining_token_share_covered": 0.9940783761709784,
+    "pretraining_token_share_uncovered_ppm": 5921.623829021618,
+    "coverage_at_matched_pieces": 0.5979809976247031,
+    "piece_types_at_matched_pieces": 19133,
+    "coverage_rows_kept_by_trainer": 0.603637954744343
+   },
+   "target": {
+    "piece_tokens": 8930288,
+    "unknown_tokens": 1,
+    "piece_types": 21194,
+    "coverage": 0.6623952994124266,
+    "coverage_min_count": {
+     "k1": 0.6623952994124266,
+     "k2": 0.6187960995124391,
+     "k5": 0.5539754969371171,
+     "k20": 0.42342792849106137
+    },
+    "piece_types_min_count": {
+     "k1": 21194,
+     "k2": 19799,
+     "k5": 17725,
+     "k20": 13548
+    },
+    "coverage_of_side_vocab": 0.6686859126045117,
+    "types_outside_side_vocab": 0,
+    "pretraining_token_share_covered": 0.9923969545828775,
+    "pretraining_token_share_uncovered_ppm": 7603.045417122557,
+    "coverage_at_matched_pieces": 0.6553319164895612,
+    "piece_types_at_matched_pieces": 20968,
+    "coverage_rows_kept_by_trainer": 0.6623952994124266
+   },
+   "rows_dropped_by_trainer": 0,
+   "words": {
+    "source_words": 6370553,
+    "french_words": 7492852,
+    "source_word_types_D11": 38783,
+    "french_word_types_all_rows": 49892,
+    "source_word_types_at_5600000": 36829,
+    "french_word_types_at_6500000_D12": 47216
+   },
+   "rows_with_cr": 0
+  },
+  "ft_topk_rep": {
+   "parent_file": "ft_topk_rep",
+   "rows": 242022,
+   "source": {
+    "piece_tokens": 7221853,
+    "unknown_tokens": 0,
+    "piece_types": 17966,
+    "coverage": 0.5615076884610576,
+    "coverage_min_count": {
+     "k1": 0.5615076884610576,
+     "k2": 0.5271596449556194,
+     "k5": 0.460463807975997,
+     "k20": 0.3284160520065008
+    },
+    "piece_types_min_count": {
+     "k1": 17966,
+     "k2": 16867,
+     "k5": 14733,
+     "k20": 10508
+    },
+    "coverage_of_side_vocab": 0.5788439231859775,
+    "types_outside_side_vocab": 1,
+    "pretraining_token_share_covered": 0.9887506235761486,
+    "pretraining_token_share_uncovered_ppm": 11249.376423851345,
+    "coverage_at_matched_pieces": 0.556882110263783,
+    "piece_types_at_matched_pieces": 17818,
+    "coverage_rows_kept_by_trainer": 0.5615076884610576
+   },
+   "target": {
+    "piece_tokens": 8762157,
+    "unknown_tokens": 1,
+    "piece_types": 19787,
+    "coverage": 0.618421052631579,
+    "coverage_min_count": {
+     "k1": 0.618421052631579,
+     "k2": 0.5791973996749594,
+     "k5": 0.5113764220527566,
+     "k20": 0.3783285410676335
+    },
+    "piece_types_min_count": {
+     "k1": 19787,
+     "k2": 18532,
+     "k5": 16362,
+     "k20": 12105
+    },
+    "coverage_of_side_vocab": 0.6242940526896987,
+    "types_outside_side_vocab": 0,
+    "pretraining_token_share_covered": 0.9879742764224302,
+    "pretraining_token_share_uncovered_ppm": 12025.723577569808,
+    "coverage_at_matched_pieces": 0.6131078884860608,
+    "piece_types_at_matched_pieces": 19617,
+    "coverage_rows_kept_by_trainer": 0.618421052631579
+   },
+   "rows_dropped_by_trainer": 0,
+   "words": {
+    "source_words": 6370553,
+    "french_words": 7445127,
+    "source_word_types_D11": 27524,
+    "french_word_types_all_rows": 36235,
+    "source_word_types_at_5600000": 26575,
+    "french_word_types_at_6500000_D12": 34789
+   },
+   "rows_with_cr": 0
+  },
+  "ft_random_small": {
+   "parent_file": "ft_random_small",
+   "rows": 242022,
+   "source": {
+    "piece_tokens": 7726286,
+    "unknown_tokens": 6,
+    "piece_types": 23480,
+    "coverage": 0.7338417302162771,
+    "coverage_min_count": {
+     "k1": 0.7338417302162771,
+     "k2": 0.6783660457557195,
+     "k5": 0.626828353544193,
+     "k20": 0.532691586448306
+    },
+    "piece_types_min_count": {
+     "k1": 23480,
+     "k2": 21705,
+     "k5": 20056,
+     "k20": 17044
+    },
+    "coverage_of_side_vocab": 0.7564441293981183,
+    "types_outside_side_vocab": 3,
+    "pretraining_token_share_covered": 0.9996419621205166,
+    "pretraining_token_share_uncovered_ppm": 358.0378794833606,
+    "coverage_at_matched_pieces": 0.7234966870858858,
+    "piece_types_at_matched_pieces": 23149,
+    "coverage_rows_kept_by_trainer": 0.7338417302162771
+   },
+   "target": {
+    "piece_tokens": 9239951,
+    "unknown_tokens": 2,
+    "piece_types": 27167,
+    "coverage": 0.8490748843605451,
+    "coverage_min_count": {
+     "k1": 0.8490748843605451,
+     "k2": 0.7906925865733216,
+     "k5": 0.719871233904238,
+     "k20": 0.5936679584948118
+    },
+    "piece_types_min_count": {
+     "k1": 27167,
+     "k2": 25299,
+     "k5": 23033,
+     "k20": 18995
+    },
+    "coverage_of_side_vocab": 0.8571383498974602,
+    "types_outside_side_vocab": 0,
+    "pretraining_token_share_covered": 0.9997191406118697,
+    "pretraining_token_share_uncovered_ppm": 280.8593881303253,
+    "coverage_at_matched_pieces": 0.8373859232404051,
+    "piece_types_at_matched_pieces": 26793,
+    "coverage_rows_kept_by_trainer": 0.8490748843605451
+   },
+   "rows_dropped_by_trainer": 0,
+   "words": {
+    "source_words": 6370553,
+    "french_words": 7423254,
+    "source_word_types_D11": 94897,
+    "french_word_types_all_rows": 113161,
+    "source_word_types_at_5600000": 88876,
+    "french_word_types_at_6500000_D12": 105692
+   },
+   "rows_with_cr": 0
+  },
+  "ft_topk": {
+   "parent_file": "ft_topk",
+   "rows": 926999,
+   "source": {
+    "piece_tokens": 23966999,
+    "unknown_tokens": 10,
+    "piece_types": 20507,
+    "coverage": 0.6409238654831854,
+    "coverage_min_count": {
+     "k1": 0.6409238654831854,
+     "k2": 0.6155769471183898,
+     "k5": 0.5762282785348168,
+     "k20": 0.4846855856982123
+    },
+    "piece_types_min_count": {
+     "k1": 20507,
+     "k2": 19696,
+     "k5": 18437,
+     "k20": 15508
+    },
+    "coverage_of_side_vocab": 0.6606521458950896,
+    "types_outside_side_vocab": 3,
+    "pretraining_token_share_covered": 0.9973760888857531,
+    "pretraining_token_share_uncovered_ppm": 2623.9111142468773,
+    "coverage_at_matched_pieces": 0.5982622827853482,
+    "piece_types_at_matched_pieces": 19142,
+    "coverage_rows_kept_by_trainer": 0.6409238654831854
+   },
+   "target": {
+    "piece_tokens": 29337762,
+    "unknown_tokens": 2,
+    "piece_types": 22662,
+    "coverage": 0.7082760345043131,
+    "coverage_min_count": {
+     "k1": 0.7082760345043131,
+     "k2": 0.674490561320165,
+     "k5": 0.6308913614201775,
+     "k20": 0.5359419927490936
+    },
+    "piece_types_min_count": {
+     "k1": 22662,
+     "k2": 21581,
+     "k5": 20186,
+     "k20": 17148
+    },
+    "coverage_of_side_vocab": 0.7149708155860546,
+    "types_outside_side_vocab": 1,
+    "pretraining_token_share_covered": 0.9960842836424532,
+    "pretraining_token_share_uncovered_ppm": 3915.7163575468785,
+    "coverage_at_matched_pieces": 0.6562695336917115,
+    "piece_types_at_matched_pieces": 20998,
+    "coverage_rows_kept_by_trainer": 0.7082760345043131
+   },
+   "rows_dropped_by_trainer": 0,
+   "words": {
+    "source_words": 20819907,
+    "french_words": 24617824,
+    "source_word_types_D11": 61190,
+    "french_word_types_all_rows": 76870,
+    "source_word_types_at_5600000": 36545,
+    "french_word_types_at_6500000_D12": 46446
+   },
+   "rows_with_cr": 0
+  },
+  "ft_random": {
+   "parent_file": "ft_random",
+   "rows": 926999,
+   "source": {
+    "piece_tokens": 29969976,
+    "unknown_tokens": 43,
+    "piece_types": 26258,
+    "coverage": 0.8206650831353919,
+    "coverage_min_count": {
+     "k1": 0.8206650831353919,
+     "k2": 0.7541255156894612,
+     "k5": 0.688648581072634,
+     "k20": 0.620983872984123
+    },
+    "piece_types_min_count": {
+     "k1": 26258,
+     "k2": 24129,
+     "k5": 22034,
+     "k20": 19869
+    },
+    "coverage_of_side_vocab": 0.8453086737981699,
+    "types_outside_side_vocab": 23,
+    "pretraining_token_share_covered": 0.999898600704746,
+    "pretraining_token_share_uncovered_ppm": 101.39929525393906,
+    "coverage_at_matched_pieces": 0.7229341167645956,
+    "piece_types_at_matched_pieces": 23131,
+    "coverage_rows_kept_by_trainer": 0.8201962745343168
+   },
+   "target": {
+    "piece_tokens": 35675139,
+    "unknown_tokens": 36,
+    "piece_types": 29419,
+    "coverage": 0.9194586823352919,
+    "coverage_min_count": {
+     "k1": 0.9194586823352919,
+     "k2": 0.8779534941867734,
+     "k5": 0.8100075009376172,
+     "k20": 0.7130578822352794
+    },
+    "piece_types_min_count": {
+     "k1": 29419,
+     "k2": 28091,
+     "k5": 25917,
+     "k20": 22815
+    },
+    "coverage_of_side_vocab": 0.9280643634642688,
+    "types_outside_side_vocab": 4,
+    "pretraining_token_share_covered": 0.9999492244876145,
+    "pretraining_token_share_uncovered_ppm": 50.77551238557783,
+    "coverage_at_matched_pieces": 0.8345730716339542,
+    "piece_types_at_matched_pieces": 26703,
+    "coverage_rows_kept_by_trainer": 0.9194274284285535
+   },
+   "rows_dropped_by_trainer": 268,
+   "words": {
+    "source_words": 24599531,
+    "french_words": 28567445,
+    "source_word_types_D11": 195719,
+    "french_word_types_all_rows": 225622,
+    "source_word_types_at_5600000": 89484,
+    "french_word_types_at_6500000_D12": 105989
+   },
+   "rows_with_cr": 0
+  },
+  "R0": {
+   "parent_file": "ft_random",
+   "rows": 214489,
+   "source": {
+    "piece_tokens": 6690150,
+    "unknown_tokens": 7,
+    "piece_types": 20958,
+    "coverage": 0.6550193774221778,
+    "coverage_min_count": {
+     "k1": 0.6550193774221778,
+     "k2": 0.616045755719465,
+     "k5": 0.5678209776222027,
+     "k20": 0.4520565070633829
+    },
+    "piece_types_min_count": {
+     "k1": 20958,
+     "k2": 19711,
+     "k5": 18168,
+     "k20": 14464
+    },
+    "coverage_of_side_vocab": 0.6750225544528934,
+    "types_outside_side_vocab": 8,
+    "pretraining_token_share_covered": 0.9957708760034554,
+    "pretraining_token_share_uncovered_ppm": 4229.123996544586,
+    "coverage_at_matched_pieces": 0.6527378422302788,
+    "piece_types_at_matched_pieces": 20885,
+    "coverage_rows_kept_by_trainer": 0.6550193774221778
+   },
+   "target": {
+    "piece_tokens": 8194797,
+    "unknown_tokens": 1,
+    "piece_types": 24471,
+    "coverage": 0.7648143517939743,
+    "coverage_min_count": {
+     "k1": 0.7648143517939743,
+     "k2": 0.7077447180897612,
+     "k5": 0.6359232404050507,
+     "k20": 0.4989686210776347
+    },
+    "piece_types_min_count": {
+     "k1": 24471,
+     "k2": 22645,
+     "k5": 20347,
+     "k20": 15965
+    },
+    "coverage_of_side_vocab": 0.7720460640479571,
+    "types_outside_side_vocab": 1,
+    "pretraining_token_share_covered": 0.9907945027065066,
+    "pretraining_token_share_uncovered_ppm": 9205.497293493452,
+    "coverage_at_matched_pieces": 0.7611576447055882,
+    "piece_types_at_matched_pieces": 24354,
+    "coverage_rows_kept_by_trainer": 0.7648143517939743
+   },
+   "rows_dropped_by_trainer": 0,
+   "words": {
+    "source_words": 5606498,
+    "french_words": 6716886,
+    "source_word_types_D11": 62000,
+    "french_word_types_all_rows": 73632,
+    "source_word_types_at_5600000": 61958,
+    "french_word_types_at_6500000_D12": 72574
+   },
+   "rows_with_cr": 0
+  },
+  "A_narrow": {
+   "parent_file": "ft_random",
+   "rows": 214489,
+   "source": {
+    "piece_tokens": 6526070,
+    "unknown_tokens": 2,
+    "piece_types": 19410,
+    "coverage": 0.6066383297912239,
+    "coverage_min_count": {
+     "k1": 0.6066383297912239,
+     "k2": 0.5808538567320916,
+     "k5": 0.5297849731216402,
+     "k20": 0.41189523690461305
+    },
+    "piece_types_min_count": {
+     "k1": 19410,
+     "k2": 18585,
+     "k5": 16951,
+     "k20": 13179
+    },
+    "coverage_of_side_vocab": 0.6254027580873824,
+    "types_outside_side_vocab": 0,
+    "pretraining_token_share_covered": 0.9932644152304075,
+    "pretraining_token_share_uncovered_ppm": 6735.58476959251,
+    "coverage_at_matched_pieces": 0.6055756969621202,
+    "piece_types_at_matched_pieces": 19376,
+    "coverage_rows_kept_by_trainer": 0.6066383297912239
+   },
+   "target": {
+    "piece_tokens": 8045971,
+    "unknown_tokens": 0,
+    "piece_types": 22283,
+    "coverage": 0.6964308038504813,
+    "coverage_min_count": {
+     "k1": 0.6964308038504813,
+     "k2": 0.6522690336292036,
+     "k5": 0.5863545443180398,
+     "k20": 0.45680710088761095
+    },
+    "piece_types_min_count": {
+     "k1": 22283,
+     "k2": 20870,
+     "k5": 18761,
+     "k20": 14616
+    },
+    "coverage_of_side_vocab": 0.703044644265657,
+    "types_outside_side_vocab": 0,
+    "pretraining_token_share_covered": 0.987888178814472,
+    "pretraining_token_share_uncovered_ppm": 12111.82118552796,
+    "coverage_at_matched_pieces": 0.6936804600575072,
+    "piece_types_at_matched_pieces": 22195,
+    "coverage_rows_kept_by_trainer": 0.6964308038504813
+   },
+   "rows_dropped_by_trainer": 0,
+   "words": {
+    "source_words": 5606498,
+    "french_words": 6715356,
+    "source_word_types_D11": 33562,
+    "french_word_types_all_rows": 44018,
+    "source_word_types_at_5600000": 33555,
+    "french_word_types_at_6500000_D12": 43703
+   },
+   "rows_with_cr": 0
+  }
+ },
+ "resampling": {
+  "what": "the R0 rule (RU0 pool) and ft_un_random's rule (UN rows of ft_random) redrawn with seeds [1, 2, 3, 4, 5] at ft_un_div's histogram; draws overlap heavily (same finite pool), so the sd is the draw-to-draw spread of these rules, not sampling error from a population",
+  "draws": {
+   "R0_rule_seed1": {
+    "source_coverage": 0.6572696587073384,
+    "source_piece_types": 21030,
+    "target_coverage": 0.7664708088511064,
+    "target_piece_types": 24524,
+    "source_word_types_D11": 62189,
+    "french_word_types_at_6500000_D12": 72854
+   },
+   "ft_un_random_rule_seed1": {
+    "source_coverage": 0.6514564320540067,
+    "source_piece_types": 20844,
+    "target_coverage": 0.7590948868608576,
+    "target_piece_types": 24288,
+    "source_word_types_D11": 58673,
+    "french_word_types_at_6500000_D12": 69436
+   },
+   "R0_rule_seed2": {
+    "source_coverage": 0.6568946118264783,
+    "source_piece_types": 21018,
+    "target_coverage": 0.7651268908613577,
+    "target_piece_types": 24481,
+    "source_word_types_D11": 62103,
+    "french_word_types_at_6500000_D12": 72803
+   },
+   "ft_un_random_rule_seed2": {
+    "source_coverage": 0.649831228903613,
+    "source_piece_types": 20792,
+    "target_coverage": 0.7568758594824353,
+    "target_piece_types": 24217,
+    "source_word_types_D11": 58710,
+    "french_word_types_at_6500000_D12": 69455
+   },
+   "R0_rule_seed3": {
+    "source_coverage": 0.6552381547693462,
+    "source_piece_types": 20965,
+    "target_coverage": 0.7640330041255157,
+    "target_piece_types": 24446,
+    "source_word_types_D11": 61791,
+    "french_word_types_at_6500000_D12": 72414
+   },
+   "ft_un_random_rule_seed3": {
+    "source_coverage": 0.6515189398674834,
+    "source_piece_types": 20846,
+    "target_coverage": 0.7592511563945493,
+    "target_piece_types": 24293,
+    "source_word_types_D11": 59098,
+    "french_word_types_at_6500000_D12": 69899
+   },
+   "R0_rule_seed4": {
+    "source_coverage": 0.6546443305413177,
+    "source_piece_types": 20946,
+    "target_coverage": 0.7642830353794224,
+    "target_piece_types": 24454,
+    "source_word_types_D11": 62017,
+    "french_word_types_at_6500000_D12": 72609
+   },
+   "ft_un_random_rule_seed4": {
+    "source_coverage": 0.6482997874734342,
+    "source_piece_types": 20743,
+    "target_coverage": 0.759313664208026,
+    "target_piece_types": 24295,
+    "source_word_types_D11": 58813,
+    "french_word_types_at_6500000_D12": 69562
+   },
+   "R0_rule_seed5": {
+    "source_coverage": 0.6546443305413177,
+    "source_piece_types": 20946,
+    "target_coverage": 0.7641267658457307,
+    "target_piece_types": 24449,
+    "source_word_types_D11": 61967,
+    "french_word_types_at_6500000_D12": 72666
+   },
+   "ft_un_random_rule_seed5": {
+    "source_coverage": 0.6494561820227528,
+    "source_piece_types": 20780,
+    "target_coverage": 0.7551881485185649,
+    "target_piece_types": 24163,
+    "source_word_types_D11": 58423,
+    "french_word_types_at_6500000_D12": 69048
+   }
+  },
+  "summary": {
+   "R0_rule": {
+    "source_coverage": {
+     "mean": 0.6557382172771596,
+     "sd": 0.0012575571658164132,
+     "min": 0.6546443305413177,
+     "max": 0.6572696587073384
+    },
+    "source_piece_types": {
+     "mean": 20981.0,
+     "sd": 40.23679907746142,
+     "min": 20946.0,
+     "max": 21030.0
+    },
+    "target_coverage": {
+     "mean": 0.7648081010126265,
+     "sd": 0.001025537790262552,
+     "min": 0.7640330041255157,
+     "max": 0.7664708088511064
+    },
+    "target_piece_types": {
+     "mean": 24470.8,
+     "sd": 32.813107137240145,
+     "min": 24446.0,
+     "max": 24524.0
+    },
+    "source_word_types_D11": {
+     "mean": 62013.4,
+     "sd": 150.4087763396804,
+     "min": 61791.0,
+     "max": 62189.0
+    },
+    "french_word_types_at_6500000_D12": {
+     "mean": 72669.2,
+     "sd": 173.79211719753,
+     "min": 72414.0,
+     "max": 72854.0
+    }
+   },
+   "ft_un_random_rule": {
+    "source_coverage": {
+     "mean": 0.650112514064258,
+     "sd": 0.0013765917955710142,
+     "min": 0.6482997874734342,
+     "max": 0.6515189398674834
+    },
+    "source_piece_types": {
+     "mean": 20801.0,
+     "sd": 44.04543109109048,
+     "min": 20743.0,
+     "max": 20846.0
+    },
+    "target_coverage": {
+     "mean": 0.7579447430928866,
+     "sd": 0.0018469445877658207,
+     "min": 0.7551881485185649,
+     "max": 0.759313664208026
+    },
+    "target_piece_types": {
+     "mean": 24251.2,
+     "sd": 59.09483903015558,
+     "min": 24163.0,
+     "max": 24295.0
+    },
+    "source_word_types_D11": {
+     "mean": 58743.4,
+     "sd": 244.59824202148306,
+     "min": 58423.0,
+     "max": 59098.0
+    },
+    "french_word_types_at_6500000_D12": {
+     "mean": 69480.0,
+     "sd": 304.7416938982915,
+     "min": 69048.0,
+     "max": 69899.0
+    }
+   }
+  }
+ },
+ "contrasts": [
+  {
+   "contrast": "ft_un_rep vs ft_un_div (E0.5 Q1, E0.6 Q1')",
+   "a": "ft_un_rep",
+   "b": "ft_un_div",
+   "asked_for": true,
+   "measures": {
+    "source_coverage": {
+     "a": 0.5410051256407051,
+     "b": 0.5805725715714465,
+     "a_minus_b": -0.03956744593074135,
+     "relative_(a-b)/b": -0.06815245478036176
+    },
+    "source_piece_types": {
+     "a": 17310,
+     "b": 18576,
+     "a_minus_b": -1266,
+     "relative_(a-b)/b": -0.06815245478036176
+    },
+    "source_coverage_k2": {
+     "a": 0.5057194649331166,
+     "b": 0.5410051256407051,
+     "a_minus_b": -0.03528566070758854,
+     "relative_(a-b)/b": -0.06522241478913939
+    },
+    "source_coverage_k5": {
+     "a": 0.4389298662332792,
+     "b": 0.47755969496187023,
+     "a_minus_b": -0.038629828728591054,
+     "relative_(a-b)/b": -0.0808900523560209
+    },
+    "source_coverage_k20": {
+     "a": 0.3077259657457182,
+     "b": 0.34898112264033004,
+     "a_minus_b": -0.041255156894611844,
+     "relative_(a-b)/b": -0.11821601289629237
+    },
+    "source_coverage_of_side_vocab": {
+     "a": 0.5577071787601495,
+     "b": 0.5984340765562572,
+     "a_minus_b": -0.04072689779610772,
+     "relative_(a-b)/b": -0.06805577989554726
+    },
+    "source_pretraining_token_share_uncovered_ppm": {
+     "a": 17247.25232728726,
+     "b": 11028.713840098028,
+     "a_minus_b": 6218.538487189233,
+     "relative_(a-b)/b": 0.5638498357424024
+    },
+    "source_coverage_at_matched_pieces": {
+     "a": 0.5407238404800601,
+     "b": 0.5795411926490811,
+     "a_minus_b": -0.03881735216902105,
+     "relative_(a-b)/b": -0.06697945316291848
+    },
+    "target_coverage": {
+     "a": 0.5931678959869984,
+     "b": 0.6346730841355169,
+     "a_minus_b": -0.04150518814851856,
+     "relative_(a-b)/b": -0.06539616880878514
+    },
+    "target_piece_types": {
+     "a": 18979,
+     "b": 20307,
+     "a_minus_b": -1328,
+     "relative_(a-b)/b": -0.06539616880878515
+    },
+    "target_coverage_k2": {
+     "a": 0.5551943992999125,
+     "b": 0.5900112514064259,
+     "a_minus_b": -0.03481685210651331,
+     "relative_(a-b)/b": -0.059010488399194816
+    },
+    "target_coverage_k5": {
+     "a": 0.4879359919989999,
+     "b": 0.5230653831728966,
+     "a_minus_b": -0.03512939117389674,
+     "relative_(a-b)/b": -0.06716061185468451
+    },
+    "target_coverage_k20": {
+     "a": 0.35573196649581196,
+     "b": 0.39645580697587196,
+     "a_minus_b": -0.04072384048006,
+     "relative_(a-b)/b": -0.10271974773354355
+    },
+    "target_coverage_of_side_vocab": {
+     "a": 0.5988010727244045,
+     "b": 0.6406688752169112,
+     "a_minus_b": -0.041867802492506656,
+     "relative_(a-b)/b": -0.06535014281493147
+    },
+    "target_pretraining_token_share_uncovered_ppm": {
+     "a": 23346.74044757558,
+     "b": 17567.239811740717,
+     "a_minus_b": 5779.500635834862,
+     "relative_(a-b)/b": 0.32899309725209347
+    },
+    "target_coverage_at_matched_pieces": {
+     "a": 0.5930741342667833,
+     "b": 0.6335479434929366,
+     "a_minus_b": -0.04047380922615329,
+     "relative_(a-b)/b": -0.06388436682946083
+    },
+    "source_word_types_D11": {
+     "a": 25134,
+     "b": 33874,
+     "a_minus_b": -8740,
+     "relative_(a-b)/b": -0.25801499675267164
+    },
+    "source_word_types_at_5600000": {
+     "a": 25131,
+     "b": 33855,
+     "a_minus_b": -8724,
+     "relative_(a-b)/b": -0.25768719539211343
+    },
+    "french_word_types_at_6500000_D12": {
+     "a": 32684,
+     "b": 43021,
+     "a_minus_b": -10337,
+     "relative_(a-b)/b": -0.24027800376560285
+    }
+   }
+  },
+  {
+   "contrast": "ft_un_div vs ft_un_random (E0.5 Q2, E0.6 Q2')",
+   "a": "ft_un_div",
+   "b": "ft_un_random",
+   "asked_for": true,
+   "measures": {
+    "source_coverage": {
+     "a": 0.5805725715714465,
+     "b": 0.6502375296912114,
+     "a_minus_b": -0.06966495811976492,
+     "relative_(a-b)/b": -0.1071377072819033
+    },
+    "source_piece_types": {
+     "a": 18576,
+     "b": 20805,
+     "a_minus_b": -2229,
+     "relative_(a-b)/b": -0.10713770728190339
+    },
+    "source_coverage_k2": {
+     "a": 0.5410051256407051,
+     "b": 0.6122015251906489,
+     "a_minus_b": -0.07119639954994372,
+     "relative_(a-b)/b": -0.11629569123953437
+    },
+    "source_coverage_k5": {
+     "a": 0.47755969496187023,
+     "b": 0.5627578447305913,
+     "a_minus_b": -0.08519814976872109,
+     "relative_(a-b)/b": -0.15139397978451627
+    },
+    "source_coverage_k20": {
+     "a": 0.34898112264033004,
+     "b": 0.4490561320165021,
+     "a_minus_b": -0.10007500937617203,
+     "relative_(a-b)/b": -0.2228563474387528
+    },
+    "source_coverage_of_side_vocab": {
+     "a": 0.5984340765562572,
+     "b": 0.6702538986982859,
+     "a_minus_b": -0.07181982214202864,
+     "relative_(a-b)/b": -0.10715315835015868
+    },
+    "source_pretraining_token_share_uncovered_ppm": {
+     "a": 11028.713840098028,
+     "b": 4476.4847618338645,
+     "a_minus_b": 6552.229078264163,
+     "relative_(a-b)/b": 1.4636996274683924
+    },
+    "source_coverage_at_matched_pieces": {
+     "a": 0.5795411926490811,
+     "b": 0.6483622952869109,
+     "a_minus_b": -0.06882110263782981,
+     "relative_(a-b)/b": -0.10614605929139563
+    },
+    "target_coverage": {
+     "a": 0.6346730841355169,
+     "b": 0.7594699337417177,
+     "a_minus_b": -0.12479684960620074,
+     "relative_(a-b)/b": -0.16432098765432096
+    },
+    "target_piece_types": {
+     "a": 20307,
+     "b": 24300,
+     "a_minus_b": -3993,
+     "relative_(a-b)/b": -0.164320987654321
+    },
+    "target_coverage_k2": {
+     "a": 0.5900112514064259,
+     "b": 0.703525440680085,
+     "a_minus_b": -0.1135141892736592,
+     "relative_(a-b)/b": -0.1613505108840515
+    },
+    "target_coverage_k5": {
+     "a": 0.5230653831728966,
+     "b": 0.6321102637829729,
+     "a_minus_b": -0.10904488061007622,
+     "relative_(a-b)/b": -0.1725092707045735
+    },
+    "target_coverage_k20": {
+     "a": 0.39645580697587196,
+     "b": 0.4946868358544818,
+     "a_minus_b": -0.09823102887860985,
+     "relative_(a-b)/b": -0.19857215061915598
+    },
+    "target_coverage_of_side_vocab": {
+     "a": 0.6406688752169112,
+     "b": 0.7666193405899985,
+     "a_minus_b": -0.1259504653730873,
+     "relative_(a-b)/b": -0.1642933574779818
+    },
+    "target_pretraining_token_share_uncovered_ppm": {
+     "a": 17567.239811740717,
+     "b": 9446.435107253561,
+     "a_minus_b": 8120.804704487156,
+     "relative_(a-b)/b": 0.8596687123009501
+    },
+    "target_coverage_at_matched_pieces": {
+     "a": 0.6335479434929366,
+     "b": 0.7567195899487436,
+     "a_minus_b": -0.12317164645580692,
+     "relative_(a-b)/b": -0.16277052701139924
+    },
+    "source_word_types_D11": {
+     "a": 33874,
+     "b": 58441,
+     "a_minus_b": -24567,
+     "relative_(a-b)/b": -0.4203726835611985
+    },
+    "source_word_types_at_5600000": {
+     "a": 33855,
+     "b": 58420,
+     "a_minus_b": -24565,
+     "relative_(a-b)/b": -0.42048955837042107
+    },
+    "french_word_types_at_6500000_D12": {
+     "a": 43021,
+     "b": 69320,
+     "a_minus_b": -26299,
+     "relative_(a-b)/b": -0.3793854587420658
+    }
+   }
+  },
+  {
+   "contrast": "A_narrow vs R0 (E0.6 N)",
+   "a": "A_narrow",
+   "b": "R0",
+   "asked_for": true,
+   "measures": {
+    "source_coverage": {
+     "a": 0.6066383297912239,
+     "b": 0.6550193774221778,
+     "a_minus_b": -0.048381047630953855,
+     "relative_(a-b)/b": -0.0738620097337532
+    },
+    "source_piece_types": {
+     "a": 19410,
+     "b": 20958,
+     "a_minus_b": -1548,
+     "relative_(a-b)/b": -0.07386200973375322
+    },
+    "source_coverage_k2": {
+     "a": 0.5808538567320916,
+     "b": 0.616045755719465,
+     "a_minus_b": -0.035191898987373404,
+     "relative_(a-b)/b": -0.05712546293947539
+    },
+    "source_coverage_k5": {
+     "a": 0.5297849731216402,
+     "b": 0.5678209776222027,
+     "a_minus_b": -0.03803600450056255,
+     "relative_(a-b)/b": -0.06698590929106117
+    },
+    "source_coverage_k20": {
+     "a": 0.41189523690461305,
+     "b": 0.4520565070633829,
+     "a_minus_b": -0.04016127015876986,
+     "relative_(a-b)/b": -0.08884126106194692
+    },
+    "source_coverage_of_side_vocab": {
+     "a": 0.6254027580873824,
+     "b": 0.6750225544528934,
+     "a_minus_b": -0.04961979636551095,
+     "relative_(a-b)/b": -0.07350835322195694
+    },
+    "source_pretraining_token_share_uncovered_ppm": {
+     "a": 6735.58476959251,
+     "b": 4229.123996544586,
+     "a_minus_b": 2506.4607730479247,
+     "relative_(a-b)/b": 0.5926666551030032
+    },
+    "source_coverage_at_matched_pieces": {
+     "a": 0.6055756969621202,
+     "b": 0.6527378422302788,
+     "a_minus_b": -0.04716214526815854,
+     "relative_(a-b)/b": -0.07225281302370125
+    },
+    "target_coverage": {
+     "a": 0.6964308038504813,
+     "b": 0.7648143517939743,
+     "a_minus_b": -0.068383547943493,
+     "relative_(a-b)/b": -0.08941195701033884
+    },
+    "target_piece_types": {
+     "a": 22283,
+     "b": 24471,
+     "a_minus_b": -2188,
+     "relative_(a-b)/b": -0.08941195701033877
+    },
+    "target_coverage_k2": {
+     "a": 0.6522690336292036,
+     "b": 0.7077447180897612,
+     "a_minus_b": -0.05547568446055762,
+     "relative_(a-b)/b": -0.07838374917200272
+    },
+    "target_coverage_k5": {
+     "a": 0.5863545443180398,
+     "b": 0.6359232404050507,
+     "a_minus_b": -0.049568696087010866,
+     "relative_(a-b)/b": -0.07794760898412541
+    },
+    "target_coverage_k20": {
+     "a": 0.45680710088761095,
+     "b": 0.4989686210776347,
+     "a_minus_b": -0.04216152019002373,
+     "relative_(a-b)/b": -0.08449733792671464
+    },
+    "target_coverage_of_side_vocab": {
+     "a": 0.703044644265657,
+     "b": 0.7720460640479571,
+     "a_minus_b": -0.06900141978230001,
+     "relative_(a-b)/b": -0.08937474458520633
+    },
+    "target_pretraining_token_share_uncovered_ppm": {
+     "a": 12111.82118552796,
+     "b": 9205.497293493452,
+     "a_minus_b": 2906.3238920345084,
+     "relative_(a-b)/b": 0.31571612041955954
+    },
+    "target_coverage_at_matched_pieces": {
+     "a": 0.6936804600575072,
+     "b": 0.7611576447055882,
+     "a_minus_b": -0.06747718464808106,
+     "relative_(a-b)/b": -0.08865073499219847
+    },
+    "source_word_types_D11": {
+     "a": 33562,
+     "b": 62000,
+     "a_minus_b": -28438,
+     "relative_(a-b)/b": -0.4586774193548387
+    },
+    "source_word_types_at_5600000": {
+     "a": 33555,
+     "b": 61958,
+     "a_minus_b": -28403,
+     "relative_(a-b)/b": -0.4584234481422899
+    },
+    "french_word_types_at_6500000_D12": {
+     "a": 43703,
+     "b": 72574,
+     "a_minus_b": -28871,
+     "relative_(a-b)/b": -0.397814644362995
+    }
+   }
+  },
+  {
+   "contrast": "A_narrow vs ft_un_div (E0.6 S)",
+   "a": "A_narrow",
+   "b": "ft_un_div",
+   "asked_for": false,
+   "measures": {
+    "source_coverage": {
+     "a": 0.6066383297912239,
+     "b": 0.5805725715714465,
+     "a_minus_b": 0.026065758219777413,
+     "relative_(a-b)/b": 0.04489664082687328
+    },
+    "source_piece_types": {
+     "a": 19410,
+     "b": 18576,
+     "a_minus_b": 834,
+     "relative_(a-b)/b": 0.044896640826873384
+    },
+    "source_coverage_k2": {
+     "a": 0.5808538567320916,
+     "b": 0.5410051256407051,
+     "a_minus_b": 0.039848731091386425,
+     "relative_(a-b)/b": 0.07365684575389948
+    },
+    "source_coverage_k5": {
+     "a": 0.5297849731216402,
+     "b": 0.47755969496187023,
+     "a_minus_b": 0.05222527815976996,
+     "relative_(a-b)/b": 0.10935863874345547
+    },
+    "source_coverage_k20": {
+     "a": 0.41189523690461305,
+     "b": 0.34898112264033004,
+     "a_minus_b": 0.062914114264283,
+     "relative_(a-b)/b": 0.18027941966684569
+    },
+    "source_coverage_of_side_vocab": {
+     "a": 0.6254027580873824,
+     "b": 0.5984340765562572,
+     "a_minus_b": 0.026968681531125194,
+     "relative_(a-b)/b": 0.04506541754159272
+    },
+    "source_pretraining_token_share_uncovered_ppm": {
+     "a": 6735.58476959251,
+     "b": 11028.713840098028,
+     "a_minus_b": -4293.129070505517,
+     "relative_(a-b)/b": -0.3892683347079534
+    },
+    "source_coverage_at_matched_pieces": {
+     "a": 0.6055756969621202,
+     "b": 0.5795411926490811,
+     "a_minus_b": 0.02603450431303911,
+     "relative_(a-b)/b": 0.04492261230653073
+    },
+    "target_coverage": {
+     "a": 0.6964308038504813,
+     "b": 0.6346730841355169,
+     "a_minus_b": 0.061757719714964354,
+     "relative_(a-b)/b": 0.09730634756487908
+    },
+    "target_piece_types": {
+     "a": 22283,
+     "b": 20307,
+     "a_minus_b": 1976,
+     "relative_(a-b)/b": 0.0973063475648791
+    },
+    "target_coverage_k2": {
+     "a": 0.6522690336292036,
+     "b": 0.5900112514064259,
+     "a_minus_b": 0.06225778222277778,
+     "relative_(a-b)/b": 0.1055196525055619
+    },
+    "target_coverage_k5": {
+     "a": 0.5863545443180398,
+     "b": 0.5230653831728966,
+     "a_minus_b": 0.06328916114514316,
+     "relative_(a-b)/b": 0.1209966539196941
+    },
+    "target_coverage_k20": {
+     "a": 0.45680710088761095,
+     "b": 0.39645580697587196,
+     "a_minus_b": 0.06035129391173899,
+     "relative_(a-b)/b": 0.1522270398108002
+    },
+    "target_coverage_of_side_vocab": {
+     "a": 0.703044644265657,
+     "b": 0.6406688752169112,
+     "a_minus_b": 0.062375769048745866,
+     "relative_(a-b)/b": 0.09736038609278047
+    },
+    "target_pretraining_token_share_uncovered_ppm": {
+     "a": 12111.82118552796,
+     "b": 17567.239811740717,
+     "a_minus_b": -5455.418626212757,
+     "relative_(a-b)/b": -0.3105450079053817
+    },
+    "target_coverage_at_matched_pieces": {
+     "a": 0.6936804600575072,
+     "b": 0.6335479434929366,
+     "a_minus_b": 0.060132516564570526,
+     "relative_(a-b)/b": 0.09491391643234169
+    },
+    "source_word_types_D11": {
+     "a": 33562,
+     "b": 33874,
+     "a_minus_b": -312,
+     "relative_(a-b)/b": -0.009210604003070201
+    },
+    "source_word_types_at_5600000": {
+     "a": 33555,
+     "b": 33855,
+     "a_minus_b": -300,
+     "relative_(a-b)/b": -0.008861320336730172
+    },
+    "french_word_types_at_6500000_D12": {
+     "a": 43703,
+     "b": 43021,
+     "a_minus_b": 682,
+     "relative_(a-b)/b": 0.01585272308872411
+    }
+   }
+  },
+  {
+   "contrast": "ft_un_div vs R0 (E0.6 P)",
+   "a": "ft_un_div",
+   "b": "R0",
+   "asked_for": false,
+   "measures": {
+    "source_coverage": {
+     "a": 0.5805725715714465,
+     "b": 0.6550193774221778,
+     "a_minus_b": -0.07444680585073127,
+     "relative_(a-b)/b": -0.11365588319496124
+    },
+    "source_piece_types": {
+     "a": 18576,
+     "b": 20958,
+     "a_minus_b": -2382,
+     "relative_(a-b)/b": -0.11365588319496135
+    },
+    "source_coverage_k2": {
+     "a": 0.5410051256407051,
+     "b": 0.616045755719465,
+     "a_minus_b": -0.07504063007875983,
+     "relative_(a-b)/b": -0.12181015676525794
+    },
+    "source_coverage_k5": {
+     "a": 0.47755969496187023,
+     "b": 0.5678209776222027,
+     "a_minus_b": -0.09026128266033251,
+     "relative_(a-b)/b": -0.15896081021576394
+    },
+    "source_coverage_k20": {
+     "a": 0.34898112264033004,
+     "b": 0.4520565070633829,
+     "a_minus_b": -0.10307538442305286,
+     "relative_(a-b)/b": -0.22801438053097342
+    },
+    "source_coverage_of_side_vocab": {
+     "a": 0.5984340765562572,
+     "b": 0.6750225544528934,
+     "a_minus_b": -0.07658847789663614,
+     "relative_(a-b)/b": -0.11346062052505963
+    },
+    "source_pretraining_token_share_uncovered_ppm": {
+     "a": 11028.713840098028,
+     "b": 4229.123996544586,
+     "a_minus_b": 6799.589843553442,
+     "relative_(a-b)/b": 1.6078010124813225
+    },
+    "source_coverage_at_matched_pieces": {
+     "a": 0.5795411926490811,
+     "b": 0.6527378422302788,
+     "a_minus_b": -0.07319664958119765,
+     "relative_(a-b)/b": -0.11213789801292794
+    },
+    "target_coverage": {
+     "a": 0.6346730841355169,
+     "b": 0.7648143517939743,
+     "a_minus_b": -0.13014126765845735,
+     "relative_(a-b)/b": -0.17016059825916396
+    },
+    "target_piece_types": {
+     "a": 20307,
+     "b": 24471,
+     "a_minus_b": -4164,
+     "relative_(a-b)/b": -0.1701605982591639
+    },
+    "target_coverage_k2": {
+     "a": 0.5900112514064259,
+     "b": 0.7077447180897612,
+     "a_minus_b": -0.1177334666833354,
+     "relative_(a-b)/b": -0.16635018767939938
+    },
+    "target_coverage_k5": {
+     "a": 0.5230653831728966,
+     "b": 0.6359232404050507,
+     "a_minus_b": -0.11285785723215402,
+     "relative_(a-b)/b": -0.17747088022804344
+    },
+    "target_coverage_k20": {
+     "a": 0.39645580697587196,
+     "b": 0.4989686210776347,
+     "a_minus_b": -0.10251281410176272,
+     "relative_(a-b)/b": -0.2054494206075791
+    },
+    "target_coverage_of_side_vocab": {
+     "a": 0.6406688752169112,
+     "b": 0.7720460640479571,
+     "a_minus_b": -0.13137718883104588,
+     "relative_(a-b)/b": -0.17016755210461787
+    },
+    "target_pretraining_token_share_uncovered_ppm": {
+     "a": 17567.239811740717,
+     "b": 9205.497293493452,
+     "a_minus_b": 8361.742518247265,
+     "relative_(a-b)/b": 0.908342292833809
+    },
+    "target_coverage_at_matched_pieces": {
+     "a": 0.6335479434929366,
+     "b": 0.7611576447055882,
+     "a_minus_b": -0.12760970121265158,
+     "relative_(a-b)/b": -0.16765213106676521
+    },
+    "source_word_types_D11": {
+     "a": 33874,
+     "b": 62000,
+     "a_minus_b": -28126,
+     "relative_(a-b)/b": -0.45364516129032256
+    },
+    "source_word_types_at_5600000": {
+     "a": 33855,
+     "b": 61958,
+     "a_minus_b": -28103,
+     "relative_(a-b)/b": -0.4535814584073082
+    },
+    "french_word_types_at_6500000_D12": {
+     "a": 43021,
+     "b": 72574,
+     "a_minus_b": -29553,
+     "relative_(a-b)/b": -0.407211949182903
+    }
+   }
+  },
+  {
+   "contrast": "ft_topk_rep vs ft_topk_div (E0.4 split)",
+   "a": "ft_topk_rep",
+   "b": "ft_topk_div",
+   "asked_for": false,
+   "measures": {
+    "source_coverage": {
+     "a": 0.5615076884610576,
+     "b": 0.603637954744343,
+     "a_minus_b": -0.04213026628328542,
+     "relative_(a-b)/b": -0.06979393186289741
+    },
+    "source_piece_types": {
+     "a": 17966,
+     "b": 19314,
+     "a_minus_b": -1348,
+     "relative_(a-b)/b": -0.06979393186289738
+    },
+    "source_coverage_k2": {
+     "a": 0.5271596449556194,
+     "b": 0.5643830478809851,
+     "a_minus_b": -0.037223402925365745,
+     "relative_(a-b)/b": -0.06595414774615142
+    },
+    "source_coverage_k5": {
+     "a": 0.460463807975997,
+     "b": 0.5024378047255907,
+     "a_minus_b": -0.041973996749593734,
+     "relative_(a-b)/b": -0.0835406817616323
+    },
+    "source_coverage_k20": {
+     "a": 0.3284160520065008,
+     "b": 0.37295286910863856,
+     "a_minus_b": -0.04453681710213775,
+     "relative_(a-b)/b": -0.11941674348445483
+    },
+    "source_coverage_of_side_vocab": {
+     "a": 0.5788439231859775,
+     "b": 0.6222129140353139,
+     "a_minus_b": -0.04336899084933632,
+     "relative_(a-b)/b": -0.06970120656620589
+    },
+    "source_pretraining_token_share_uncovered_ppm": {
+     "a": 11249.376423851345,
+     "b": 5921.623829021618,
+     "a_minus_b": 5327.752594829727,
+     "relative_(a-b)/b": 0.8997114218432191
+    },
+    "source_coverage_at_matched_pieces": {
+     "a": 0.556882110263783,
+     "b": 0.5979809976247031,
+     "a_minus_b": -0.041098887360920155,
+     "relative_(a-b)/b": -0.0687294203731773
+    },
+    "target_coverage": {
+     "a": 0.618421052631579,
+     "b": 0.6623952994124266,
+     "a_minus_b": -0.0439742467808476,
+     "relative_(a-b)/b": -0.06638671322072284
+    },
+    "target_piece_types": {
+     "a": 19787,
+     "b": 21194,
+     "a_minus_b": -1407,
+     "relative_(a-b)/b": -0.06638671322072284
+    },
+    "target_coverage_k2": {
+     "a": 0.5791973996749594,
+     "b": 0.6187960995124391,
+     "a_minus_b": -0.039598699837479656,
+     "relative_(a-b)/b": -0.06399313096621037
+    },
+    "target_coverage_k5": {
+     "a": 0.5113764220527566,
+     "b": 0.5539754969371171,
+     "a_minus_b": -0.042599074884360544,
+     "relative_(a-b)/b": -0.07689703808180536
+    },
+    "target_coverage_k20": {
+     "a": 0.3783285410676335,
+     "b": 0.42342792849106137,
+     "a_minus_b": -0.045099387423427895,
+     "relative_(a-b)/b": -0.10651018600531437
+    },
+    "target_coverage_of_side_vocab": {
+     "a": 0.6242940526896987,
+     "b": 0.6686859126045117,
+     "a_minus_b": -0.04439185991481298,
+     "relative_(a-b)/b": -0.06638671322072273
+    },
+    "target_pretraining_token_share_uncovered_ppm": {
+     "a": 12025.723577569808,
+     "b": 7603.045417122557,
+     "a_minus_b": 4422.678160447251,
+     "relative_(a-b)/b": 0.5816982429813045
+    },
+    "target_coverage_at_matched_pieces": {
+     "a": 0.6131078884860608,
+     "b": 0.6553319164895612,
+     "a_minus_b": -0.04222402800350045,
+     "relative_(a-b)/b": -0.06443151468904999
+    },
+    "source_word_types_D11": {
+     "a": 27524,
+     "b": 38783,
+     "a_minus_b": -11259,
+     "relative_(a-b)/b": -0.29030760900394503
+    },
+    "source_word_types_at_5600000": {
+     "a": 26575,
+     "b": 36829,
+     "a_minus_b": -10254,
+     "relative_(a-b)/b": -0.2784218957886448
+    },
+    "french_word_types_at_6500000_D12": {
+     "a": 34789,
+     "b": 47216,
+     "a_minus_b": -12427,
+     "relative_(a-b)/b": -0.2631946797695696
+    }
+   }
+  },
+  {
+   "contrast": "ft_topk_div vs ft_random_small (E0.4)",
+   "a": "ft_topk_div",
+   "b": "ft_random_small",
+   "asked_for": false,
+   "measures": {
+    "source_coverage": {
+     "a": 0.603637954744343,
+     "b": 0.7338417302162771,
+     "a_minus_b": -0.13020377547193407,
+     "relative_(a-b)/b": -0.1774275979557071
+    },
+    "source_piece_types": {
+     "a": 19314,
+     "b": 23480,
+     "a_minus_b": -4166,
+     "relative_(a-b)/b": -0.17742759795570698
+    },
+    "source_coverage_k2": {
+     "a": 0.5643830478809851,
+     "b": 0.6783660457557195,
+     "a_minus_b": -0.11398299787473432,
+     "relative_(a-b)/b": -0.16802580050679564
+    },
+    "source_coverage_k5": {
+     "a": 0.5024378047255907,
+     "b": 0.626828353544193,
+     "a_minus_b": -0.12439054881860223,
+     "relative_(a-b)/b": -0.19844435580374936
+    },
+    "source_coverage_k20": {
+     "a": 0.37295286910863856,
+     "b": 0.532691586448306,
+     "a_minus_b": -0.1597387173396675,
+     "relative_(a-b)/b": -0.2998709223187046
+    },
+    "source_coverage_of_side_vocab": {
+     "a": 0.6222129140353139,
+     "b": 0.7564441293981183,
+     "a_minus_b": -0.13423121536280447,
+     "relative_(a-b)/b": -0.17745027047748857
+    },
+    "source_pretraining_token_share_uncovered_ppm": {
+     "a": 5921.623829021618,
+     "b": 358.0378794833606,
+     "a_minus_b": 5563.585949538257,
+     "relative_(a-b)/b": 15.539098705327962
+    },
+    "source_coverage_at_matched_pieces": {
+     "a": 0.5979809976247031,
+     "b": 0.7234966870858858,
+     "a_minus_b": -0.12551568946118263,
+     "relative_(a-b)/b": -0.17348481575878005
+    },
+    "target_coverage": {
+     "a": 0.6623952994124266,
+     "b": 0.8490748843605451,
+     "a_minus_b": -0.18667958494811854,
+     "relative_(a-b)/b": -0.21986233297750948
+    },
+    "target_piece_types": {
+     "a": 21194,
+     "b": 27167,
+     "a_minus_b": -5973,
+     "relative_(a-b)/b": -0.21986233297750948
+    },
+    "target_coverage_k2": {
+     "a": 0.6187960995124391,
+     "b": 0.7906925865733216,
+     "a_minus_b": -0.17189648706088256,
+     "relative_(a-b)/b": -0.21739989722913944
+    },
+    "target_coverage_k5": {
+     "a": 0.5539754969371171,
+     "b": 0.719871233904238,
+     "a_minus_b": -0.1658957369671209,
+     "relative_(a-b)/b": -0.23045196023097297
+    },
+    "target_coverage_k20": {
+     "a": 0.42342792849106137,
+     "b": 0.5936679584948118,
+     "a_minus_b": -0.17024003000375043,
+     "relative_(a-b)/b": -0.28675967359831533
+    },
+    "target_coverage_of_side_vocab": {
+     "a": 0.6686859126045117,
+     "b": 0.8571383498974602,
+     "a_minus_b": -0.18845243729294847,
+     "relative_(a-b)/b": -0.21986233297750954
+    },
+    "target_pretraining_token_share_uncovered_ppm": {
+     "a": 7603.045417122557,
+     "b": 280.8593881303253,
+     "a_minus_b": 7322.186028992232,
+     "relative_(a-b)/b": 26.07064722933373
+    },
+    "target_coverage_at_matched_pieces": {
+     "a": 0.6553319164895612,
+     "b": 0.8373859232404051,
+     "a_minus_b": -0.18205400675084382,
+     "relative_(a-b)/b": -0.21740753181801212
+    },
+    "source_word_types_D11": {
+     "a": 38783,
+     "b": 94897,
+     "a_minus_b": -56114,
+     "relative_(a-b)/b": -0.5913147939344763
+    },
+    "source_word_types_at_5600000": {
+     "a": 36829,
+     "b": 88876,
+     "a_minus_b": -52047,
+     "relative_(a-b)/b": -0.5856136639812772
+    },
+    "french_word_types_at_6500000_D12": {
+     "a": 47216,
+     "b": 105692,
+     "a_minus_b": -58476,
+     "relative_(a-b)/b": -0.5532679862241229
+    }
+   }
+  }
+ ],
+ "checks": [
+  {
+   "check": "pretraining lines = 9,312,233 on both sides",
+   "ok": true
+  },
+  {
+   "check": "vectorised types_at = vocab/common.py types_at (ft_un_rep French, 6.5M)",
+   "ok": true,
+   "literal": 32684,
+   "vectorised": 32684
+  },
+  {
+   "check": "piece types with 1 thread (Python set) = with N threads (bincount), ft_un_rep source",
+   "ok": true,
+   "one_thread": 17310,
+   "n_threads": 17310
+  },
+  {
+   "check": "ft_topk rows = 926,999",
+   "ok": true,
+   "rows": 926999
+  },
+  {
+   "check": "ft_random rows = 926,999",
+   "ok": true,
+   "rows": 926999
+  },
+  {
+   "check": "ft_random.source has one label per row",
+   "ok": true,
+   "lines": 926999
+  },
+  {
+   "check": "ft_un_div and ft_un_rep share one source-length histogram",
+   "ok": true
+  },
+  {
+   "check": "RU0 (UN rows of ft_random with rep_rand = 0) = 450,709",
+   "ok": true,
+   "got": 450709
+  },
+  {
+   "check": "R0: 1-d integer index (int64, shape (214489,))",
+   "ok": true
+  },
+  {
+   "check": "R0: 214,489 rows, strictly ascending, within [0, 926,999)",
+   "ok": true,
+   "rows": 214489,
+   "min": 0,
+   "max": 926998
+  },
+  {
+   "check": "R0: every row is labelled 'un' in ft_random.source",
+   "ok": true
+  },
+  {
+   "check": "R0: rep_rand = 0 on every row",
+   "ok": true,
+   "rows_with_rep": 0
+  },
+  {
+   "check": "R0: source-length histogram = ft_un_div's",
+   "ok": true
+  },
+  {
+   "check": "R0: power check: the same indices read one line later do NOT give ft_un_div's histogram",
+   "ok": true
+  },
+  {
+   "check": "A_narrow: 1-d integer index (int64, shape (214489,))",
+   "ok": true
+  },
+  {
+   "check": "A_narrow: 214,489 rows, strictly ascending, within [0, 926,999)",
+   "ok": true,
+   "rows": 214489,
+   "min": 0,
+   "max": 926998
+  },
+  {
+   "check": "A_narrow: every row is labelled 'un' in ft_random.source",
+   "ok": true
+  },
+  {
+   "check": "A_narrow: rep_rand = 0 on every row",
+   "ok": true,
+   "rows_with_rep": 0
+  },
+  {
+   "check": "A_narrow: source-length histogram = ft_un_div's",
+   "ok": true
+  },
+  {
+   "check": "A_narrow: power check: the same indices read one line later do NOT give ft_un_div's histogram",
+   "ok": true
+  },
+  {
+   "check": "R0.npy = match_random(ft_un_div's histogram, RU0, seed 42) row for row (e06_build.py build_r0)",
+   "ok": true,
+   "tightest_slack": 1.2025073746312684
+  },
+  {
+   "check": "ft_un_random file = ft_random rows match_random(histogram, UN rows, seed 42), both sides, line for line",
+   "ok": true,
+   "tightest_slack": 1.664825452938577
+  },
+  {
+   "check": "A_narrow capped pool at 42,000 / 58,000 = 402,010 rows",
+   "ok": true,
+   "got": 402010
+  },
+  {
+   "check": "A_narrow is inside the capped pool",
+   "ok": true
+  },
+  {
+   "check": "rows shared by R0 and A_narrow = 136,916",
+   "ok": true,
+   "got": 136916
+  },
+  {
+   "check": "R0 source word types (D11) = 62,000",
+   "ok": true,
+   "got": 62000
+  },
+  {
+   "check": "R0 French word types at 6.5M (D12) = 72,574",
+   "ok": true,
+   "got": 72574
+  },
+  {
+   "check": "A_narrow source word types (D11) = 33,562",
+   "ok": true,
+   "got": 33562
+  },
+  {
+   "check": "A_narrow French word types at 6.5M (D12) = 43,703",
+   "ok": true,
+   "got": 43703
+  },
+  {
+   "check": "ft_un_rep source word types (D11) = 25,134",
+   "ok": true,
+   "got": 25134
+  },
+  {
+   "check": "ft_un_rep French word types at 6.5M (D12) = 32,684",
+   "ok": true,
+   "got": 32684
+  },
+  {
+   "check": "ft_un_div source word types (D11) = 33,874",
+   "ok": true,
+   "got": 33874
+  },
+  {
+   "check": "ft_un_div French word types at 6.5M (D12) = 43,021",
+   "ok": true,
+   "got": 43021
+  },
+  {
+   "check": "ft_un_random source word types (D11) = 58,441",
+   "ok": true,
+   "got": 58441
+  },
+  {
+   "check": "ft_topk_div source word types (D11) = 38,783",
+   "ok": true,
+   "got": 38783
+  },
+  {
+   "check": "ft_topk_rep source word types (D11) = 27,524",
+   "ok": true,
+   "got": 27524
+  },
+  {
+   "check": "ft_random_small source word types (D11) = 94,897",
+   "ok": true,
+   "got": 94897
+  }
+ ],
+ "all_checks_ok": true,
+ "definitions": {
+  "row": "the line as read with LF as the only break (e06_build.py read_lines), then .strip() (dataset.py)",
+  "pieces": "sp.encode(line.strip(), out_type=int): spm_enfr_v1_fixed.model defaults, no sampling, no BOS/EOS",
+  "coverage": "distinct piece ids over all rows of the set on that side, control and unknown ids excluded, / countable ids (31,996 of one joint 32,000-id en-fr vocabulary): Saunders & DeNeefe's 'share of the generic subword vocabulary that appears at least once', with e06_build_spec.md A28's PROPOSAL for which ids count",
+  "coverage_min_count": "share of countable ids occurring at least k times in the set",
+  "coverage_of_side_vocab": "the same, with numerator and denominator restricted to the ids the base saw at least once on that side of its pretraining corpus (train.clean.en / .fr, read the same way)",
+  "pretraining_token_share_uncovered_ppm": "pretraining piece tokens on that side whose id never occurs in the set, per million (token-weighted coverage = 1 - this / 1e6)",
+  "coverage_at_matched_pieces": "coverage among the first N pieces of the rows in a Random(0) shuffle of the set's ascending row list (types_at's rule on pieces); N per side in budgets",
+  "coverage_rows_kept_by_trainer": "coverage over the rows dataset.py keeps (both sides non-empty, <= 256 pieces with BOS/EOS)",
+  "source_word_types_D11": "distinct lowercased \\w+ source tokens over all rows (prereg D11, e05_build.py lexicon)",
+  "source_word_types_at_5600000": "distinct source tokens in the first 5,600,000 source tokens, types_at's rule",
+  "french_word_types_at_6500000_D12": "prereg D12 (vocab/common.py types_at, Random(0) shuffle of the ascending rows)",
+  "R0 / A_narrow rows": "row indices into ft_random in its LF line order (e06_build.py Parent('ft_random'), build_r0, build_a_narrow); checked above"
+ },
+ "runtime_seconds": 222.7
+}
