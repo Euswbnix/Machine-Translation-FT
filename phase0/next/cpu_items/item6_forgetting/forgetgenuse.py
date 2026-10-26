@@ -4,8 +4,8 @@ WMT2027_PLAN.md §3.2 item 6. The measure is Saunders & DeNeefe (2024, EMNLP, Se
 saunders2024 note in phase0/next/groundwork.json describes it: "For each reference token,
 ForgetGenUse counts how often the original model produced it correctly and the adapted model no
 longer does. It can be split into tokens that appear in the adaptation set (ID) and tokens that do
-not (OOD)." The note gives this sentence, not Eq 1's typography, so the counting below is this
-script's operationalisation of it (README.md, "Definition"):
+not (OOD)." The counting below is Eq 1 exactly, as the author checked it against the paper on
+2026-10-25 (README.md, "Definition"):
 
   for test segment s and token type v, with r, b, f the counts of v in the reference, the base
   hypothesis and the fine-tuned hypothesis of s:
@@ -13,7 +13,10 @@ script's operationalisation of it (README.md, "Definition"):
       F(s,v) = min(f, r)          fine-tuned model's correct uses
       L(s,v) = max(0, B - F)      correct uses the fine-tuned model no longer produces  (forgotten)
       G(s,v) = max(0, F - B)      correct uses only the fine-tuned model produces      (reported only)
-  ForgetGenUse_X = sum_{s, v in X} L / sum_{s, v in X} B
+  ForgetGenUse_X = sum_{s, v in X} L / sum_{s, v in X} r      (Eq 1: lost uses over the reference
+      token occurrences of X; the paper writes O = min(c_B, c_R), A = min(c_F, c_R), L = max(O - A, 0))
+  ForgetGenUse_X_per_base_correct = sum L / sum B: this script's first reading (2026-10-19), kept as
+      a variant; it is NOT the paper's measure.
       X = All; ID = types that occur >= --id-min-count times in the fine-tuning set's TARGET side
       (tokenised the same way); OOD = the other reference types.
   ForgetGenUse_X_macro (alternative aggregation, reported beside it): the mean over the types of X
@@ -21,8 +24,8 @@ script's operationalisation of it (README.md, "Definition"):
   Secondary split (not in the paper): (s,v) pairs whose type v also occurs in the source segment s
   (copyable tokens: names, numbers) versus those whose type does not.
 
-Every count behind the ratios is written, so another normalisation (e.g. by reference occurrences)
-can be recomputed from the JSON without re-running.
+Every count behind the ratios (ref_occ, base_correct, ft_correct, lost, gained per split) is
+written, so other normalisations can be recomputed from the JSON without re-running.
 
 Tokenisers (--tok): words = lowercased \\w+ (the project's token rule, e04_split.py / e05_build.py;
 the default); words_cased = \\w+ with case kept; spm = the base model's SentencePiece pieces
@@ -60,12 +63,11 @@ COPY_SPLITS = ("ID_in_src", "ID_not_in_src", "OOD_in_src", "OOD_not_in_src")
 DEFINITION = (
     "Per test segment s and reference token type v: B=min(count in base hyp, count in ref), "
     "F=min(count in fine-tuned hyp, count in ref), lost L=max(0,B-F), gained G=max(0,F-B). "
-    "ForgetGenUse_X = sum L / sum B over (s,v) with v in X. ID = types occurring >= id_min_count "
+    "ForgetGenUse_X = sum L / sum c_ref over (s,v) with v in X (Saunders & DeNeefe 2024, Eq 1: total lost uses over the reference token occurrences of X; checked against the paper by the author 2026-10-25). _per_base_correct = sum L / sum B (this folder's first reading, kept as a variant). ID = types occurring >= id_min_count "
     "times in the fine-tuning set's target side under the same tokeniser; OOD = the rest. "
     "_macro = mean over types of X with sum_s B>0 of sum_s L / sum_s B. Copy splits: v also in the "
-    "source segment (same tokeniser) or not. Operationalisation of Saunders & DeNeefe (2024) Sec 2.1 "
-    "as described in groundwork.json's saunders2024 note; Eq 1's exact normalisation is to be checked "
-    "against the paper.")
+    "source segment (same tokeniser) or not. Saunders & DeNeefe (2024) Sec 2.1, Eq 1; per-segment clipping "
+    "and the target-side ID set as the paper defines them (author-checked 2026-10-25).")
 
 
 def die(msg):
@@ -163,7 +165,8 @@ def score(ref_t, base_t, ft_t, src_t, id_types):
     out = {}
     for k, c in sums.items():
         d = {x: c[x] for x in ("ref_occ", "base_correct", "ft_correct", "lost", "gained")}
-        d["forgetgenuse"] = c["lost"] / c["base_correct"] if c["base_correct"] else None
+        d["forgetgenuse"] = c["lost"] / c["ref_occ"] if c["ref_occ"] else None          # Eq 1
+        d["forgetgenuse_per_base_correct"] = c["lost"] / c["base_correct"] if c["base_correct"] else None
         out[k] = d
     for k in SPLITS:
         types = [v for v in per_type if k == "All" or (k == "ID") == (v in id_types)]
@@ -251,7 +254,7 @@ def run(argv=None):
 
     summary = {}
     for k in SPLITS + COPY_SPLITS:
-        for m in ("forgetgenuse", "forgetgenuse_macro"):
+        for m in ("forgetgenuse", "forgetgenuse_per_base_correct", "forgetgenuse_macro"):
             vals = [r["results"][k].get(m) for r in runs]
             vals = [v for v in vals if v is not None]
             if m == "forgetgenuse_macro" and k in COPY_SPLITS:

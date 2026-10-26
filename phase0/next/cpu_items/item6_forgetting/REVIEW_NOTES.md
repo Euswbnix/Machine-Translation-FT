@@ -1,4 +1,20 @@
-# item6_forgetting: points still open after review (2026-10-19)
+# item6_forgetting: review notes
+
+## 2026-10-25: the switch to Eq 1
+
+The author read Eq 1 in Saunders & DeNeefe (2024) on 2026-10-25: ForgetGenUse_V = sum over t in V of
+L(t), divided by the reference token occurrences of V, with O = min(c_B, c_R), A = min(c_F, c_R) and
+L(t) = sum over sentences of max(O - A, 0); clipping per sentence; ID = the fine-tuning set's target
+side. The script's headline now uses that denominator (it used B, the base model's correct uses,
+before); the old ratio is kept as `forgetgenuse_per_base_correct`. The tests were re-derived by hand
+(test_forgetgenuse.py docstring), 8 of 8 mutations are killed (mutation.log), and the real run was
+repeated; the independent checker's own implementation (fgu_check.py, field alt_per_ref_occ) gives the
+same integer counts for all 30 runs (real/crosscheck_real_words_eq1.json). README.md was rewritten;
+points 1, 3, 5, 6 and 8 below are dealt with there, point 2's timing paragraph and point 4's macro
+figures were dropped from it, and point 7's docstring sentence now names the per-split counts only.
+Still open: the token unit and case Eq 1 counts in (README, Open points).
+
+## 2026-10-19
 
 The headline numbers in README.md and every figure in results.json were re-derived by an independent check with its own code and agree. After one round of README edits, a second reviewer still found the wording and precision points below. Where they conflict with README.md, these notes are right; the README is to be corrected before any of it is quoted.
 

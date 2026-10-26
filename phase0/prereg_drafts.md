@@ -128,8 +128,8 @@ left open are each a reviewer's first question:
 1. **"Repetitive" is a bundle.** The two UN halves also differ in vocabulary (25,134 against 33,874
    source word types) and in duplicate source sentences (8.45% against 0%). Saunders & DeNeefe
    (EMNLP 2024) find that forgetting tracks the fine-tuning set's vocabulary coverage, with target
-   coverage against COMET drop at Kendall tau 0.9 across the 5 de-en and 3 en-ja domains (**to
-   check**: pooled, n = 8, or per pair). A reviewer will say repetitiveness is a proxy for low
+   coverage against COMET drop at Kendall tau 0.9 across the 5 de-en and 3 en-ja domains (pooled,
+   n = 8; checked by the author against the paper, 2026-10-25). A reviewer will say repetitiveness is a proxy for low
    coverage.
 2. **Duplicates.** Exact deduplication of the pool is standard (WMT18, Koehn et al. 2018), and
    Waldendorf et al. 2025 remove near-duplicates. The repetitive half's 8.45% duplicate sources may

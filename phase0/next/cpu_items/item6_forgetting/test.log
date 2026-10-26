@@ -8,6 +8,6 @@ test_words_cased (__main__.T.test_words_cased) ... ok
 test_words_hand_computed (__main__.T.test_words_hand_computed) ... ok
 
 ----------------------------------------------------------------------
-Ran 8 tests in 0.011s
+Ran 8 tests in 0.010s
 
 OK

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# The real run of item 6 (NOT YET RUN: newstest2014's test.en / test.fr are on no reachable machine).
+# The real run of item 6 (run 2026-10-19; re-run 2026-10-25 after the switch to Eq 1, outputs in real/).
 # 30 E0.5 runs = 6 sets x 5 seeds; one forgetgenuse.py call per set and tokeniser (12 calls).
 #
 # Needs, on the Studio:

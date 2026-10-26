@@ -1,7 +1,7 @@
 {
  "item": "item6_forgetting",
  "label": "ft_un_random",
- "definition": "Per test segment s and reference token type v: B=min(count in base hyp, count in ref), F=min(count in fine-tuned hyp, count in ref), lost L=max(0,B-F), gained G=max(0,F-B). ForgetGenUse_X = sum L / sum B over (s,v) with v in X. ID = types occurring >= id_min_count times in the fine-tuning set's target side under the same tokeniser; OOD = the rest. _macro = mean over types of X with sum_s B>0 of sum_s L / sum_s B. Copy splits: v also in the source segment (same tokeniser) or not. Operationalisation of Saunders & DeNeefe (2024) Sec 2.1 as described in groundwork.json's saunders2024 note; Eq 1's exact normalisation is to be checked against the paper.",
+ "definition": "Per test segment s and reference token type v: B=min(count in base hyp, count in ref), F=min(count in fine-tuned hyp, count in ref), lost L=max(0,B-F), gained G=max(0,F-B). ForgetGenUse_X = sum L / sum c_ref over (s,v) with v in X (Saunders & DeNeefe 2024, Eq 1: total lost uses over the reference token occurrences of X; checked against the paper by the author 2026-10-25). _per_base_correct = sum L / sum B (this folder's first reading, kept as a variant). ID = types occurring >= id_min_count times in the fine-tuning set's target side under the same tokeniser; OOD = the rest. _macro = mean over types of X with sum_s B>0 of sum_s L / sum_s B. Copy splits: v also in the source segment (same tokeniser) or not. Saunders & DeNeefe (2024) Sec 2.1, Eq 1; per-segment clipping and the target-side ID set as the paper defines them (author-checked 2026-10-25).",
  "options": {
   "tok": "spm",
   "model": "/Users/euswbnic/e06data/spm/spm_enfr_v1_fixed.model",
@@ -57,7 +57,8 @@
      "ft_correct": 60748,
      "lost": 6921,
      "gained": 4300,
-     "forgetgenuse": 0.10921744070444539,
+     "forgetgenuse": 0.06922938422758372,
+     "forgetgenuse_per_base_correct": 0.10921744070444539,
      "ref_types": 10701,
      "types_base_correct": 7738,
      "forgetgenuse_macro": 0.16247127005715084
@@ -68,7 +69,8 @@
      "ft_correct": 60728,
      "lost": 6808,
      "gained": 4300,
-     "forgetgenuse": 0.10766019356063002,
+     "forgetgenuse": 0.06834106286012569,
+     "forgetgenuse_per_base_correct": 0.10766019356063002,
      "ref_types": 10581,
      "types_base_correct": 7675,
      "forgetgenuse_macro": 0.15688851522721822
@@ -79,7 +81,8 @@
      "ft_correct": 20,
      "lost": 113,
      "gained": 0,
-     "forgetgenuse": 0.849624060150376,
+     "forgetgenuse": 0.3192090395480226,
+     "forgetgenuse_per_base_correct": 0.849624060150376,
      "ref_types": 120,
      "types_base_correct": 63,
      "forgetgenuse_macro": 0.8425925925925927
@@ -90,7 +93,8 @@
      "ft_correct": 16728,
      "lost": 1073,
      "gained": 357,
-     "forgetgenuse": 0.061511121302453564
+     "forgetgenuse": 0.05526085389092033,
+     "forgetgenuse_per_base_correct": 0.061511121302453564
     },
     "ID_not_in_src": {
      "ref_occ": 80201,
@@ -98,7 +102,8 @@
      "ft_correct": 44000,
      "lost": 5735,
      "gained": 3943,
-     "forgetgenuse": 0.12524021663172608
+     "forgetgenuse": 0.07150783656064139,
+     "forgetgenuse_per_base_correct": 0.12524021663172608
     },
     "OOD_in_src": {
      "ref_occ": 131,
@@ -106,7 +111,8 @@
      "ft_correct": 20,
      "lost": 89,
      "gained": 0,
-     "forgetgenuse": 0.8165137614678899
+     "forgetgenuse": 0.6793893129770993,
+     "forgetgenuse_per_base_correct": 0.8165137614678899
     },
     "OOD_not_in_src": {
      "ref_occ": 223,
@@ -114,7 +120,8 @@
      "ft_correct": 0,
      "lost": 24,
      "gained": 0,
-     "forgetgenuse": 1.0
+     "forgetgenuse": 0.10762331838565023,
+     "forgetgenuse_per_base_correct": 1.0
     },
     "ref_occ_share_ID": 0.9964590085223862
    },
@@ -811,7 +818,8 @@
      "ft_correct": 60535,
      "lost": 7090,
      "gained": 4256,
-     "forgetgenuse": 0.11188435986049962,
+     "forgetgenuse": 0.07091985756011683,
+     "forgetgenuse_per_base_correct": 0.11188435986049962,
      "ref_types": 10701,
      "types_base_correct": 7738,
      "forgetgenuse_macro": 0.16562162447241527
@@ -822,7 +830,8 @@
      "ft_correct": 60515,
      "lost": 6977,
      "gained": 4256,
-     "forgetgenuse": 0.11033272186729079,
+     "forgetgenuse": 0.07003754341584854,
+     "forgetgenuse_per_base_correct": 0.11033272186729079,
      "ref_types": 10581,
      "types_base_correct": 7675,
      "forgetgenuse_macro": 0.16018416462552218
@@ -833,7 +842,8 @@
      "ft_correct": 20,
      "lost": 113,
      "gained": 0,
-     "forgetgenuse": 0.849624060150376,
+     "forgetgenuse": 0.3192090395480226,
+     "forgetgenuse_per_base_correct": 0.849624060150376,
      "ref_types": 120,
      "types_base_correct": 63,
      "forgetgenuse_macro": 0.828042328042328
@@ -844,7 +854,8 @@
      "ft_correct": 16698,
      "lost": 1119,
      "gained": 373,
-     "forgetgenuse": 0.0641481311625774
+     "forgetgenuse": 0.05762991193284236,
+     "forgetgenuse_per_base_correct": 0.0641481311625774
     },
     "ID_not_in_src": {
      "ref_occ": 80201,
@@ -852,7 +863,8 @@
      "ft_correct": 43817,
      "lost": 5858,
      "gained": 3883,
-     "forgetgenuse": 0.1279262753319357
+     "forgetgenuse": 0.07304148327327589,
+     "forgetgenuse_per_base_correct": 0.1279262753319357
     },
     "OOD_in_src": {
      "ref_occ": 131,
@@ -860,7 +872,8 @@
      "ft_correct": 20,
      "lost": 89,
      "gained": 0,
-     "forgetgenuse": 0.8165137614678899
+     "forgetgenuse": 0.6793893129770993,
+     "forgetgenuse_per_base_correct": 0.8165137614678899
     },
     "OOD_not_in_src": {
      "ref_occ": 223,
@@ -868,7 +881,8 @@
      "ft_correct": 0,
      "lost": 24,
      "gained": 0,
-     "forgetgenuse": 1.0
+     "forgetgenuse": 0.10762331838565023,
+     "forgetgenuse_per_base_correct": 1.0
     },
     "ref_occ_share_ID": 0.9964590085223862
    },
@@ -1565,7 +1579,8 @@
      "ft_correct": 60732,
      "lost": 6852,
      "gained": 4215,
-     "forgetgenuse": 0.1081285802206126,
+     "forgetgenuse": 0.06853919097347257,
+     "forgetgenuse_per_base_correct": 0.1081285802206126,
      "ref_types": 10701,
      "types_base_correct": 7738,
      "forgetgenuse_macro": 0.16193599800817093
@@ -1576,7 +1591,8 @@
      "ft_correct": 60711,
      "lost": 6740,
      "gained": 4215,
-     "forgetgenuse": 0.10658485672718072,
+     "forgetgenuse": 0.06765845529924311,
+     "forgetgenuse_per_base_correct": 0.10658485672718072,
      "ref_types": 10581,
      "types_base_correct": 7675,
      "forgetgenuse_macro": 0.15647914257379716
@@ -1587,7 +1603,8 @@
      "ft_correct": 21,
      "lost": 112,
      "gained": 0,
-     "forgetgenuse": 0.8421052631578947,
+     "forgetgenuse": 0.3163841807909605,
+     "forgetgenuse_per_base_correct": 0.8421052631578947,
      "ref_types": 120,
      "types_base_correct": 63,
      "forgetgenuse_macro": 0.8267195767195767
@@ -1598,7 +1615,8 @@
      "ft_correct": 16802,
      "lost": 995,
      "gained": 353,
-     "forgetgenuse": 0.05703966980050447
+     "forgetgenuse": 0.051243755472009066,
+     "forgetgenuse_per_base_correct": 0.05703966980050447
     },
     "ID_not_in_src": {
      "ref_occ": 80201,
@@ -1606,7 +1624,8 @@
      "ft_correct": 43909,
      "lost": 5745,
      "gained": 3862,
-     "forgetgenuse": 0.12545859538784068
+     "forgetgenuse": 0.07163252328524582,
+     "forgetgenuse_per_base_correct": 0.12545859538784068
     },
     "OOD_in_src": {
      "ref_occ": 131,
@@ -1614,7 +1633,8 @@
      "ft_correct": 21,
      "lost": 88,
      "gained": 0,
-     "forgetgenuse": 0.8073394495412844
+     "forgetgenuse": 0.6717557251908397,
+     "forgetgenuse_per_base_correct": 0.8073394495412844
     },
     "OOD_not_in_src": {
      "ref_occ": 223,
@@ -1622,7 +1642,8 @@
      "ft_correct": 0,
      "lost": 24,
      "gained": 0,
-     "forgetgenuse": 1.0
+     "forgetgenuse": 0.10762331838565023,
+     "forgetgenuse_per_base_correct": 1.0
     },
     "ref_occ_share_ID": 0.9964590085223862
    },
@@ -2319,7 +2340,8 @@
      "ft_correct": 60785,
      "lost": 6871,
      "gained": 4287,
-     "forgetgenuse": 0.10842841136833467,
+     "forgetgenuse": 0.06872924418837274,
+     "forgetgenuse_per_base_correct": 0.10842841136833467,
      "ref_types": 10701,
      "types_base_correct": 7738,
      "forgetgenuse_macro": 0.16465199527394309
@@ -2330,7 +2352,8 @@
      "ft_correct": 60764,
      "lost": 6759,
      "gained": 4287,
-     "forgetgenuse": 0.10688531848946803,
+     "forgetgenuse": 0.06784918388243089,
+     "forgetgenuse_per_base_correct": 0.10688531848946803,
      "ref_types": 10581,
      "types_base_correct": 7675,
      "forgetgenuse_macro": 0.1591088563860723
@@ -2341,7 +2364,8 @@
      "ft_correct": 21,
      "lost": 112,
      "gained": 0,
-     "forgetgenuse": 0.8421052631578947,
+     "forgetgenuse": 0.3163841807909605,
+     "forgetgenuse_per_base_correct": 0.8421052631578947,
      "ref_types": 120,
      "types_base_correct": 63,
      "forgetgenuse_macro": 0.8399470899470899
@@ -2352,7 +2376,8 @@
      "ft_correct": 16742,
      "lost": 1068,
      "gained": 366,
-     "forgetgenuse": 0.061224489795918366
+     "forgetgenuse": 0.055003347582015756,
+     "forgetgenuse_per_base_correct": 0.061224489795918366
     },
     "ID_not_in_src": {
      "ref_occ": 80201,
@@ -2360,7 +2385,8 @@
      "ft_correct": 44022,
      "lost": 5691,
      "gained": 3921,
-     "forgetgenuse": 0.1242793501048218
+     "forgetgenuse": 0.07095921497238189,
+     "forgetgenuse_per_base_correct": 0.1242793501048218
     },
     "OOD_in_src": {
      "ref_occ": 131,
@@ -2368,7 +2394,8 @@
      "ft_correct": 21,
      "lost": 88,
      "gained": 0,
-     "forgetgenuse": 0.8073394495412844
+     "forgetgenuse": 0.6717557251908397,
+     "forgetgenuse_per_base_correct": 0.8073394495412844
     },
     "OOD_not_in_src": {
      "ref_occ": 223,
@@ -2376,7 +2403,8 @@
      "ft_correct": 0,
      "lost": 24,
      "gained": 0,
-     "forgetgenuse": 1.0
+     "forgetgenuse": 0.10762331838565023,
+     "forgetgenuse_per_base_correct": 1.0
     },
     "ref_occ_share_ID": 0.9964590085223862
    },
@@ -3073,7 +3101,8 @@
      "ft_correct": 60666,
      "lost": 6890,
      "gained": 4187,
-     "forgetgenuse": 0.10872824251605674,
+     "forgetgenuse": 0.06891929740327292,
+     "forgetgenuse_per_base_correct": 0.10872824251605674,
      "ref_types": 10701,
      "types_base_correct": 7738,
      "forgetgenuse_macro": 0.15907792851049965
@@ -3084,7 +3113,8 @@
      "ft_correct": 60645,
      "lost": 6778,
      "gained": 4187,
-     "forgetgenuse": 0.10718578025175533,
+     "forgetgenuse": 0.06803991246561866,
+     "forgetgenuse_per_base_correct": 0.10718578025175533,
      "ref_types": 10581,
      "types_base_correct": 7675,
      "forgetgenuse_macro": 0.15359761270109615
@@ -3095,7 +3125,8 @@
      "ft_correct": 21,
      "lost": 112,
      "gained": 0,
-     "forgetgenuse": 0.8421052631578947,
+     "forgetgenuse": 0.3163841807909605,
+     "forgetgenuse_per_base_correct": 0.8421052631578947,
      "ref_types": 120,
      "types_base_correct": 63,
      "forgetgenuse_macro": 0.8267195767195767
@@ -3106,7 +3137,8 @@
      "ft_correct": 16707,
      "lost": 1079,
      "gained": 342,
-     "forgetgenuse": 0.0618550791102958
+     "forgetgenuse": 0.05556986146160581,
+     "forgetgenuse_per_base_correct": 0.0618550791102958
     },
     "ID_not_in_src": {
      "ref_occ": 80201,
@@ -3114,7 +3146,8 @@
      "ft_correct": 43938,
      "lost": 5699,
      "gained": 3845,
-     "forgetgenuse": 0.12445405310971348
+     "forgetgenuse": 0.07105896435206543,
+     "forgetgenuse_per_base_correct": 0.12445405310971348
     },
     "OOD_in_src": {
      "ref_occ": 131,
@@ -3122,7 +3155,8 @@
      "ft_correct": 21,
      "lost": 88,
      "gained": 0,
-     "forgetgenuse": 0.8073394495412844
+     "forgetgenuse": 0.6717557251908397,
+     "forgetgenuse_per_base_correct": 0.8073394495412844
     },
     "OOD_not_in_src": {
      "ref_occ": 223,
@@ -3130,7 +3164,8 @@
      "ft_correct": 0,
      "lost": 24,
      "gained": 0,
-     "forgetgenuse": 1.0
+     "forgetgenuse": 0.10762331838565023,
+     "forgetgenuse_per_base_correct": 1.0
     },
     "ref_occ_share_ID": 0.9964590085223862
    },
@@ -3820,6 +3855,13 @@
  "summary_over_runs": {
   "All.forgetgenuse": {
    "n": 5,
+   "mean": 0.06926739487056376,
+   "sd": 0.0009582714475241972,
+   "min": 0.06853919097347257,
+   "max": 0.07091985756011683
+  },
+  "All.forgetgenuse_per_base_correct": {
+   "n": 5,
    "mean": 0.1092774069339898,
    "sd": 0.0015117851497086787,
    "min": 0.1081285802206126,
@@ -3833,6 +3875,13 @@
    "max": 0.16562162447241527
   },
   "ID.forgetgenuse": {
+   "n": 5,
+   "mean": 0.06838523158465337,
+   "sd": 0.0009574551511425483,
+   "min": 0.06765845529924311,
+   "max": 0.07003754341584854
+  },
+  "ID.forgetgenuse_per_base_correct": {
    "n": 5,
    "mean": 0.10772977417926496,
    "sd": 0.0015083143659706231,
@@ -3848,6 +3897,13 @@
   },
   "OOD.forgetgenuse": {
    "n": 5,
+   "mean": 0.31751412429378534,
+   "sd": 0.0015472388630089296,
+   "min": 0.3163841807909605,
+   "max": 0.3192090395480226
+  },
+  "OOD.forgetgenuse_per_base_correct": {
+   "n": 5,
    "mean": 0.8451127819548873,
    "sd": 0.004118214718083986,
    "min": 0.8421052631578947,
@@ -3862,12 +3918,26 @@
   },
   "ID_in_src.forgetgenuse": {
    "n": 5,
+   "mean": 0.05494154606787867,
+   "sd": 0.002313089031025577,
+   "min": 0.051243755472009066,
+   "max": 0.05762991193284236
+  },
+  "ID_in_src.forgetgenuse_per_base_correct": {
+   "n": 5,
    "mean": 0.06115569823434992,
    "sd": 0.0025747104858646896,
    "min": 0.05703966980050447,
    "max": 0.0641481311625774
   },
   "ID_not_in_src.forgetgenuse": {
+   "n": 5,
+   "mean": 0.07164000448872208,
+   "sd": 0.0008340787011933752,
+   "min": 0.07095921497238189,
+   "max": 0.07304148327327589
+  },
+  "ID_not_in_src.forgetgenuse_per_base_correct": {
    "n": 5,
    "mean": 0.12547169811320755,
    "sd": 0.001460821670038651,
@@ -3876,12 +3946,26 @@
   },
   "OOD_in_src.forgetgenuse": {
    "n": 5,
+   "mean": 0.6748091603053435,
+   "sd": 0.004181088225230283,
+   "min": 0.6717557251908397,
+   "max": 0.6793893129770993
+  },
+  "OOD_in_src.forgetgenuse_per_base_correct": {
+   "n": 5,
    "mean": 0.8110091743119267,
    "sd": 0.005024977591790485,
    "min": 0.8073394495412844,
    "max": 0.8165137614678899
   },
   "OOD_not_in_src.forgetgenuse": {
+   "n": 5,
+   "mean": 0.10762331838565023,
+   "sd": 0.0,
+   "min": 0.10762331838565023,
+   "max": 0.10762331838565023
+  },
+  "OOD_not_in_src.forgetgenuse_per_base_correct": {
    "n": 5,
    "mean": 1.0,
    "sd": 0.0,
@@ -3890,10 +3974,10 @@
   }
  },
  "seconds": {
-  "read_check": 0.014,
-  "ft_vocab": 4.378,
-  "score_all_runs": 0.879,
-  "total": 5.27
+  "read_check": 0.013,
+  "ft_vocab": 4.404,
+  "score_all_runs": 0.811,
+  "total": 5.228
  },
  "python": "3.14.3"
 }

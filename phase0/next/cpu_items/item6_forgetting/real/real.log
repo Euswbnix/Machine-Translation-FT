@@ -1,86 +1,86 @@
 31 hypothesis files match redecode_report.json
-ft_random_small_lr1_s42_st2.newstest2014.hyp: ForgetGenUse All 0.0725  ID 0.0730  OOD 0.0473  (OOD base-correct 930 of 47,332)
-ft_random_small_lr1_s1_st2.newstest2014.hyp: ForgetGenUse All 0.0733  ID 0.0738  OOD 0.0473  (OOD base-correct 930 of 47,332)
-ft_random_small_lr1_s2_st2.newstest2014.hyp: ForgetGenUse All 0.0738  ID 0.0742  OOD 0.0548  (OOD base-correct 930 of 47,332)
-ft_random_small_lr1_s3_st2.newstest2014.hyp: ForgetGenUse All 0.0727  ID 0.0731  OOD 0.0527  (OOD base-correct 930 of 47,332)
-ft_random_small_lr1_s4_st2.newstest2014.hyp: ForgetGenUse All 0.0728  ID 0.0733  OOD 0.0495  (OOD base-correct 930 of 47,332)
-total 1.744 s
-ft_topk_div_lr1_s42_st2.newstest2014.hyp: ForgetGenUse All 0.0893  ID 0.0844  OOD 0.1985  (OOD base-correct 2,020 of 47,332)
-ft_topk_div_lr1_s1_st2.newstest2014.hyp: ForgetGenUse All 0.0880  ID 0.0833  OOD 0.1916  (OOD base-correct 2,020 of 47,332)
-ft_topk_div_lr1_s2_st2.newstest2014.hyp: ForgetGenUse All 0.0886  ID 0.0835  OOD 0.2030  (OOD base-correct 2,020 of 47,332)
-ft_topk_div_lr1_s3_st2.newstest2014.hyp: ForgetGenUse All 0.0902  ID 0.0855  OOD 0.1950  (OOD base-correct 2,020 of 47,332)
-ft_topk_div_lr1_s4_st2.newstest2014.hyp: ForgetGenUse All 0.0899  ID 0.0855  OOD 0.1901  (OOD base-correct 2,020 of 47,332)
-total 1.72 s
-ft_topk_rep_lr1_s42_st2.newstest2014.hyp: ForgetGenUse All 0.1249  ID 0.1107  OOD 0.3454  (OOD base-correct 2,866 of 47,332)
-ft_topk_rep_lr1_s1_st2.newstest2014.hyp: ForgetGenUse All 0.1233  ID 0.1093  OOD 0.3405  (OOD base-correct 2,866 of 47,332)
-ft_topk_rep_lr1_s2_st2.newstest2014.hyp: ForgetGenUse All 0.1247  ID 0.1103  OOD 0.3479  (OOD base-correct 2,866 of 47,332)
-ft_topk_rep_lr1_s3_st2.newstest2014.hyp: ForgetGenUse All 0.1263  ID 0.1119  OOD 0.3496  (OOD base-correct 2,866 of 47,332)
-ft_topk_rep_lr1_s4_st2.newstest2014.hyp: ForgetGenUse All 0.1254  ID 0.1107  OOD 0.3535  (OOD base-correct 2,866 of 47,332)
-total 1.679 s
-ft_un_div_lr1_s42_st2.newstest2014.hyp: ForgetGenUse All 0.1159  ID 0.1071  OOD 0.2687  (OOD base-correct 2,560 of 47,332)
-ft_un_div_lr1_s1_st2.newstest2014.hyp: ForgetGenUse All 0.1185  ID 0.1093  OOD 0.2797  (OOD base-correct 2,560 of 47,332)
-ft_un_div_lr1_s2_st2.newstest2014.hyp: ForgetGenUse All 0.1167  ID 0.1083  OOD 0.2641  (OOD base-correct 2,560 of 47,332)
-ft_un_div_lr1_s3_st2.newstest2014.hyp: ForgetGenUse All 0.1187  ID 0.1095  OOD 0.2793  (OOD base-correct 2,560 of 47,332)
-ft_un_div_lr1_s4_st2.newstest2014.hyp: ForgetGenUse All 0.1140  ID 0.1053  OOD 0.2668  (OOD base-correct 2,560 of 47,332)
-total 1.537 s
-ft_un_random_lr1_s42_st2.newstest2014.hyp: ForgetGenUse All 0.1057  ID 0.1030  OOD 0.1745  (OOD base-correct 1,771 of 47,332)
-ft_un_random_lr1_s1_st2.newstest2014.hyp: ForgetGenUse All 0.1088  ID 0.1063  OOD 0.1733  (OOD base-correct 1,771 of 47,332)
-ft_un_random_lr1_s2_st2.newstest2014.hyp: ForgetGenUse All 0.1071  ID 0.1045  OOD 0.1728  (OOD base-correct 1,771 of 47,332)
-ft_un_random_lr1_s3_st2.newstest2014.hyp: ForgetGenUse All 0.1059  ID 0.1032  OOD 0.1756  (OOD base-correct 1,771 of 47,332)
-ft_un_random_lr1_s4_st2.newstest2014.hyp: ForgetGenUse All 0.1063  ID 0.1036  OOD 0.1750  (OOD base-correct 1,771 of 47,332)
-total 1.581 s
-ft_un_rep_lr1_s42_st2.newstest2014.hyp: ForgetGenUse All 0.1497  ID 0.1304  OOD 0.4065  (OOD base-correct 3,306 of 47,332)
-ft_un_rep_lr1_s1_st2.newstest2014.hyp: ForgetGenUse All 0.1494  ID 0.1300  OOD 0.4074  (OOD base-correct 3,306 of 47,332)
-ft_un_rep_lr1_s2_st2.newstest2014.hyp: ForgetGenUse All 0.1523  ID 0.1330  OOD 0.4099  (OOD base-correct 3,306 of 47,332)
-ft_un_rep_lr1_s3_st2.newstest2014.hyp: ForgetGenUse All 0.1500  ID 0.1308  OOD 0.4065  (OOD base-correct 3,306 of 47,332)
-ft_un_rep_lr1_s4_st2.newstest2014.hyp: ForgetGenUse All 0.1500  ID 0.1307  OOD 0.4083  (OOD base-correct 3,306 of 47,332)
-total 1.563 s
-ft_random_small_lr1_s42_st2.newstest2014.hyp: ForgetGenUse All 0.0727  ID 0.0727  OOD 0.3333  (OOD base-correct 3 of 63,369)
-ft_random_small_lr1_s1_st2.newstest2014.hyp: ForgetGenUse All 0.0732  ID 0.0732  OOD 0.3333  (OOD base-correct 3 of 63,369)
-ft_random_small_lr1_s2_st2.newstest2014.hyp: ForgetGenUse All 0.0742  ID 0.0742  OOD 0.3333  (OOD base-correct 3 of 63,369)
-ft_random_small_lr1_s3_st2.newstest2014.hyp: ForgetGenUse All 0.0727  ID 0.0726  OOD 0.3333  (OOD base-correct 3 of 63,369)
-ft_random_small_lr1_s4_st2.newstest2014.hyp: ForgetGenUse All 0.0732  ID 0.0732  OOD 0.3333  (OOD base-correct 3 of 63,369)
-total 5.756 s
-ft_topk_div_lr1_s42_st2.newstest2014.hyp: ForgetGenUse All 0.0956  ID 0.0932  OOD 0.6778  (OOD base-correct 270 of 63,369)
-ft_topk_div_lr1_s1_st2.newstest2014.hyp: ForgetGenUse All 0.0943  ID 0.0919  OOD 0.6556  (OOD base-correct 270 of 63,369)
-ft_topk_div_lr1_s2_st2.newstest2014.hyp: ForgetGenUse All 0.0933  ID 0.0908  OOD 0.6778  (OOD base-correct 270 of 63,369)
-ft_topk_div_lr1_s3_st2.newstest2014.hyp: ForgetGenUse All 0.0978  ID 0.0954  OOD 0.6630  (OOD base-correct 270 of 63,369)
-ft_topk_div_lr1_s4_st2.newstest2014.hyp: ForgetGenUse All 0.0932  ID 0.0907  OOD 0.6593  (OOD base-correct 270 of 63,369)
-total 5.884 s
-ft_topk_rep_lr1_s42_st2.newstest2014.hyp: ForgetGenUse All 0.1290  ID 0.1205  OOD 0.8387  (OOD base-correct 750 of 63,369)
-ft_topk_rep_lr1_s1_st2.newstest2014.hyp: ForgetGenUse All 0.1266  ID 0.1180  OOD 0.8387  (OOD base-correct 750 of 63,369)
-ft_topk_rep_lr1_s2_st2.newstest2014.hyp: ForgetGenUse All 0.1277  ID 0.1193  OOD 0.8333  (OOD base-correct 750 of 63,369)
-ft_topk_rep_lr1_s3_st2.newstest2014.hyp: ForgetGenUse All 0.1322  ID 0.1237  OOD 0.8467  (OOD base-correct 750 of 63,369)
-ft_topk_rep_lr1_s4_st2.newstest2014.hyp: ForgetGenUse All 0.1291  ID 0.1206  OOD 0.8427  (OOD base-correct 750 of 63,369)
-total 5.776 s
-ft_un_div_lr1_s42_st2.newstest2014.hyp: ForgetGenUse All 0.1196  ID 0.1138  OOD 0.7469  (OOD base-correct 573 of 63,369)
-ft_un_div_lr1_s1_st2.newstest2014.hyp: ForgetGenUse All 0.1244  ID 0.1186  OOD 0.7627  (OOD base-correct 573 of 63,369)
-ft_un_div_lr1_s2_st2.newstest2014.hyp: ForgetGenUse All 0.1218  ID 0.1161  OOD 0.7382  (OOD base-correct 573 of 63,369)
-ft_un_div_lr1_s3_st2.newstest2014.hyp: ForgetGenUse All 0.1228  ID 0.1173  OOD 0.7312  (OOD base-correct 573 of 63,369)
-ft_un_div_lr1_s4_st2.newstest2014.hyp: ForgetGenUse All 0.1191  ID 0.1135  OOD 0.7330  (OOD base-correct 573 of 63,369)
-total 5.285 s
-ft_un_random_lr1_s42_st2.newstest2014.hyp: ForgetGenUse All 0.1092  ID 0.1077  OOD 0.8496  (OOD base-correct 133 of 63,369)
-ft_un_random_lr1_s1_st2.newstest2014.hyp: ForgetGenUse All 0.1119  ID 0.1103  OOD 0.8496  (OOD base-correct 133 of 63,369)
-ft_un_random_lr1_s2_st2.newstest2014.hyp: ForgetGenUse All 0.1081  ID 0.1066  OOD 0.8421  (OOD base-correct 133 of 63,369)
-ft_un_random_lr1_s3_st2.newstest2014.hyp: ForgetGenUse All 0.1084  ID 0.1069  OOD 0.8421  (OOD base-correct 133 of 63,369)
-ft_un_random_lr1_s4_st2.newstest2014.hyp: ForgetGenUse All 0.1087  ID 0.1072  OOD 0.8421  (OOD base-correct 133 of 63,369)
-total 5.27 s
-ft_un_rep_lr1_s42_st2.newstest2014.hyp: ForgetGenUse All 0.1551  ID 0.1427  OOD 0.8529  (OOD base-correct 1,108 of 63,369)
-ft_un_rep_lr1_s1_st2.newstest2014.hyp: ForgetGenUse All 0.1544  ID 0.1420  OOD 0.8493  (OOD base-correct 1,108 of 63,369)
-ft_un_rep_lr1_s2_st2.newstest2014.hyp: ForgetGenUse All 0.1571  ID 0.1450  OOD 0.8421  (OOD base-correct 1,108 of 63,369)
-ft_un_rep_lr1_s3_st2.newstest2014.hyp: ForgetGenUse All 0.1563  ID 0.1442  OOD 0.8375  (OOD base-correct 1,108 of 63,369)
-ft_un_rep_lr1_s4_st2.newstest2014.hyp: ForgetGenUse All 0.1545  ID 0.1421  OOD 0.8466  (OOD base-correct 1,108 of 63,369)
-total 5.163 s
-ft_random_small_words    All 0.0730 (0.0005)  ID 0.0735 (0.0005)  OOD 0.0503 (0.0033)  ref share ID 0.9793
-ft_topk_div_words        All 0.0892 (0.0009)  ID 0.0844 (0.0010)  OOD 0.1956 (0.0052)  ref share ID 0.9529
-ft_topk_rep_words        All 0.1249 (0.0011)  ID 0.1106 (0.0009)  OOD 0.3474 (0.0048)  ref share ID 0.9317
-ft_un_div_words          All 0.1168 (0.0019)  ID 0.1079 (0.0017)  OOD 0.2717 (0.0073)  ref share ID 0.9421
-ft_un_random_words       All 0.1067 (0.0013)  ID 0.1041 (0.0014)  OOD 0.1743 (0.0012)  ref share ID 0.9604
-ft_un_rep_words          All 0.1503 (0.0012)  ID 0.1310 (0.0012)  OOD 0.4077 (0.0014)  ref share ID 0.9223
-ft_random_small_spm      All 0.0732 (0.0006)  ID 0.0732 (0.0006)  OOD 0.3333 (0.0000)  ref share ID 0.9999
-ft_topk_div_spm          All 0.0948 (0.0019)  ID 0.0924 (0.0019)  OOD 0.6667 (0.0105)  ref share ID 0.9952
-ft_topk_rep_spm          All 0.1289 (0.0021)  ID 0.1204 (0.0021)  OOD 0.8400 (0.0050)  ref share ID 0.9870
-ft_un_div_spm            All 0.1215 (0.0022)  ID 0.1159 (0.0022)  OOD 0.7424 (0.0129)  ref share ID 0.9892
-ft_un_random_spm         All 0.1093 (0.0015)  ID 0.1077 (0.0015)  OOD 0.8451 (0.0041)  ref share ID 0.9965
-ft_un_rep_spm            All 0.1555 (0.0012)  ID 0.1432 (0.0013)  OOD 0.8457 (0.0060)  ref share ID 0.9799
+ft_random_small_lr1_s42_st2.newstest2014.hyp: ForgetGenUse All 0.0466  ID 0.0470  OOD 0.0288  (OOD base-correct 930 of 47,332)
+ft_random_small_lr1_s1_st2.newstest2014.hyp: ForgetGenUse All 0.0471  ID 0.0475  OOD 0.0288  (OOD base-correct 930 of 47,332)
+ft_random_small_lr1_s2_st2.newstest2014.hyp: ForgetGenUse All 0.0475  ID 0.0478  OOD 0.0334  (OOD base-correct 930 of 47,332)
+ft_random_small_lr1_s3_st2.newstest2014.hyp: ForgetGenUse All 0.0467  ID 0.0471  OOD 0.0321  (OOD base-correct 930 of 47,332)
+ft_random_small_lr1_s4_st2.newstest2014.hyp: ForgetGenUse All 0.0468  ID 0.0472  OOD 0.0301  (OOD base-correct 930 of 47,332)
+total 1.697 s
+ft_topk_div_lr1_s42_st2.newstest2014.hyp: ForgetGenUse All 0.0574  ID 0.0545  OOD 0.1157  (OOD base-correct 2,020 of 47,332)
+ft_topk_div_lr1_s1_st2.newstest2014.hyp: ForgetGenUse All 0.0566  ID 0.0538  OOD 0.1117  (OOD base-correct 2,020 of 47,332)
+ft_topk_div_lr1_s2_st2.newstest2014.hyp: ForgetGenUse All 0.0570  ID 0.0539  OOD 0.1183  (OOD base-correct 2,020 of 47,332)
+ft_topk_div_lr1_s3_st2.newstest2014.hyp: ForgetGenUse All 0.0580  ID 0.0552  OOD 0.1137  (OOD base-correct 2,020 of 47,332)
+ft_topk_div_lr1_s4_st2.newstest2014.hyp: ForgetGenUse All 0.0578  ID 0.0552  OOD 0.1108  (OOD base-correct 2,020 of 47,332)
+total 1.673 s
+ft_topk_rep_lr1_s42_st2.newstest2014.hyp: ForgetGenUse All 0.0803  ID 0.0718  OOD 0.1970  (OOD base-correct 2,866 of 47,332)
+ft_topk_rep_lr1_s1_st2.newstest2014.hyp: ForgetGenUse All 0.0793  ID 0.0709  OOD 0.1942  (OOD base-correct 2,866 of 47,332)
+ft_topk_rep_lr1_s2_st2.newstest2014.hyp: ForgetGenUse All 0.0802  ID 0.0715  OOD 0.1984  (OOD base-correct 2,866 of 47,332)
+ft_topk_rep_lr1_s3_st2.newstest2014.hyp: ForgetGenUse All 0.0812  ID 0.0725  OOD 0.1994  (OOD base-correct 2,866 of 47,332)
+ft_topk_rep_lr1_s4_st2.newstest2014.hyp: ForgetGenUse All 0.0806  ID 0.0717  OOD 0.2016  (OOD base-correct 2,866 of 47,332)
+total 1.661 s
+ft_un_div_lr1_s42_st2.newstest2014.hyp: ForgetGenUse All 0.0745  ID 0.0692  OOD 0.1613  (OOD base-correct 2,560 of 47,332)
+ft_un_div_lr1_s1_st2.newstest2014.hyp: ForgetGenUse All 0.0762  ID 0.0706  OOD 0.1679  (OOD base-correct 2,560 of 47,332)
+ft_un_div_lr1_s2_st2.newstest2014.hyp: ForgetGenUse All 0.0750  ID 0.0699  OOD 0.1585  (OOD base-correct 2,560 of 47,332)
+ft_un_div_lr1_s3_st2.newstest2014.hyp: ForgetGenUse All 0.0763  ID 0.0707  OOD 0.1676  (OOD base-correct 2,560 of 47,332)
+ft_un_div_lr1_s4_st2.newstest2014.hyp: ForgetGenUse All 0.0733  ID 0.0680  OOD 0.1601  (OOD base-correct 2,560 of 47,332)
+total 1.571 s
+ft_un_random_lr1_s42_st2.newstest2014.hyp: ForgetGenUse All 0.0679  ID 0.0664  OOD 0.1060  (OOD base-correct 1,771 of 47,332)
+ft_un_random_lr1_s1_st2.newstest2014.hyp: ForgetGenUse All 0.0699  ID 0.0685  OOD 0.1053  (OOD base-correct 1,771 of 47,332)
+ft_un_random_lr1_s2_st2.newstest2014.hyp: ForgetGenUse All 0.0689  ID 0.0674  OOD 0.1049  (OOD base-correct 1,771 of 47,332)
+ft_un_random_lr1_s3_st2.newstest2014.hyp: ForgetGenUse All 0.0681  ID 0.0665  OOD 0.1067  (OOD base-correct 1,771 of 47,332)
+ft_un_random_lr1_s4_st2.newstest2014.hyp: ForgetGenUse All 0.0683  ID 0.0668  OOD 0.1063  (OOD base-correct 1,771 of 47,332)
+total 1.562 s
+ft_un_rep_lr1_s42_st2.newstest2014.hyp: ForgetGenUse All 0.0963  ID 0.0846  OOD 0.2349  (OOD base-correct 3,306 of 47,332)
+ft_un_rep_lr1_s1_st2.newstest2014.hyp: ForgetGenUse All 0.0961  ID 0.0843  OOD 0.2354  (OOD base-correct 3,306 of 47,332)
+ft_un_rep_lr1_s2_st2.newstest2014.hyp: ForgetGenUse All 0.0979  ID 0.0862  OOD 0.2368  (OOD base-correct 3,306 of 47,332)
+ft_un_rep_lr1_s3_st2.newstest2014.hyp: ForgetGenUse All 0.0965  ID 0.0848  OOD 0.2349  (OOD base-correct 3,306 of 47,332)
+ft_un_rep_lr1_s4_st2.newstest2014.hyp: ForgetGenUse All 0.0965  ID 0.0847  OOD 0.2359  (OOD base-correct 3,306 of 47,332)
+total 1.523 s
+ft_random_small_lr1_s42_st2.newstest2014.hyp: ForgetGenUse All 0.0461  ID 0.0461  OOD 0.1429  (OOD base-correct 3 of 63,369)
+ft_random_small_lr1_s1_st2.newstest2014.hyp: ForgetGenUse All 0.0464  ID 0.0464  OOD 0.1429  (OOD base-correct 3 of 63,369)
+ft_random_small_lr1_s2_st2.newstest2014.hyp: ForgetGenUse All 0.0470  ID 0.0470  OOD 0.1429  (OOD base-correct 3 of 63,369)
+ft_random_small_lr1_s3_st2.newstest2014.hyp: ForgetGenUse All 0.0461  ID 0.0460  OOD 0.1429  (OOD base-correct 3 of 63,369)
+ft_random_small_lr1_s4_st2.newstest2014.hyp: ForgetGenUse All 0.0464  ID 0.0464  OOD 0.1429  (OOD base-correct 3 of 63,369)
+total 5.721 s
+ft_topk_div_lr1_s42_st2.newstest2014.hyp: ForgetGenUse All 0.0606  ID 0.0591  OOD 0.3853  (OOD base-correct 270 of 63,369)
+ft_topk_div_lr1_s1_st2.newstest2014.hyp: ForgetGenUse All 0.0598  ID 0.0583  OOD 0.3726  (OOD base-correct 270 of 63,369)
+ft_topk_div_lr1_s2_st2.newstest2014.hyp: ForgetGenUse All 0.0591  ID 0.0576  OOD 0.3853  (OOD base-correct 270 of 63,369)
+ft_topk_div_lr1_s3_st2.newstest2014.hyp: ForgetGenUse All 0.0620  ID 0.0605  OOD 0.3768  (OOD base-correct 270 of 63,369)
+ft_topk_div_lr1_s4_st2.newstest2014.hyp: ForgetGenUse All 0.0591  ID 0.0575  OOD 0.3747  (OOD base-correct 270 of 63,369)
+total 5.726 s
+ft_topk_rep_lr1_s42_st2.newstest2014.hyp: ForgetGenUse All 0.0817  ID 0.0764  OOD 0.4857  (OOD base-correct 750 of 63,369)
+ft_topk_rep_lr1_s1_st2.newstest2014.hyp: ForgetGenUse All 0.0802  ID 0.0749  OOD 0.4857  (OOD base-correct 750 of 63,369)
+ft_topk_rep_lr1_s2_st2.newstest2014.hyp: ForgetGenUse All 0.0810  ID 0.0757  OOD 0.4826  (OOD base-correct 750 of 63,369)
+ft_topk_rep_lr1_s3_st2.newstest2014.hyp: ForgetGenUse All 0.0838  ID 0.0785  OOD 0.4903  (OOD base-correct 750 of 63,369)
+ft_topk_rep_lr1_s4_st2.newstest2014.hyp: ForgetGenUse All 0.0819  ID 0.0765  OOD 0.4880  (OOD base-correct 750 of 63,369)
+total 5.624 s
+ft_un_div_lr1_s42_st2.newstest2014.hyp: ForgetGenUse All 0.0758  ID 0.0723  OOD 0.3963  (OOD base-correct 573 of 63,369)
+ft_un_div_lr1_s1_st2.newstest2014.hyp: ForgetGenUse All 0.0789  ID 0.0753  OOD 0.4046  (OOD base-correct 573 of 63,369)
+ft_un_div_lr1_s2_st2.newstest2014.hyp: ForgetGenUse All 0.0772  ID 0.0737  OOD 0.3917  (OOD base-correct 573 of 63,369)
+ft_un_div_lr1_s3_st2.newstest2014.hyp: ForgetGenUse All 0.0779  ID 0.0745  OOD 0.3880  (OOD base-correct 573 of 63,369)
+ft_un_div_lr1_s4_st2.newstest2014.hyp: ForgetGenUse All 0.0755  ID 0.0721  OOD 0.3889  (OOD base-correct 573 of 63,369)
+total 5.201 s
+ft_un_random_lr1_s42_st2.newstest2014.hyp: ForgetGenUse All 0.0692  ID 0.0683  OOD 0.3192  (OOD base-correct 133 of 63,369)
+ft_un_random_lr1_s1_st2.newstest2014.hyp: ForgetGenUse All 0.0709  ID 0.0700  OOD 0.3192  (OOD base-correct 133 of 63,369)
+ft_un_random_lr1_s2_st2.newstest2014.hyp: ForgetGenUse All 0.0685  ID 0.0677  OOD 0.3164  (OOD base-correct 133 of 63,369)
+ft_un_random_lr1_s3_st2.newstest2014.hyp: ForgetGenUse All 0.0687  ID 0.0678  OOD 0.3164  (OOD base-correct 133 of 63,369)
+ft_un_random_lr1_s4_st2.newstest2014.hyp: ForgetGenUse All 0.0689  ID 0.0680  OOD 0.3164  (OOD base-correct 133 of 63,369)
+total 5.228 s
+ft_un_rep_lr1_s42_st2.newstest2014.hyp: ForgetGenUse All 0.0983  ID 0.0907  OOD 0.4709  (OOD base-correct 1,108 of 63,369)
+ft_un_rep_lr1_s1_st2.newstest2014.hyp: ForgetGenUse All 0.0979  ID 0.0903  OOD 0.4689  (OOD base-correct 1,108 of 63,369)
+ft_un_rep_lr1_s2_st2.newstest2014.hyp: ForgetGenUse All 0.0996  ID 0.0921  OOD 0.4649  (OOD base-correct 1,108 of 63,369)
+ft_un_rep_lr1_s3_st2.newstest2014.hyp: ForgetGenUse All 0.0991  ID 0.0917  OOD 0.4624  (OOD base-correct 1,108 of 63,369)
+ft_un_rep_lr1_s4_st2.newstest2014.hyp: ForgetGenUse All 0.0979  ID 0.0903  OOD 0.4674  (OOD base-correct 1,108 of 63,369)
+total 5.126 s
+ft_random_small_words    All 0.0469 (0.0003)  ID 0.0473 (0.0003)  OOD 0.0306 (0.0020)  ref share ID 0.9793
+ft_topk_div_words        All 0.0573 (0.0006)  ID 0.0545 (0.0007)  OOD 0.1140 (0.0030)  ref share ID 0.9529
+ft_topk_rep_words        All 0.0803 (0.0007)  ID 0.0717 (0.0006)  OOD 0.1981 (0.0027)  ref share ID 0.9317
+ft_un_div_words          All 0.0751 (0.0013)  ID 0.0697 (0.0011)  OOD 0.1631 (0.0044)  ref share ID 0.9421
+ft_un_random_words       All 0.0686 (0.0008)  ID 0.0671 (0.0009)  OOD 0.1058 (0.0007)  ref share ID 0.9604
+ft_un_rep_words          All 0.0966 (0.0007)  ID 0.0849 (0.0007)  OOD 0.2356 (0.0008)  ref share ID 0.9223
+ft_random_small_spm      All 0.0464 (0.0004)  ID 0.0464 (0.0004)  OOD 0.1429 (0.0000)  ref share ID 0.9999
+ft_topk_div_spm          All 0.0601 (0.0012)  ID 0.0586 (0.0012)  OOD 0.3789 (0.0060)  ref share ID 0.9952
+ft_topk_rep_spm          All 0.0817 (0.0013)  ID 0.0764 (0.0013)  OOD 0.4865 (0.0029)  ref share ID 0.9870
+ft_un_div_spm            All 0.0770 (0.0014)  ID 0.0736 (0.0014)  OOD 0.3939 (0.0068)  ref share ID 0.9892
+ft_un_random_spm         All 0.0693 (0.0010)  ID 0.0684 (0.0010)  OOD 0.3175 (0.0015)  ref share ID 0.9965
+ft_un_rep_spm            All 0.0986 (0.0008)  ID 0.0910 (0.0008)  OOD 0.4669 (0.0033)  ref share ID 0.9799
 REAL_EXIT=0

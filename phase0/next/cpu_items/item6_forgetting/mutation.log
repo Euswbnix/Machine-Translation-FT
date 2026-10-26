@@ -1,0 +1,10 @@
+killed    unclipped F  (FAILED (failures=3))
+killed    unclipped B  (FAILED (failures=1))
+killed    ID and OOD swapped  (FAILED (failures=3, errors=1))
+killed    denominator B instead of reference occurrences (the 2026-10-19 reading)  (FAILED (failures=5))
+killed    |B - F| in place of max(0, B - F)  (FAILED (failures=6))
+killed    copy split inverted  (FAILED (failures=1))
+killed    > in place of >= for the min count  (FAILED (failures=3))
+killed    splitlines()  (FAILED (failures=1, errors=5))
+unmutated: exit 0 (OK)
+MUTATION_CHECK OK

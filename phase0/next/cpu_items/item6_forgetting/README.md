@@ -1,75 +1,83 @@
 # item6_forgetting: token-level forgetting (ForgetGenUse), ID vs OOD
 
-WMT2027_PLAN.md §3.2 item 6 (line 357). **Status: implemented and tested; no real result yet.**
-The newstest2014 references are on no reachable machine, so every number below checks the code. None
-of them measures forgetting. This is a descriptive CPU analysis, not a registered result.
+WMT2027_PLAN.md §3.2 item 6. **Status: run on the real newstest2014 outputs (2026-10-19), re-run
+2026-10-25 with the paper's Eq 1, cross-checked by an independent implementation.** This is a
+descriptive CPU analysis, not a registered result.
+
+**Correction, 2026-10-25.** The first run divided the lost uses by the base model's correct uses
+(Σ L / Σ B). That was this folder's reading of a one-sentence note, made before anyone had read
+Eq 1. The author read Eq 1 in the paper on 2026-10-25: the denominator is the number of reference
+token occurrences. Every headline value below is now Eq 1. The old ratio is still written to the
+JSON as `forgetgenuse_per_base_correct`, but it is not the paper's measure and should not be quoted.
+The Eq 1 values are 0.64–0.65 of the old ones for All and ID and 0.57–0.61 for OOD. The ordering of
+the sets and the ID/OOD split of the extra lost uses (counts, not rates) do not change.
 
 ## Definition used
 
-Source: groundwork.json, saunders2024 note, line 104 (field "setup", Evaluation/Metrics): "For each
-reference token, ForgetGenUse counts how often the original model produced it correctly and the
-adapted model no longer does. It can be split into tokens that appear in the adaptation set (ID) and
-tokens that do not (OOD)." Line 113 ("useful_for_design") asks for ForgetGenUse_ID/OOD on the E0.5
-newstest2014 outputs. The note gives this sentence but not the formula of Eq 1, so the counting
-rule below is my implementation of that sentence:
+Saunders & DeNeefe (2024, EMNLP), Sec 2.1, Eq 1, as the author checked it against the paper on
+2026-10-25. For sentence i and token t, with c_R, c_B, c_F the counts of t in the reference, the base
+hypothesis and the fine-tuned hypothesis:
 
-For test segment s and reference token type v, let r, b, f be the counts of v in the reference, the
-base hypothesis and the fine-tuned hypothesis.
-
-- B = min(b, r) is the base model's correct uses, clipped the way BLEU clips unigram matches.
-- F = min(f, r) is the fine-tuned model's correct uses.
-- L = max(0, B − F) is the forgotten uses.
-- G = max(0, F − B) is the gained uses. It is reported only.
-
-**ForgetGenUse_X = Σ L / Σ B**, summed over the (s, v) pairs with v in X, where X is All, ID or OOD:
-
-- **ID**: the types that occur at least once (`--id-min-count`, default 1) in the fine-tuning set's
-  **target (French) side**, tokenised the same way. Using the target side only is my assumption: the
-  note says just "appear in the adaptation set". I chose the target side because the note reports
-  target coverage as the paper's strongest correlate (line 113).
-- **OOD**: every other type.
+- O_i(t) = min{c_B, c_R}, the base model's correct uses, clipped per sentence (this folder calls it B).
+- A_i(t) = min{c_F, c_R}, the fine-tuned model's correct uses (F).
+- L(t) = Σ_i max{O_i(t) − A_i(t), 0}, the lost uses. Clipping and the positive part are both taken
+  per sentence before summing.
+- **ForgetGenUse_V = Σ_{t∈V} L(t) / Σ_i Σ_{t∈V} c_{R_i}(t)**: total lost uses over the reference
+  token occurrences of the token set V. The denominator is neither the base model's correct uses nor
+  an average of per-token rates.
+- V is All, ID or OOD. **ID** = the types that occur at least once (`--id-min-count`, default 1) in
+  the fine-tuning set's **target (French) side**, tokenised the same way; the author confirmed that
+  "in the fine-tuning set" means the target side. **OOD** = every other reference type.
+- G = max(0, F − B) per sentence (gained uses) is reported only.
 
 Also reported:
 
-- `_macro`: the mean over the types with Σ_s B > 0 of (Σ_s L / Σ_s B). This is an alternative
-  aggregation.
-- A copy split that is not in the paper: whether v also occurs in the source segment (names and
+- `forgetgenuse_per_base_correct` = Σ L / Σ B, the first reading. Kept so the 2026-10-19 numbers can
+  be traced; not the paper's measure.
+- `forgetgenuse_macro`: the mean over the types with Σ_s B > 0 of (Σ_s L / Σ_s B). An alternative
+  aggregation, not in the paper.
+- A copy split that is not in the paper: whether t also occurs in the source sentence (names and
   numbers).
-- Per-split totals (reference occurrences, B, F, L, G and type counts). A different denominator,
-  such as reference occurrences, can be recomputed from these. Per-type B, F and L are kept only for
-  the 25 most-lost and most-gained types (`--top`), so per-type netting, or an average over another
-  set of types, needs a re-run (about a minute for everything).
+- Per-split totals (reference occurrences, B, F, L, G and type counts), so any pooled normalisation can
+  be recomputed from the JSON. Per-type B, F and L are kept only for up to 25 most-lost OOD types, 25
+  most-lost ID types and 25 most-gained types, and only for types with L > 0 or G > 0 (`--top`).
+  Per-type netting, or an average over another set of types, needs a re-run (about a minute).
 
 Tokenisers:
 
 - `words` (default): lowercased `\w+`, the project rule (e04_split.py:13,29; e05_build.py:49,79).
 - `words_cased`: `\w+` with case kept.
-- `spm`: pieces from the base model's `spm_enfr_v1_fixed` (sha256 d1c10ea8…, checked). The note's
-  coverage measure (line 112) is defined on subwords.
+- `spm`: pieces from the base model's `spm_enfr_v1_fixed` (sha256 d1c10ea8…, checked). The paper's
+  coverage measure is defined on subwords.
+
+Which unit and case the paper's Eq 1 counts in has not been checked (Open points).
 
 ## Files
 
 | file | what it is |
 | --- | --- |
 | `forgetgenuse.py` | `--src --ref --base-hyp --ft-hyp (1..n) --ft-train <prefix>... --out` → JSON. Stdlib only; sentencepiece is needed only for `--tok spm`. It refuses to run if the line counts differ (lines split on `\n` only), if a training prefix's .en and .fr differ in length, or if `--expect-src-sha` / `--expect-ref-sha` (`newstest2014` = E0.5's 967dca93… / 82526d36…) do not match. |
-| `test_forgetgenuse.py` | Hand-computed synthetic tests (example and arithmetic in its docstring), plus clipping, cased, min-count, invariant and refusal tests. `test.log`: 8 tests, OK. |
+| `test_forgetgenuse.py` | Hand-computed synthetic tests (example and arithmetic in its docstring), plus clipping, cased, min-count, invariant and refusal tests. `test.log`: 8 tests, OK (Studio, Python 3.14.3, 2026-10-25). |
+| `mutation_check.py` | Applies 8 single-line mutations to a copy of `forgetgenuse.py` and checks that the tests fail for each. `mutation.log`: 8 of 8 killed (Studio, 2026-10-25). |
 | `smoke_run.sh`, `smoke_check.py` | End-to-end run on the Studio, plus an independent recount that does not import the script. Outputs: `results_smoke.json`, `smoke.log`, `example_output_A_refbase_words.json`. |
 | `run_real.sh` | The real run: 30 runs, 2 tokenisers, 12 calls, a hypothesis sha256 check against `redecode_report.json`, and a summary table. |
 | `results_glue_full3003.json` | `run_real.sh` on full-size files with stand-in references; it tests the glue only. |
+| `real/` | The real run (Eq 1): per-set JSONs, `summary.json`, `real.log`, and the independent cross-check (`item6_crosscheck.py`, `crosscheck_real_words_eq1.json`). |
 
-Studio copies: `~/cpu_items/item6_forgetting/` (scripts, `hyps/`, `smoke/`, `glue_test/out/`).
+Studio copies: `~/cpu_items/item6_forgetting/` (scripts, `real/`, `real_refs/`, `real_hyps/`, `smoke/`,
+`glue_test/out/`; the 2026-10-19 run is kept in `real_per_base_correct_20261019/`).
 
 ## Tests
 
-- **Synthetic tests:** 8 of 8 pass on the Studio (Python 3.14.3). The hand example gives All 3/10 = 0.3,
-  ID 0/6 = 0, OOD 3/4 = 0.75, and macro All 3/9.
-- **Mutation check:** 8 of 8 deliberately broken copies fail the tests. This is my run; no log of
-  it is kept in this folder. An independent check went through each mutation against the tests by
-  reasoning and did not re-run them. The mutations:
+- **Synthetic tests:** 8 of 8 pass on the Studio (Python 3.14.3). The hand example gives All 3/11,
+  ID 0/7, OOD 3/4 (the Σ L / Σ B variant: 3/10, 0/6, 3/4) and macro All 3/9; the clipping test gives
+  1/3 (variant 0.5), so it also separates per-sentence from per-type netting (per-type would give 0).
+- **Mutation check** (`mutation_check.py`, `mutation.log`): each of these 8 mutations makes the tests
+  fail:
   - unclipped F;
   - unclipped B;
   - ID and OOD swapped;
-  - dividing by reference occurrences instead of B;
+  - dividing by B instead of reference occurrences (the 2026-10-19 reading);
   - |B − F| in place of max(0, B − F);
   - the copy split inverted;
   - `>` in place of `>=` for the min count;
@@ -77,139 +85,81 @@ Studio copies: `~/cpu_items/item6_forgetting/` (scripts, `hyps/`, `smoke/`, `glu
 - **Smoke run** (first 1,000 lines; fine-tuning set ft_un_rep). The inputs are the base
   hypothesis `baseline_v1.1_averaged` (sha256 21f41ffb…) and the fine-tuned hypothesis
   `ft_un_rep_lr1_s42_st2` (sha256 7455e7ba…). The reference is one of those two hypotheses, so it
-  is fake, and the source is a stand-in. 34 of 34 independent checks pass:
-  - With the reference set to the base hypothesis, B equals the reference occurrences, G = 0, and
-    ForgetGenUse_All = 1 − (clipped matches / occurrences). Words: All 0.2258, ID 0.2018, OOD 0.5333
-    (OOD base-correct 1,755 of 24,232). spm: All 0.2393, ID 0.2266, OOD 0.8715 (638 of 32,354).
+  is fake, and the source is a stand-in. 34 of 34 independent checks pass (run 2026-10-19 under the
+  first reading; with ref = base, B equals the reference occurrences, so Eq 1 gives the same numbers):
+  - With the reference set to the base hypothesis, G = 0 and ForgetGenUse_All = 1 − (clipped
+    matches / occurrences). Words: All 0.2258, ID 0.2018, OOD 0.5333 (OOD base-correct 1,755 of
+    24,232). spm: All 0.2393, ID 0.2266, OOD 0.8715 (638 of 32,354).
   - With the reference set to the fine-tuned hypothesis, lost = 0 in every split.
-- **Glue test:** `run_real.sh` ran with the reference sha checks removed in a copy. It used
-  full-size 3,003-line files, the real training sets, and the two hypotheses copied into all 31
-  slots. It also refused correctly when the references were missing, when the reference sha was
-  wrong, and when a hypothesis was altered. These refusal runs are not logged in this folder. The
-  independent check read the refusal code and did not re-run it.
+- **Glue test:** `run_real.sh` ran on full-size 3,003-line files with the real training sets and the
+  two hypotheses copied into all 31 slots; the reference sha checks were removed in a copy (whether
+  the hypothesis sha check was also bypassed or a substitute report used is not recorded). It also
+  refused correctly when the references were missing, when the reference sha was wrong, and when a
+  hypothesis was altered. These refusal runs are not logged in this folder.
 
 ## The real run
 
-**What it needs:**
+newstest2014 `test.en` / `test.fr` copied from the training box (`data_enfr_v1/`), sha256
+`967dca93…` / `82526d36…` = the src_sha / ref_sha in E0.5's BLEU cache; the 31 re-decoded
+hypotheses sha-checked against `redecode_report.json`. 2026-10-25: `run_real.sh real_refs real_hyps`
+on the M5 Max, exit 0, a few seconds. ForgetGenUse (Eq 1), `words` tokeniser, mean (sd) over the 5
+seeds; ID = types in the set's French side:
 
-- newstest2014 `test.en` and `test.fr` exactly as E0.5 scored them: Machine_translation
-  `data_enfr_v1/test.{en,fr}`, sha256 967dca935c7c… and 82526d36ae1c… (the cache in E0.5's results
-  archive). Copy them to the Studio.
-- The 31 `*.newstest2014.hyp` files plus `redecode_report.json` from
-  `~/mt_local/phase0_final/e05_redecode/`.
+| set | All | ID | OOD | OOD reference occurrences (of 73,616) |
+| --- | --- | --- | --- | --- |
+| ft_un_rep | 0.0966 (0.0007) | 0.0849 (0.0007) | 0.2356 (0.0008) | 5,722 |
+| ft_un_div | 0.0751 (0.0013) | 0.0697 (0.0011) | 0.1631 (0.0044) | 4,265 |
+| ft_un_random | 0.0686 (0.0008) | 0.0671 (0.0009) | 0.1058 (0.0007) | 2,916 |
+| ft_topk_rep | 0.0803 (0.0007) | 0.0717 (0.0006) | 0.1981 (0.0027) | 5,025 |
+| ft_topk_div | 0.0573 (0.0006) | 0.0545 (0.0007) | 0.1140 (0.0030) | 3,466 |
+| ft_random_small | 0.0469 (0.0003) | 0.0473 (0.0003) | 0.0306 (0.0020) | 1,527 |
 
-**Command:**
+**Cross-check:** the independent checker's `fgu_check.py` (its own implementation), driven by
+`real/item6_crosscheck.py`, gives for every one of the 30 runs the same integer counts (r, B, F, L, G
+for All, ID, OOD, OOD_in_src, OOD_not_in_src); the largest difference in any mean or sd is 2.8e-17
+(`real/crosscheck_real_words_eq1.json`).
 
-```
-cd ~/cpu_items/item6_forgetting && nohup ./run_real.sh <REF_DIR> <HYP_DIR> real > real.log 2>&1 &
-```
+**Reading, descriptive only:**
 
-**Time:** measured on full-size files with all 30 runs and both tokenisers, while the E0.6 job was
-running, under `nice -n 5`: **55.6 s wall in one process**. This timing is not logged in this
-folder. An independent recount, run as two parallel processes under a different load, took a
-similar time.
-
-- `words` takes about 2.0–2.3 s per set.
-- `spm` takes about 6.2–8.6 s per set; encoding the 214–242k training rows dominates.
-
-E0.6's 40 runs will need their outputs written (prereg OD 11). They cost the same per set.
+- Within UN, forgetting orders rep > div > random, as BLEU does; so does topk_rep > topk_div.
+- The OOD rate differs most between sets (0.236 / 0.163 / 0.106), but by counts most of the extra
+  loss of rep over div is on ID tokens. Mean lost uses: rep 7,114, div 5,526, random 5,052. Of the
+  rep − div gap (+1,587), 935 (59%) are ID and 652 (41%) OOD. Of the div − random gap (+474), 387
+  (82%) are OOD. For topk_rep − topk_div (+1,691), 64% are ID. All has the same denominator (73,616)
+  for every set, so these shares are the same under Eq 1 and under the first reading.
+- The OOD class itself differs in size by set (last column): the repetitive half's French side
+  covers fewer of the test set's tokens, which is item 1's coverage gap seen from the test side. So
+  the OOD rates compare different token populations; the All column compares like with like.
+- `spm` results are in `real/*_spm.json`; with pieces nearly every reference token is ID (share
+  0.980–0.997), so the spm OOD cells rest on few tokens and are not used.
+- The paper's ranges (from the pre-reading note: Table 2, All 0.07–0.25; Table 4, OOD 0.11–0.65,
+  ID 0.07–0.17) use the same formula now, but a different setting (8 whole-domain corpora, 20K steps,
+  other test sets) and possibly another token unit, so a side-by-side comparison is only rough.
 
 ## Caveats
 
-1. **Eq 1 has not been read, so the counting rule is my reading.** The note gives only the one
-   sentence quoted above, not a formula. Four parts of the rule are my choices, not the paper's:
-   - pooling over all (s, v) pairs rather than averaging per type;
-   - clipping per segment;
-   - taking max(0, B − F) in each segment rather than netting each type over the whole test set;
-   - B as the denominator, rather than reference occurrences.
-
-   Three more choices are mine too, as noted above: ID comes from the French side only, tokens are
-   lowercased, and the default unit is words rather than the model's subwords. Until Eq 1 is read
-   in the PDF, do not compare these numbers with the paper's Table 2 and Table 4 ranges (OOD
-   0.11–0.65, ID 0.07–0.17).
-2. **The stand-ins cannot show how much the counting rule matters.** Both stand-ins set the
-   reference to the base output. So B equals the reference count in every segment and G = 0
-   (`results_smoke.json`: base_correct = ref_occ and gained = 0). B − F is then never negative, and
-   three readings give the same number: Σ L / Σ B, Σ L / (reference occurrences), and per-type
-   netting max(0, Σ_s B − Σ_s F) / Σ B. Only the per-type average differs. In the full-size glue
-   run (ft_un_rep) the macro All is 0.393 against 0.234 pooled for words, and 0.379 against 0.245
-   for spm. `results_glue_full3003.json` keeps only the pooled numbers. With a real reference the
-   fine-tuned model also gains tokens, and the readings come apart. In this folder only the hand
-   clipping test tells per-segment netting from per-type netting: it gives 0.5 per segment, and
-   per-type netting would give 0. See Open points.
-3. **The tokeniser matters.** With spm pieces nearly every reference token is ID. In the stand-in
-   full run the OOD occurrences were 19 (ft_random_small) to 1,954 (ft_un_rep) of 98,166, so spm
-   OOD rates will be noisy for the broad sets. With `words` they were 1,527 to 5,486 of 72,951.
-   Words mode ignores punctuation; spm counts it. Lowercasing follows the project rule, while the
-   paper's examples are cased; `words_cased` is available.
-4. **Stand-in by-product** (not a result): these are the shares of the *base model's* newstest2014
-   output tokens that occur in each set's French side, from the glue run.
-
-   | set | words | spm |
-   | --- | --- | --- |
-   | ft_un_rep | 0.9248 | 0.9801 |
-   | ft_un_div | 0.9425 | 0.9892 |
-   | ft_un_random | 0.9611 | 0.9966 |
-   | ft_topk_rep | 0.9344 | 0.9864 |
-   | ft_topk_div | 0.9532 | 0.9939 |
-   | ft_random_small | 0.9791 | 0.9998 |
-
-   French-side vocabulary sizes are 32,771 / 43,420 / 70,046 / 36,235 / 49,892 / 113,161 word
-   types, and 18,980 / 20,308 / 24,303 / 19,788 / 21,195 / 27,169 of 32,000 spm pieces. The real
-   reference will give different shares.
-5. **Statistics:** one test set and five seeds per set. The script reports the mean and sd over
-   seeds and no significance test. The ID/OOD split is per type, so OOD mixes rare content words,
-   names and numbers, which is why the copy split is there.
-6. **Scope:** the fine-tuning target side defines ID. Base-pretraining coverage is not used.
+1. **The token unit and case are not checked against the paper.** Eq 1's formula, the per-sentence
+   clipping, the denominator and the target-side ID set are now as in the paper. Whether the paper
+   counts words or subwords, and cased or lowercased tokens, has not been read. The default here is
+   lowercased words; `words_cased` and `spm` are available.
+2. **The stand-ins could not separate the readings.** The stand-ins with nonzero loss (smoke A and
+   the glue run) set ref = base, so B equals the reference occurrences and G = 0, and the ref = ft
+   smoke run has L = 0 everywhere. Every reading gave the same number there. Only the real run shows
+   the difference: Σ L / Σ B is about 1.56 times Eq 1 for All, because the base model gets about 64%
+   of the reference occurrences right (47,332 of 73,616 with `words`).
+3. **The tokeniser matters.** With spm pieces nearly every reference token is ID (above). Words mode
+   ignores punctuation; spm counts it.
+4. **Statistics:** one test set and five seeds per set. The script reports the mean and sd over seeds
+   and no significance test. The ID/OOD split is per type, so OOD mixes rare content words, names and
+   numbers, which is why the copy split is there.
+5. **Scope:** the fine-tuning target side defines ID. Base-pretraining coverage is not used.
    Changing `--id-min-count` changes ID.
 
 ## Open points
 
-These need a recomputation, a code change or a source that is not on hand, so they are not done
-here.
-
-1. **Read Eq 1 in the paper's PDF.** No PDF was on hand for this check. Settle these questions:
-   - the denominator (B or reference occurrences);
-   - netting per segment or per type;
-   - ID from the target side only, or from both sides;
-   - case;
-   - words or subwords.
-
-   If the paper differs, change the default rule in `forgetgenuse.py`.
-2. **Measure how much the rule moves the numbers.** This needs a stand-in where the fine-tuned
-   model also gains tokens, for example a reference set to another fine-tuned output. An independent
-   check reported such a run (reference = the ft_un_random s42 output, ft_un_rep vocabulary). For
-   words, All was 0.151 under this rule, 0.101 with per-type netting, 0.122 per reference occurrence
-   and 0.262 as a per-type average. Those numbers are not in this folder and were not reproduced
-   here.
-3. **Keep the full per-type counts** (or add an option for them) so that other per-type readings
-   need no re-run. This is a code change.
-4. **Re-run and log three things** in this folder: the mutation check, the `run_real.sh` refusal
-   runs and the timing.
-
-## Real run (2026-10-19)
-
-newstest2014 `test.en` / `test.fr` copied from the training box (`data_enfr_v1/`), sha256
-`967dca93…` / `82526d36…` = the src_sha / ref_sha in E0.5's BLEU cache; the 31 re-decoded
-hypotheses sha-checked against `redecode_report.json`. `run_real.sh real_refs real_hyps real` on the
-M5 Max, 5.2 s, exit 0. Outputs in `real/`. ForgetGenUse, `words` tokeniser, mean (sd) over the 5
-seeds, pooled as defined above (ΣL / ΣB; ID = types in the set's French side):
-
-| set | All | ID | OOD |
-| --- | --- | --- | --- |
-| ft_un_rep | 0.1503 (0.0012) | 0.1310 (0.0012) | 0.4077 (0.0014) |
-| ft_un_div | 0.1168 (0.0019) | 0.1079 (0.0017) | 0.2717 (0.0073) |
-| ft_un_random | 0.1067 (0.0013) | 0.1041 (0.0014) | 0.1743 (0.0012) |
-| ft_topk_rep | 0.1249 (0.0011) | 0.1106 (0.0009) | 0.3474 (0.0048) |
-| ft_topk_div | 0.0892 (0.0009) | 0.0844 (0.0010) | 0.1956 (0.0052) |
-| ft_random_small | 0.0730 (0.0005) | 0.0735 (0.0005) | 0.0503 (0.0033) |
-
-Cross-check: the independent checker's `fgu_check.py` (its own implementation), driven by
-`real/item6_crosscheck.py`, gives the same means and sds to four decimals for all six sets
-(`real/crosscheck_real_words.json`).
-
-Reading, descriptive only: within UN, forgetting orders rep > div > random, as BLEU does; the gap is
-mostly in tokens the fine-tuning set does not contain (OOD 0.41 / 0.27 / 0.17), while ID forgetting
-differs by 2–3 points. The counting rule is this folder's reading of the note (Eq 1 unchecked, see
-the caveats above), so compare sets with each other, not with the paper's values; `spm` OOD cells
-rest on very few tokens and are not used.
+1. **Check the token unit and case in the paper** (words or subwords; cased or not). If they differ,
+   re-run with `--tok spm` or `words_cased` as the headline; both are already supported.
+2. **Keep the full per-type counts** (or add an option for them) so that per-type readings need no
+   re-run. This is a code change.
+3. **Log the glue test's refusal runs and the timing** in this folder (the mutation check is now
+   logged).

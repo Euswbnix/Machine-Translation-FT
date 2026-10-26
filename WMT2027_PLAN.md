@@ -193,8 +193,8 @@ E0.7 and E1.0 both select with CometKiwi-22 alone.
 | --- | --- | --- | --- |
 | A narrow QE top slice is no better, or worse, than a same-size random draw, a lower band, or the full data | Waldendorf et al. 2025; Chimoto et al. 2024; Tan et al. 2024; Finkelstein et al. 2024 | The phenomenon. Waldendorf: CometKiwi-22 top 1% against same-size random, from scratch, 3 seeds; En-Ar 45.2 against 49.7 chrF++, En-De a tie on chrF++ and lower COMET. Chimoto: COMET-QE top 10% far below random on en-de, gap mostly closed at 30% kept. Tan: COMETKiwi > 89 below > 87 at 53k pairs, single runs. Finkelstein: top ~0.3% by BLEURT-QE, no random control. None tests a mechanism. [Gn:waldendorf2025, chimoto2024, tan2024, finkelstein2024] | Credited, not claimed. |
 | The top of a ranking is redundant and lexically thin | Lo et al. 2018; Bernier-Colborne & Lo 2019 | A qualitative remark for YiSi-based scorers, and two remedies: drop pairs that add no new source bigram (bicov), or discount them by 20%. No measurement; the 2019 discount was never ablated. [Gn:lo2018, berniercolborne2019] | A measurement for a learned reference-free QE metric, and a controlled test of the harm. |
-| Fine-tuning loss tracks the vocabulary of the fine-tuning set | Saunders & DeNeefe 2024 | Forgetting correlates with target vocabulary coverage across the 5 de-en and 3 en-ja domains (Kendall tau 0.9 with the COMET drop; pooled, n = 8, or per pair: to check), with no seeds reported; a coverage-completing mix-in removes most of it, with no same-size random control. [Gn:saunders2024] | Whether repetition hurts beyond coverage (E0.6), and the link to QE selection. Coverage is their idea and is credited. |
-| QE filtering helps | Peter et al. 2023 | Keeping the top 50% and training from scratch to convergence: both QE metrics at or above random in every COMET22 cell of their Table 2; apparently one run per condition (to check). [Gn:peter2023] | Not contradicted. Our claims are scoped to the extreme top band and to fine-tuning; W2 maps where the sign turns. |
+| Fine-tuning loss tracks the vocabulary of the fine-tuning set | Saunders & DeNeefe 2024 | Forgetting correlates with target vocabulary coverage across the 5 de-en and 3 en-ja domains (Kendall tau 0.9 with the COMET drop, pooled over the 8 domains; checked by the author 2026-10-25), with no seeds reported; a coverage-completing mix-in removes most of it, with no same-size random control. [Gn:saunders2024] | Whether repetition hurts beyond coverage (E0.6), and the link to QE selection. Coverage is their idea and is credited. |
+| QE filtering helps | Peter et al. 2023 | Keeping the top 50% and training from scratch to convergence: both QE metrics at or above random in every COMET22 cell of their Table 2; one score per configuration, with no seed values, number of seeds, repeated random draws, or variance reported (checked by the author 2026-10-25). [Gn:peter2023] | Not contradicted. Our claims are scoped to the extreme top band and to fine-tuning; W2 maps where the sign turns. |
 | A QE top slice beats random in LLM LoRA fine-tuning | Fujita de Mello & Takada 2025 | Japanese-English, four 7B LLMs with LoRA, 10k of a 440k single-domain pool: COMET-Kiwi top-10k beat same-size random in BLEU in 8 of 8 model-direction cells and in COMET in 6 of 8 (Tables III-IV), on a pool already deduplicated and filtered for repetition. Single seed, not length-matched; the tables have apparent copy errors. [Gn:llmselect] | The closest published result against C2 for LLM LoRA fine-tuning, and the reviewer objection the note itself names; E1.0 tests that regime. |
 | Redundancy controls on top of a ranking | Kirchhoff & Bilmes 2014 (principle); Lo et al. 2018; Azpeitia et al. 2018; Lu et al. 2018; Bernier-Colborne & Lo 2019; Xu et al. 2020; Koehn et al. 2019 (practice) | The principle and the practice. The evidence that it helps NMT is weak to negative. Separately, deduplication before ranking: Rossenbach et al. 2018's near-duplicate filter gave +0.0 to +0.4 BLEU once pairs are model-ranked. [PA] | An intervention result of our own (W4). |
 | "It is just duplicates" | Koehn et al. 2018; Waldendorf et al. 2025 | The WMT18 pool was deduplicated before scoring. Waldendorf near-deduplicated their data (whether this covers every setup is to check) and the CometKiwi top-1% deficit on En-Ar remained. [Gn:koehn2018, waldendorf2025] | E0.6 tests repetition with duplicates removed. |
@@ -352,12 +352,21 @@ the pre-registration work are.
    mean rep rises. The repetitive half is not more numeric than the diverse half (about 3.2%
    against 3.5% of source tokens masked).
 3. **Chimoto et al.'s rival explanation:** language-ID and length-ratio contamination in each
-   half [Gn:chimoto2024].
+   half [Gn:chimoto2024]. **Run 19 October 2026** (`phase0/next/cpu_items/item3_contamination/`;
+   independent check): length-ratio outliers (whitespace ratio above 1.5 or below 1/1.5) 2.14% /
+   3.13% / 5.96% for `ft_un_rep` / `ft_un_div` / `ft_un_random`, so the repetitive half is the
+   cleaner one; wrong-language rows under 0.4% in either half under either tool (py3langid 0.4.0,
+   Apple NaturalLanguage), mostly English lists of names and dates, against 0.8-1.1% in random UN.
+   Neither contaminant explains C1.
 4. **heldout_un hygiene:** its disjointness from the six E0.5 training sets is already checked
    (E0.5's second pre-flight, message of commit `0fb52a6`; a scratch recount on the
    run-of-record files on 17 October finds no shared source or target line). Repeat the check
    for the new E0.6 sets in `e06_build.py`'s manifest, and measure heldout_un's overlap with
-   the pool [Gl] [Gn:koehn2018].
+   the pool [Gl] [Gn:koehn2018]. **Run 19 October 2026** (`phase0/next/cpu_items/item4_heldout/`;
+   independent check): none of the 46 feasibility index files shares a line with heldout_un, exact
+   or normalised; all 2,000 rows are in the pool, and the 4,652 pool rows that touch them are
+   exactly E0.3's reservation; 0 of 9,312,233 pretraining rows share a source, target or pair with
+   it. Repeat for the production build's manifest.
 5. **Depth descriptives for W2:** share of rows with rep > 0, duplicate rate, UN share, and word
    types at matched word count, for the top 0.13%, 0.3%, 1%, 6%, 10%, 12%, 25%, 30% and 50% of the
    ranking (the retention levels of Tan, Finkelstein, Waldendorf, Chimoto and Peter, plus this
@@ -380,14 +389,16 @@ the pre-registration work are.
    the base on newstest2014 and heldout_un, and **62 of 62 reproduce the recorded BLEU exactly**.
    Hypotheses: `~/mt_local/phase0_final/e05_redecode/` (sha256 per file in
    `phase0/next/e05_redecode/redecode_report.json`). This item is now CPU work, **run 19 October 2026** on the M5 Max (`phase0/next/cpu_items/item6_forgetting/`,
-   cross-checked by an independent implementation): ForgetGenUse All / ID / OOD 0.150 / 0.131 / 0.408 for `ft_un_rep`,
-   0.117 / 0.108 / 0.272 for `ft_un_div`, 0.107 / 0.104 / 0.174 for `ft_un_random`: rep > div > random, as in
-   BLEU. The OOD rate differs most (0.408 / 0.272 / 0.174, against ID 0.131 / 0.108 / 0.104), but
-   about 59% of `ft_un_rep`'s extra lost uses over `ft_un_div` are on ID tokens, the div − random
-   gap is about 82% OOD, and the OOD classes differ in size by set (base-correct OOD uses 3,306 /
-   2,560 / 1,771 of 47,332; means of `real/*_words.json`); the folder README's "mostly OOD"
-   reading is to be corrected. The counting rule is the
-   folder's reading of the pre-reading note, Eq 1 unchecked (descriptive). If [PR] E0.6 OD 11
+   cross-checked by an independent implementation; **re-run 25 October 2026 with the paper's Eq 1**,
+   which the author read that day: lost uses over reference token occurrences, clipped per sentence,
+   ID = the fine-tuning set's target side; the first run had divided by the base model's correct
+   uses, which made the All values about 1.56 times too large): ForgetGenUse All / ID / OOD
+   0.097 / 0.085 / 0.236 for `ft_un_rep`, 0.075 / 0.070 / 0.163 for `ft_un_div`, 0.069 / 0.067 / 0.106
+   for `ft_un_random`: rep > div > random, as in BLEU. The OOD rate differs most, but about 59% of
+   `ft_un_rep`'s extra lost uses over `ft_un_div` are on ID tokens, the div − random gap is about 82%
+   OOD, and the OOD classes differ in size by set (OOD reference occurrences 5,722 / 4,265 / 2,916 of
+   73,616; `real/*_words.json`). Still unchecked: whether Eq 1 counts words or subwords, cased or
+   not (descriptive). If [PR] E0.6 OD 11
    picks FLORES+ devtest as the second out-of-domain set, those 30 checkpoints are decoded on it
    the same way on the 5090 (the outline's N1; the checkpoints are on the box in `~/redecode/`); WMT24++
    is paragraph-level and is not used for this arm (OD 11). E0.6's own evaluation must write
@@ -848,8 +859,8 @@ asserted things about papers nobody had read [P] [PA]. Therefore:
 | Finkelstein et al. 2024 (WMT) | the size of the QE-filtered set; what the pool contains |
 | Lo et al. 2018 (WMT) | pair counts behind 10M and 100M words; how bicov refills the budget |
 | Bernier-Colborne & Lo 2019 (WMT) | that the coverage re-ranking was never ablated |
-| Saunders & DeNeefe 2024 (EMNLP) | their coverage definition (subword, source and target); single runs; whether the Kendall tau pools the 5 de-en and 3 en-ja domains (n = 8) or is per pair |
-| Peter et al. 2023 (WMT) | the CometKiwi checkpoint; one run per condition; Random left out of significance tests |
+| Saunders & DeNeefe 2024 (EMNLP) | their coverage definition (subword, source and target); single runs; whether the Kendall tau pools the 5 de-en and 3 en-ja domains (n = 8) or is per pair. **Checked 2026-10-25:** coverage definition as noted; tau pooled (n = 8); Eq 1 as in item 6. Open: single runs and the fine-tuning hyperparameters; Tables 8-9 |
+| Peter et al. 2023 (WMT) | the CometKiwi checkpoint; one run per condition; Random left out of significance tests. **Checked 2026-10-25:** no checkpoint named; no seeds, runs, random-draw repeats or variance reported (Table 2: one score per configuration); Table 3 gives only Full / Filtered / Common sizes (Common = pairs both BleurtQE and Bicleaner keep), no per-source retention; ParaCrawl is in all three pairs, en-zh also has about 19.7M back-translated Chinese sentences. UN v1.0 is on WMT 2023's official en-zh list, but the paper is no evidence of how much UN its QE filter kept |
 | Koehn et al. 2018 (WMT findings) | no random baseline; the pool was deduplicated before release |
 | Fujita de Mello & Takada 2025 (arXiv 2512.11388) | the table copy errors; which test set was used |
 
