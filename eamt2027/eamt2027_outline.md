@@ -1,5 +1,9 @@
 # EAMT 2027 paper outline (draft, 2026-10-16)
 
+> **30 October 2026:** EAMT 2027 is no longer the target (see the venue note at the top of
+> `WMT2027_PLAN.md`): the paper goes to ARR for EMNLP 2027, with WMT 2027 as the fallback. The
+> skeleton's content still applies; its EAMT-specific limits (10 pages, track, dates) do not.
+
 Skeleton of the EAMT 2027 research-technical paper. It is written for the author, so it uses the
 project's internal names (E0.5, `ft_un_div`, ...). The paper itself must not use them: see 0.2.
 

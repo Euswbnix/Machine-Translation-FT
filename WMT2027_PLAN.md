@@ -1,5 +1,17 @@
 # Research plan: EAMT 2027, extended for WMT 2027
 
+> **Venue decision, 30 October 2026 (author).** EAMT 2027 is no longer a target. Its call
+> (published 28 Oct) set the deadline at 31 Jan 2027 AoE, not mid-March, and recent EAMTs are
+> in-person only; neither EAMT nor WMT is in the CCF 2026 list. The route now is: run the
+> experiments as planned (E0.6, E0.7, then the LLM bridge E1.0) and write only after all of them;
+> submit through ARR for the EMNLP 2027 main conference (CCF B); if it is not accepted to the main
+> conference, commit the ARR reviews to WMT 2027 (WMT26 accepted ARR commitments; WMT 2027's call
+> is not out); later, a substantially extended version to Computational Linguistics (CCF B), which
+> accepts extended conference papers. The schedule below still assumes EAMT and will be redone
+> once the EMNLP 2027 ARR cycle and WMT 2027 dates are published; the E0.6 decisions and runs go
+> ahead as planned. Sources: eamt2027.org/calls, statmt.org/wmt26, aclrollingreview.org/cfp,
+> cljournal.org/submissions.html, the CCF 2026 PDF (sha256 271b630b…).
+
 Version of 17 October 2026. This file replaces the previous `WMT2027_PLAN.md`, whose thesis
 Phase 0 refuted (§0.3: the in-domain results of the lr-1.0 follow-up to E0.3 and of E0.5, not
 the E0.3 gate verdict itself). The previous version, with its correction note (2026-09-04 to
