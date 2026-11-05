@@ -4,12 +4,17 @@
 > (published 28 Oct) set the deadline at 31 Jan 2027 AoE, not mid-March, and recent EAMTs are
 > in-person only; neither EAMT nor WMT is in the CCF 2026 list. The route now is: run the
 > experiments as planned (E0.6, E0.7, then the LLM bridge E1.0) and write only after all of them;
-> submit through ARR for the EMNLP 2027 main conference (CCF B); if it is not accepted to the main
-> conference, commit the ARR reviews to WMT 2027 (WMT26 accepted ARR commitments; WMT 2027's call
-> is not out); later, a substantially extended version to Computational Linguistics (CCF B), which
-> accepts extended conference papers. The schedule below still assumes EAMT and will be redone
-> once the EMNLP 2027 ARR cycle and WMT 2027 dates are published; the E0.6 decisions and runs go
-> ahead as planned. Sources: eamt2027.org/calls, statmt.org/wmt26, aclrollingreview.org/cfp,
+> submit directly to the WMT 2027 research track; later, a substantially extended version to
+> Computational Linguistics (CCF B), which accepts extended conference papers.
+>
+> **Updated 4 November 2026 (author):** the ARR route to EMNLP 2027 from the 30 October note is
+> dropped. Since its October 2026 cycle ARR requires a qualified designated service contributor per
+> submission (otherwise a lottery that can end in desk rejection), and the author cannot serve as
+> one. WMT26 took research papers directly through SoftConf as well as through ARR commitments;
+> WMT 2027's call is not out, so this must be confirmed when it appears. If WMT 2027 takes only ARR
+> commitments, the route is decided again. The schedule below still assumes EAMT and will be redone
+> once WMT 2027's dates are published. Sources: eamt2027.org/calls, statmt.org/wmt26,
+> aclrollingreview.org/sustainable-reviewing-2026, aclrollingreview.org/qualifications,
 > cljournal.org/submissions.html, the CCF 2026 PDF (sha256 271b630b…).
 
 Version of 17 October 2026. This file replaces the previous `WMT2027_PLAN.md`, whose thesis
