@@ -96,10 +96,11 @@
 - <https://aclanthology.org/2024.wmt-1.126/>
 - **重点**:Sec 4.1,Tables 4、6、7、16,Fig 2(合成数据部分可略读)
 - **核对**:
-  - [ ] QE 筛选集的确切大小(1M / 296M 约 0.34% 是笔记算的)。
-  - [ ] 池子来源:是否只点名了 Europarl、News Commentary、Rapid,有没有 UN 这类模板化语料。
-  - [ ] BLEURT-QE 检查点、是否纯 top-k、种子、步数、学习率。
-  - [ ] Table 16"微调对数据量不敏感"用的学习率和步数。
+  - [x] QE 筛选集的确切大小(1M / 296M 约 0.34% 是笔记算的)。
+  - [x] 池子来源:是否只点名了 Europarl、News Commentary、Rapid,有没有 UN 这类模板化语料。
+  - [x] BLEURT-QE 检查点、是否纯 top-k、种子、步数、学习率。
+  - [x] Table 16"微调对数据量不敏感"用的学习率和步数。
+- **已读完(2026-11-27)**:作者笔记和讨论意见见 `reading_notes/07_finkelstein_2024.md`。待再核一个数:Table 3 的 De→En 句级平均长度(77.3 / 88.3)。
 
 ### 8. Fujita de Mello & Takada 2025(arXiv,约 45 分钟)
 - <https://arxiv.org/abs/2512.11388>
