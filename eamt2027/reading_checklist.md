@@ -53,11 +53,12 @@
 - <https://aclanthology.org/2024.findings-acl.560/>
 - **重点**:Sec 4–5,Tables 4–6,App A(他们自己的方法可略读)
 - **核对**:
-  - [ ] Tables 4–6 的加粗代表什么(显著性?最好?),看 PDF;"±"是 bootstrap 区间还是种子波动。
-  - [ ] COMET-QE 保留的是高分一端吗(原文有没有明说)。
-  - [ ] 模型大小、COMET-QE 检查点有没有写。
-  - [ ] Sec 5.2 说 Swahili 里 QE 一贯胜随机,但 Table 4 保留 10% 的 FLORES 是 15.3 vs 15.7:以哪个为准。
-  - [ ] 训练了多少步、有没有换过训练长度。
+  - [x] Tables 4–6 的加粗代表什么(显著性?最好?),看 PDF;"±"是 bootstrap 区间还是种子波动。
+  - [x] COMET-QE 保留的是高分一端吗(原文有没有明说)。
+  - [x] 模型大小、COMET-QE 检查点有没有写。
+  - [x] Sec 5.2 说 Swahili 里 QE 一贯胜随机,但 Table 4 保留 10% 的 FLORES 是 15.3 vs 15.7:以哪个为准。
+  - [x] 训练了多少步、有没有换过训练长度。
+- **已读完(2026-11-27)**:作者笔记和讨论意见见 `reading_notes/04_chimoto_2024.md`。
 
 ### 5. Lo et al. 2018 + Bernier-Colborne & Lo 2019(NRC 两篇,共约 1 小时 45 分)
 - <https://aclanthology.org/W18-6481/>、<https://aclanthology.org/W19-5434/>
