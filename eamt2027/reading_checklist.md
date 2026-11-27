@@ -86,10 +86,11 @@
 - <https://aclanthology.org/2024.wmt-1.11/>
 - **重点**:Sec 3、5.2,Table 4
 - **核对**:
-  - [ ] "100k (Cleaned)"到底是什么:Table 4 图注说随机抽样,Sec 5.2 正文说是 QE 分低于 80 的样本。
-  - [ ] "53k > 87"是否包含"> 89"的句对。
-  - [ ] 过滤用哪个 QE 模型版本;全参数还是 LoRA。
-  - [ ] 学习率 2e-5、1 个 epoch 是否就是全部设置。
+  - [x] "100k (Cleaned)"到底是什么:Table 4 图注说随机抽样,Sec 5.2 正文说是 QE 分低于 80 的样本。
+  - [x] "53k > 87"是否包含"> 89"的句对。
+  - [x] 过滤用哪个 QE 模型版本;全参数还是 LoRA。
+  - [x] 学习率 2e-5、1 个 epoch 是否就是全部设置。
+- **已读完(2026-11-27)**:作者笔记和讨论意见见 `reading_notes/06_tan_2024.md`。还差一小项:Section 4.3 里中文 BLEU 的 sacreBLEU 签名(是不是 tok:13a)。
 
 ### 7. Finkelstein et al. 2024(WMT24,约 1 小时)
 - <https://aclanthology.org/2024.wmt-1.126/>
