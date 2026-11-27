@@ -90,7 +90,7 @@
   - [x] "53k > 87"是否包含"> 89"的句对。
   - [x] 过滤用哪个 QE 模型版本;全参数还是 LoRA。
   - [x] 学习率 2e-5、1 个 epoch 是否就是全部设置。
-- **已读完(2026-11-27)**:作者笔记和讨论意见见 `reading_notes/06_tan_2024.md`。还差一小项:Section 4.3 里中文 BLEU 的 sacreBLEU 签名(是不是 tok:13a)。
+- **已读完(2026-11-27)**:作者笔记和讨论意见见 `reading_notes/06_tan_2024.md`。中文 BLEU 的签名已核(`reading_notes/11_supplementary_checks.md`):sacreBLEU 2.3.1,tok:13a;评测文本是否带 Jieba 的空格没说明。
 
 ### 7. Finkelstein et al. 2024(WMT24,约 1 小时)
 - <https://aclanthology.org/2024.wmt-1.126/>
@@ -100,7 +100,7 @@
   - [x] 池子来源:是否只点名了 Europarl、News Commentary、Rapid,有没有 UN 这类模板化语料。
   - [x] BLEURT-QE 检查点、是否纯 top-k、种子、步数、学习率。
   - [x] Table 16"微调对数据量不敏感"用的学习率和步数。
-- **已读完(2026-11-27)**:作者笔记和讨论意见见 `reading_notes/07_finkelstein_2024.md`。待再核一个数:Table 3 的 De→En 句级平均长度(77.3 / 88.3)。
+- **已读完(2026-11-27)**:作者笔记和讨论意见见 `reading_notes/07_finkelstein_2024.md`。Table 3 的 De→En 句级平均长度(77.3 / 88.3)已复核,原文如此(`reading_notes/11_supplementary_checks.md`)。
 
 ### 8. Fujita de Mello & Takada 2025(arXiv,约 45 分钟)
 - <https://arxiv.org/abs/2512.11388>
@@ -110,7 +110,7 @@
   - [x] Table V 的百分比加起来约 100%,和 Sec V-D 的公式对不上:原文怎么算的。
   - [x] 测试集是哪一份(引用 [16] 对不上);"WMT24 ja-en"998 对是不是 WMT24++ en-ja 反过来用。
   - [x] COMET-Kiwi 检查点、BLEU 实现和日语分词、LoRA 秩、学习率。
-- **已读完(2026-11-27,arXiv v1)**:作者笔记和讨论意见见 `reading_notes/08_fujita_de_mello_takada_2025.md`。动笔前再查一次 IEEE 正式版有没有改表。
+- **已读完(2026-11-27,arXiv v1)**:作者笔记和讨论意见见 `reading_notes/08_fujita_de_mello_takada_2025.md`。正式版出处和 DOI 已找到(10.1109/BigData66926.2025.11402145,见 `reading_notes/11_supplementary_checks.md`);**仍待做**:用学校图书馆权限下载 IEEE 正式版,核对那六处是否改过。
 
 ### 9. Pang et al.,"Salute the Classic: Revisiting Challenges of Machine Translation in the Age of Large Language Models"(TACL 2025,arXiv 2401.08350)
 - <https://aclanthology.org/2025.tacl-1.4/>(已正式发表在 TACL 2025,引用正式版;arXiv 版作者顺序不同)
