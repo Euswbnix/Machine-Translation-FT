@@ -106,10 +106,11 @@
 - <https://arxiv.org/abs/2512.11388>
 - **重点**:Sec IV–V,Tables I–V
 - **核对**:
-  - [ ] Table III 里 Gemma 和 Mistral 多格完全相同(随机都是 17.37 / 0.8095),Table IV 也有重复格:是不是抄错了。
-  - [ ] Table V 的百分比加起来约 100%,和 Sec V-D 的公式对不上:原文怎么算的。
-  - [ ] 测试集是哪一份(引用 [16] 对不上);"WMT24 ja-en"998 对是不是 WMT24++ en-ja 反过来用。
-  - [ ] COMET-Kiwi 检查点、BLEU 实现和日语分词、LoRA 秩、学习率。
+  - [x] Table III 里 Gemma 和 Mistral 多格完全相同(随机都是 17.37 / 0.8095),Table IV 也有重复格:是不是抄错了。
+  - [x] Table V 的百分比加起来约 100%,和 Sec V-D 的公式对不上:原文怎么算的。
+  - [x] 测试集是哪一份(引用 [16] 对不上);"WMT24 ja-en"998 对是不是 WMT24++ en-ja 反过来用。
+  - [x] COMET-Kiwi 检查点、BLEU 实现和日语分词、LoRA 秩、学习率。
+- **已读完(2026-11-27,arXiv v1)**:作者笔记和讨论意见见 `reading_notes/08_fujita_de_mello_takada_2025.md`。动笔前再查一次 IEEE 正式版有没有改表。
 
 ### 9. Pang et al.,"Salute the Classic: Revisiting Challenges of Machine Translation in the Age of Large Language Models"(TACL 2025,arXiv 2401.08350)
 - <https://aclanthology.org/2025.tacl-1.4/>(已正式发表在 TACL 2025,引用正式版;arXiv 版作者顺序不同)
