@@ -1117,9 +1117,13 @@ the registered text, and the run refuses a different revision, as D7 does for Co
 *Stage 0, the pilot gate.* It runs before any training run counts:
 - **P1.** The base model, 8-shot on FLORES+ en→fr with exemplars from FLORES+ dev, must reproduce
   Shang et al. (arXiv 2602.11961v3, Table 5): 39.7 spBLEU / 83.8 COMET, within the tolerance of
-  OPEN DECISION 2. **To check:** which FLORES+ split, spBLEU tokenizer and COMET model that number
-  uses, and whether Shang's "Qwen3-1.7B" is the base or the instruct model. The passages read do not
-  say.
+  OPEN DECISION 2. **Checked by the author, 2026-11-27** (arXiv v3; notes in
+  `eamt2027/reading_notes/10_shang_2026.md`): the number is on FLORES+ devtest (1,012 sentences),
+  with eight exemplars drawn at random from FLORES+ dev and reused for every test sentence, in the
+  prompt format `X=Y`; spBLEU is sacreBLEU with the `flores200` tokenizer; COMET is
+  `Unbabel/wmt22-comet-da`, reported on a 0-100 scale. Not reported: whether "Qwen3-1.7B" is the
+  Base or the post-trained checkpoint, the FLORES+ revision, the exemplar IDs and seed, the
+  separator between exemplars, and the decoding settings of that table.
 - **P2.** The base model's off-target-language rate on FLORES+ devtest and WMT24++, below the
   threshold of OPEN DECISION 2.
 - **P3.** Measure, without gating: tokens per example (estimated at about 100), throughput,

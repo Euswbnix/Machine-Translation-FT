@@ -125,10 +125,13 @@
 - <https://arxiv.org/abs/2602.11961>(只有预印本,没找到正式发表记录)
 - **为什么**:E1.0 的试跑门槛(Qwen3-1.7B-Base 的 8-shot FLORES+ en→fr 39.7 spBLEU / 83.8 COMET)出自它的 Table 5。
 - **核对**:
-  - [ ] Table 5 评的是 base 模型还是 instruct 模型。
-  - [ ] 用的是哪一份 FLORES+(dev 还是 devtest,哪个版本)。
-  - [ ] spBLEU 用哪个分词器;COMET 用哪个模型。
-  - [ ] 8-shot 的示例怎么选的。
+  - [x] Table 5 评的是 base 模型还是 instruct 模型。
+  - [x] 用的是哪一份 FLORES+(dev 还是 devtest,哪个版本)。
+  - [x] spBLEU 用哪个分词器;COMET 用哪个模型。
+  - [x] 8-shot 的示例怎么选的。
+- **已读完(2026-11-27,arXiv v3)**:作者笔记和讨论意见见 `reading_notes/10_shang_2026.md`。
+
+**第二组(定 E1.0 之前)到此全部读完。**
 
 ---
 
