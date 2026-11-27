@@ -116,9 +116,10 @@
 - <https://aclanthology.org/2025.tacl-1.4/>(已正式发表在 TACL 2025,引用正式版;arXiv 版作者顺序不同)
 - **为什么**:Saunders & DeNeefe 在局限性里引它,说 LLM 也有类似的术语遗忘;定 LoRA 设计前要读。
 - **核对**:
-  - [ ] 遗忘是怎么测的、在什么模型和微调方式下(LoRA 还是全参数)。
-  - [ ] 是否给出"微调数据的什么属性导致遗忘";和"词表覆盖"有没有关系。
-  - [ ] 学习率、步数,以及有没有换过学习率。
+  - [x] 遗忘是怎么测的、在什么模型和微调方式下(LoRA 还是全参数)。
+  - [x] 是否给出"微调数据的什么属性导致遗忘";和"词表覆盖"有没有关系。
+  - [x] 学习率、步数,以及有没有换过学习率。
+- **已读完(2026-11-27,TACL 正式版)**:作者笔记和讨论意见见 `reading_notes/09_pang_2025.md`。
 
 ### 10. Shang et al.,"Scaling Model and Data for Multilingual Machine Translation with Open Large Language Models"(arXiv 2602.11961,至少读 Table 5 和评测设置)
 - <https://arxiv.org/abs/2602.11961>(只有预印本,没找到正式发表记录)
