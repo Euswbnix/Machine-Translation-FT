@@ -30,12 +30,13 @@
 - <https://aclanthology.org/2025.findings-emnlp.495/>
 - **重点**:Sec 4.4–5,Tables 1、4、13、14,App C、F、G.2
 - **核对**:
-  - [ ] 用的是哪个 CometKiwi 检查点(原文没写的话记"没写"),和我们的 CometKiwi-22 是否同一个。
-  - [ ] App C 的近似去重是否也用于 En→De,还是只用于 En→Ar。
-  - [ ] Sec 5.1 说保留 1% 时 CometKiwi"两个语言对都更差";核对 Table 13:En→De 相对随机是不是只有 COMET 更差,chrF++ / spBLEU 持平。
-  - [ ] CometKiwi-22 的人工打分训练数据是否覆盖 En-Fr、En-De(他们用这一点解释语言对差异)。
-  - [ ] App F:随机组每个种子重抽,具体怎么抽。
-  - [ ] App G.2:差距随训练步数缩小的幅度。
+  - [x] 用的是哪个 CometKiwi 检查点(原文没写的话记"没写"),和我们的 CometKiwi-22 是否同一个。
+  - [x] App C 的近似去重是否也用于 En→De,还是只用于 En→Ar。
+  - [x] Sec 5.1 说保留 1% 时 CometKiwi"两个语言对都更差";核对 Table 13:En→De 相对随机是不是只有 COMET 更差,chrF++ / spBLEU 持平。
+  - [x] CometKiwi-22 的人工打分训练数据是否覆盖 En-Fr、En-De(他们用这一点解释语言对差异)。
+  - [x] App F:随机组每个种子重抽,具体怎么抽。
+  - [x] App G.2:差距随训练步数缩小的幅度。
+- **已读完(2026-11-27)**:作者笔记和讨论意见见 `reading_notes/02_waldendorf_2025.md`。要点:CometKiwi-22 的人工打分训练数据不覆盖 En-Fr。
 
 ### 3. Koehn et al. 2018(WMT18 过滤任务报告,约 1 小时)
 - <https://aclanthology.org/W18-6453/>
