@@ -284,8 +284,8 @@
 下面这些,除 Azpeitia 2018(先行研究核查时看过)、Pombal(LLM 备忘录的作者读过,见"其余")和 Shang(LLM 备忘录的作者读过 Tables 4、5、7、8、10、13)外,都没人打开过;但都不是可选的,区别只在什么时候必须读完:
 
 **阅读周内、周日定 E0.6 之前**(至少读它们的覆盖 / 饱和定义;Koehn 2018 的笔记要求设计词表对照之前先看,好借用现成定义而不是自己发明;对应预注册 E0.6 第 1、2 项,结果出来后就不能再换覆盖的量):
-- Erdmann & Gwinnup 2018(AFRL,"Coverage and cynicism"):Koehn 2018 里 cvg 系统的出处,可能是"按词表覆盖选句"的先例。
-- Azpeitia et al. 2018(Vicomtech,源端 n-gram 饱和):在排序之上加冗余控制,反而让 NMT 变差的先例。
+- Erdmann & Gwinnup 2018(AFRL,"Coverage and cynicism"):Koehn 2018 里 cvg 系统的出处,可能是"按词表覆盖选句"的先例。**已读(11 月 27 日)**:它的 coverage 是所选语料的特征频率分布向参考语料分布匹配(对数收益加过饱和惩罚),不是简单的词表覆盖;结果混有 METEOR、预过滤等因素。笔记见 `reading_notes/01_erdmann_gwinnup_2018_azpeitia_2018.md`。
+- Azpeitia et al. 2018(Vicomtech,源端 n-gram 饱和):在排序之上加冗余控制,反而让 NMT 变差的先例。**已读(11 月 27 日)**:源端 1–3 gram 新颖度乘以质量分,降分不删除;NMT 100M 词时从 30.4 降到 24.9(10M 词时 26.4 → 25.6);作者推测是压掉了有用的上下文变体,没做对照。笔记同上。
 
 **在 EAMT 论文里写任何关于冗余、冗余控制或覆盖控制的句子之前**(阅读周读完十篇后有时间就读,最晚在 12 月 18 日初稿之前):
 - WMT19 过滤任务背后的系统论文:Erdmann & Gwinnup 2019(AFRL,质量与覆盖)、Gonzalez-Rubio 2019(Webinterpret)、Axelrod 2019(DiDi,cynical selection)。`PRIOR_ART_E04.md` 第 5 节说,它的第三个主张(QE 选数据需要多样性或冗余控制;重复程度这类统计量能预测伤害)真正可能被抢先的地方在这里。

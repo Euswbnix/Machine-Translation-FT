@@ -20,10 +20,11 @@
 - Vicomtech "STACC, OOV Density and N-gram Saturation":<https://aclanthology.org/W18-6473/>
 - **为什么先读**:E0.6 要定"覆盖用什么量、按什么规则选"(预注册第 1、2 项),结果出来后不能再换。最好借用现成定义,不要自己发明。
 - **核对**:
-  - [ ] AFRL 的"coverage"怎么算:按词还是 n-gram、源端还是目标端、相对什么词表、有没有阈值。
-  - [ ] Vicomtech 的"n-gram saturation"怎么算:n 取几、按什么顺序累计、饱和后怎么处理(丢弃还是降分)。
-  - [ ] 两篇各自报告的效果:Koehn 2018 的 Table 4 里 AFRL 的 cvg 系统 NMT 10M 只有 13.8 / 13.5,Vicomtech 的 ngsat 变体 NMT 100M 低 5.5。确认原文对这些结果怎么解释。
-  - [ ] 两个定义里,哪一个能直接套到我们"重复那一半 vs 窄词表多样组"的对照上。
+  - [x] AFRL 的"coverage"怎么算:按词还是 n-gram、源端还是目标端、相对什么词表、有没有阈值。
+  - [x] Vicomtech 的"n-gram saturation"怎么算:n 取几、按什么顺序累计、饱和后怎么处理(丢弃还是降分)。
+  - [x] 两篇各自报告的效果:Koehn 2018 的 Table 4 里 AFRL 的 cvg 系统 NMT 10M 只有 13.8 / 13.5,Vicomtech 的 ngsat 变体 NMT 100M 低 5.5。确认原文对这些结果怎么解释。
+  - [x] 两个定义里,哪一个能直接套到我们"重复那一半 vs 窄词表多样组"的对照上。
+- **已读完(2026-11-27)**:作者笔记和讨论意见见 `reading_notes/01_erdmann_gwinnup_2018_azpeitia_2018.md`。
 
 ### 2. Waldendorf et al. 2025(Findings of EMNLP,约 2 小时)
 - <https://aclanthology.org/2025.findings-emnlp.495/>
